@@ -400,3 +400,16 @@
 - [2025-11-08T15:20:31Z] feat(routing): add weighted least-connections balancer with health probing
 - [2025-11-08T16:37:29Z] refactor(buffer): optimize zero-copy ring buffer with memory barrier fences
 - [2025-11-08T17:00:24Z] fix(timeout): decouple deadline cancellation from synchronous cleanup hook
+
+
+### Sprint Milestone: 2025-11-05 (Target Tier 2)
+- [2025-11-05T04:24:44Z] feat(storage): implement append-only commit log with CRC32 checksums
+- [2025-11-05T05:58:32Z] test(chaos): verify raft consensus under network partition and clock drift
+- [2025-11-05T06:49:56Z] perf(query): push down projection and filter predicates to parquet reader
+- [2025-11-05T08:34:29Z] refactor(wal): stream write-ahead log directly into memory mapped segment
+- [2025-11-05T09:52:54Z] feat(crypto): implement constant-time comparison for HMAC authentication
+- [2025-11-05T11:28:58Z] fix(gc): eliminate root reference leak in transient session context
+- [2025-11-05T12:02:46Z] perf(dispatch): replace dynamic lookup table with computed branch table
+- [2025-11-05T13:41:11Z] test(fuzz): add property-based fuzz testing for protobuf frame parser
+- [2025-11-05T15:14:18Z] feat(routing): add weighted least-connections balancer with health probing
+- [2025-11-05T16:48:38Z] refactor(buffer): optimize zero-copy ring buffer with memory barrier fences
