@@ -379,3 +379,24 @@
 - [2026-04-17T16:03:05Z] feat(metrics): track p99 tail latency across service boundary
 - [2026-04-17T16:55:14Z] test(boundary): fuzz input validation for malformed network frames
 - [2026-04-17T17:15:16Z] feat(guard): implement token bucket rate limiter with sliding window
+
+
+### Sprint Milestone: 2025-11-08 (Target Tier 3)
+- [2025-11-08T04:32:49Z] feat(engine): add vectorized SIMD kernel for dot product calculation
+- [2025-11-08T04:11:50Z] perf(cache): implement adaptive two-queue eviction algorithm
+- [2025-11-08T05:32:22Z] test(concurrency): stress-test actor mailbox under 50k sustained msg/s
+- [2025-11-08T06:13:27Z] refactor(pipeline): extract non-blocking work-stealing threadpool
+- [2025-11-08T07:01:26Z] feat(metrics): export percentile latency histograms for internal RPCs
+- [2025-11-08T07:25:05Z] perf(alloc): replace dynamic heap allocations with arena bump allocator
+- [2025-11-08T08:11:50Z] fix(circuit-breaker): tune backoff exponential jitter to prevent thundering herd
+- [2025-11-08T09:51:06Z] feat(storage): implement append-only commit log with CRC32 checksums
+- [2025-11-08T10:02:25Z] test(chaos): verify raft consensus under network partition and clock drift
+- [2025-11-08T11:52:24Z] perf(query): push down projection and filter predicates to parquet reader
+- [2025-11-08T11:52:54Z] refactor(wal): stream write-ahead log directly into memory mapped segment
+- [2025-11-08T12:37:00Z] feat(crypto): implement constant-time comparison for HMAC authentication
+- [2025-11-08T13:47:05Z] fix(gc): eliminate root reference leak in transient session context
+- [2025-11-08T14:52:51Z] perf(dispatch): replace dynamic lookup table with computed branch table
+- [2025-11-08T14:05:06Z] test(fuzz): add property-based fuzz testing for protobuf frame parser
+- [2025-11-08T15:20:31Z] feat(routing): add weighted least-connections balancer with health probing
+- [2025-11-08T16:37:29Z] refactor(buffer): optimize zero-copy ring buffer with memory barrier fences
+- [2025-11-08T17:00:24Z] fix(timeout): decouple deadline cancellation from synchronous cleanup hook
