@@ -413,3 +413,16 @@
 - [2025-11-05T13:41:11Z] test(fuzz): add property-based fuzz testing for protobuf frame parser
 - [2025-11-05T15:14:18Z] feat(routing): add weighted least-connections balancer with health probing
 - [2025-11-05T16:48:38Z] refactor(buffer): optimize zero-copy ring buffer with memory barrier fences
+
+
+### Sprint Milestone: 2025-11-25 (Target Tier 2)
+- [2025-11-25T04:28:15Z] test(fuzz): add property-based fuzz testing for protobuf frame parser
+- [2025-11-25T05:37:17Z] feat(routing): add weighted least-connections balancer with health probing
+- [2025-11-25T06:46:20Z] refactor(buffer): optimize zero-copy ring buffer with memory barrier fences
+- [2025-11-25T08:43:01Z] fix(timeout): decouple deadline cancellation from synchronous cleanup hook
+- [2025-11-25T09:02:13Z] feat(engine): add vectorized SIMD kernel for dot product calculation
+- [2025-11-25T11:51:50Z] perf(cache): implement adaptive two-queue eviction algorithm
+- [2025-11-25T12:58:29Z] test(concurrency): stress-test actor mailbox under 50k sustained msg/s
+- [2025-11-25T13:36:22Z] refactor(pipeline): extract non-blocking work-stealing threadpool
+- [2025-11-25T15:08:21Z] feat(metrics): export percentile latency histograms for internal RPCs
+- [2025-11-25T16:11:56Z] perf(alloc): replace dynamic heap allocations with arena bump allocator
