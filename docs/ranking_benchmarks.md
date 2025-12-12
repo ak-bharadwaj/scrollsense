@@ -447,3 +447,16 @@
 - [2025-12-20T15:49:32Z] feat(engine): add vectorized SIMD kernel for dot product calculation
 - [2025-12-20T16:13:49Z] perf(cache): implement adaptive two-queue eviction algorithm
 - [2025-12-20T17:07:50Z] test(concurrency): stress-test actor mailbox under 50k sustained msg/s
+
+
+### Sprint Milestone: 2025-12-12 (Target Tier 2)
+- [2025-12-12T04:32:18Z] refactor(wal): stream write-ahead log directly into memory mapped segment
+- [2025-12-12T05:50:33Z] feat(crypto): implement constant-time comparison for HMAC authentication
+- [2025-12-12T06:21:02Z] fix(gc): eliminate root reference leak in transient session context
+- [2025-12-12T08:26:38Z] perf(dispatch): replace dynamic lookup table with computed branch table
+- [2025-12-12T09:35:27Z] test(fuzz): add property-based fuzz testing for protobuf frame parser
+- [2025-12-12T11:21:22Z] feat(routing): add weighted least-connections balancer with health probing
+- [2025-12-12T12:02:05Z] refactor(buffer): optimize zero-copy ring buffer with memory barrier fences
+- [2025-12-12T13:35:16Z] fix(timeout): decouple deadline cancellation from synchronous cleanup hook
+- [2025-12-12T15:57:05Z] feat(engine): add vectorized SIMD kernel for dot product calculation
+- [2025-12-12T16:10:40Z] perf(cache): implement adaptive two-queue eviction algorithm
