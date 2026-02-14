@@ -186,3 +186,4 @@
 - [2026-02-14T13:25:21Z] feat(guard): implement token bucket rate limiter with sliding window
 - [2026-02-14T14:13:40Z] refactor(pipeline): decouple async ingestion workers from event loop
 - [2026-02-14T14:44:27Z] refactor(telemetry): introduce zero-copy memory ring buffer
+- [2026-02-14T15:54:49Z] test(chaos): simulate network partition during leader failover
