@@ -165,3 +165,4 @@
 - [2026-05-12T14:34:37Z] perf(serving): benchmark inference latency under concurrent candidate retrieval
 - [2026-05-15T05:21:29Z] refactor(cache): extract multi-tier redis session cache
 - [2026-05-15T06:20:45Z] feat(pipeline): add real-time engagement telemetry ingest worker
+- [2026-02-14T04:11:30Z] feat(metrics): track p99 tail latency across service boundary
