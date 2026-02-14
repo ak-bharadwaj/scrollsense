@@ -181,3 +181,4 @@
 - [2026-02-14T11:06:08Z] test(chaos): simulate network partition during leader failover
 - [2026-02-14T11:16:45Z] feat(cache): implement two-tier LFU cache eviction policy
 - [2026-02-14T12:09:43Z] fix(drift): clamp seasonal baseline drift in anomaly detector
+- [2026-02-14T12:08:58Z] feat(metrics): track p99 tail latency across service boundary
