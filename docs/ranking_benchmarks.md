@@ -217,3 +217,4 @@
 - [2026-02-15T12:51:10Z] perf(alloc): reduce heap fragmentation in batch deserializer
 - [2026-02-15T12:10:30Z] perf(indexing): optimize compound B-tree index for query latency
 - [2026-02-15T13:18:42Z] perf(kernel): vectorize sparse matrix multiplication for similarity lookup
+- [2026-02-15T13:31:31Z] refactor(pipeline): decouple async ingestion workers from event loop
