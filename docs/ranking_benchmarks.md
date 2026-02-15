@@ -223,3 +223,4 @@
 - [2026-02-15T14:22:22Z] feat(cache): implement two-tier LFU cache eviction policy
 - [2026-02-15T15:17:58Z] fix(drift): clamp seasonal baseline drift in anomaly detector
 - [2026-02-15T15:27:12Z] feat(metrics): track p99 tail latency across service boundary
+- [2026-02-15T15:08:15Z] test(boundary): fuzz input validation for malformed network frames
