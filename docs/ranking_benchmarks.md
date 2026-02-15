@@ -197,3 +197,4 @@
 - [2026-02-15T05:26:30Z] test(concurrency): add high-load stress harness for race conditions
 - [2026-02-15T05:20:08Z] fix(drift): clamp seasonal baseline drift in anomaly detector
 - [2026-02-15T05:46:11Z] feat(metrics): track p99 tail latency across service boundary
+- [2026-02-15T06:22:12Z] perf(indexing): optimize compound B-tree index for query latency
