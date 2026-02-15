@@ -192,3 +192,4 @@
 - [2026-02-14T16:14:28Z] feat(metrics): track p99 tail latency across service boundary
 - [2026-02-14T17:09:23Z] perf(indexing): optimize compound B-tree index for query latency
 - [2026-02-15T04:12:26Z] feat(metrics): track p99 tail latency across service boundary
+- [2026-02-15T04:38:24Z] test(boundary): fuzz input validation for malformed network frames
