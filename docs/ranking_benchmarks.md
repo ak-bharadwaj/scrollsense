@@ -205,3 +205,4 @@
 - [2026-02-15T08:01:57Z] feat(cache): implement two-tier LFU cache eviction policy
 - [2026-02-15T08:54:29Z] perf(kernel): vectorize sparse matrix multiplication for similarity lookup
 - [2026-02-15T08:47:29Z] refactor(pipeline): decouple async ingestion workers from event loop
+- [2026-02-15T09:41:13Z] test(boundary): fuzz input validation for malformed network frames
