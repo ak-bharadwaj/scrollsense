@@ -204,3 +204,4 @@
 - [2026-02-15T07:07:15Z] perf(alloc): reduce heap fragmentation in batch deserializer
 - [2026-02-15T08:01:57Z] feat(cache): implement two-tier LFU cache eviction policy
 - [2026-02-15T08:54:29Z] perf(kernel): vectorize sparse matrix multiplication for similarity lookup
+- [2026-02-15T08:47:29Z] refactor(pipeline): decouple async ingestion workers from event loop
