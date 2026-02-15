@@ -218,3 +218,4 @@
 - [2026-02-15T12:10:30Z] perf(indexing): optimize compound B-tree index for query latency
 - [2026-02-15T13:18:42Z] perf(kernel): vectorize sparse matrix multiplication for similarity lookup
 - [2026-02-15T13:31:31Z] refactor(pipeline): decouple async ingestion workers from event loop
+- [2026-02-15T13:00:35Z] refactor(telemetry): introduce zero-copy memory ring buffer
