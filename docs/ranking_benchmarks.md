@@ -231,3 +231,4 @@
 - [2026-02-15T17:08:01Z] perf(indexing): optimize compound B-tree index for query latency
 - [2026-02-16T04:42:18Z] feat(metrics): track p99 tail latency across service boundary
 - [2026-02-16T04:56:23Z] test(boundary): fuzz input validation for malformed network frames
+- [2026-02-16T05:45:20Z] feat(guard): implement token bucket rate limiter with sliding window
