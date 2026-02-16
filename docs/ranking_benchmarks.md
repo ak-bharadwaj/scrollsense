@@ -229,3 +229,4 @@
 - [2026-02-15T16:40:24Z] fix(drift): clamp seasonal baseline drift in anomaly detector
 - [2026-02-15T17:51:17Z] perf(alloc): reduce heap fragmentation in batch deserializer
 - [2026-02-15T17:08:01Z] perf(indexing): optimize compound B-tree index for query latency
+- [2026-02-16T04:42:18Z] feat(metrics): track p99 tail latency across service boundary
