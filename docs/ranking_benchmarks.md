@@ -237,3 +237,4 @@
 - [2026-02-16T07:43:21Z] test(chaos): simulate network partition during leader failover
 - [2026-02-16T07:28:19Z] feat(cache): implement two-tier LFU cache eviction policy
 - [2026-02-16T08:51:20Z] fix(drift): clamp seasonal baseline drift in anomaly detector
+- [2026-02-16T09:40:24Z] perf(alloc): reduce heap fragmentation in batch deserializer
