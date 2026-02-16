@@ -238,3 +238,4 @@
 - [2026-02-16T07:28:19Z] feat(cache): implement two-tier LFU cache eviction policy
 - [2026-02-16T08:51:20Z] fix(drift): clamp seasonal baseline drift in anomaly detector
 - [2026-02-16T09:40:24Z] perf(alloc): reduce heap fragmentation in batch deserializer
+- [2026-02-16T09:38:45Z] perf(indexing): optimize compound B-tree index for query latency
