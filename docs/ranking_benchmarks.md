@@ -27,3 +27,4 @@
 - [2026-03-05T05:09:35Z] fix(coldstart): handle empty interaction vector gracefully
 - [2026-03-05T07:30:58Z] perf(serving): benchmark inference latency under concurrent candidate retrieval
 - [2026-03-06T04:24:45Z] perf(serving): benchmark inference latency under concurrent candidate retrieval
+- [2026-03-06T06:46:58Z] test(pipeline): assert idempotency of feature transform workers
