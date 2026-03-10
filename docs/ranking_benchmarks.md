@@ -35,3 +35,4 @@
 - [2026-03-10T07:21:03Z] refactor(cache): extract multi-tier redis session cache
 - [2026-03-10T09:56:47Z] feat(pipeline): add real-time engagement telemetry ingest worker
 - [2026-03-10T11:04:19Z] docs(api): document recommendation scoring hyperparameters
+- [2026-03-10T15:19:14Z] fix(metrics): fix NDCG calculation when relevancy scores are tied
