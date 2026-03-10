@@ -31,3 +31,4 @@
 - [2026-03-06T09:09:49Z] feat(recommender): implement exponential decay on watch-time signals
 - [2026-03-09T05:45:37Z] fix(metrics): fix NDCG calculation when relevancy scores are tied
 - [2026-03-09T07:20:20Z] perf(embeddings): optimize cosine similarity batch kernel
+- [2026-03-10T05:24:56Z] perf(embeddings): optimize cosine similarity batch kernel
