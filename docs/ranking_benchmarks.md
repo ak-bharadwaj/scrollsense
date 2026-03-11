@@ -38,3 +38,4 @@
 - [2026-03-10T15:19:14Z] fix(metrics): fix NDCG calculation when relevancy scores are tied
 - [2026-03-11T04:27:28Z] perf(serving): benchmark inference latency under concurrent candidate retrieval
 - [2026-03-11T06:21:08Z] test(pipeline): assert idempotency of feature transform workers
+- [2026-03-11T09:54:00Z] feat(recommender): implement exponential decay on watch-time signals
