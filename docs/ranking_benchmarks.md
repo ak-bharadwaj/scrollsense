@@ -45,3 +45,4 @@
 - [2026-03-12T09:54:40Z] fix(coldstart): handle empty interaction vector gracefully
 - [2026-03-13T05:00:06Z] refactor(cache): extract multi-tier redis session cache
 - [2026-03-13T07:51:00Z] feat(pipeline): add real-time engagement telemetry ingest worker
+- [2026-03-13T09:13:16Z] docs(api): document recommendation scoring hyperparameters
