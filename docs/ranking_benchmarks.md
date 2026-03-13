@@ -43,3 +43,4 @@
 - [2026-03-12T05:38:20Z] feat(recommender): implement exponential decay on watch-time signals
 - [2026-03-12T06:26:01Z] test(ranking): add integration test for diversity reranker
 - [2026-03-12T09:54:40Z] fix(coldstart): handle empty interaction vector gracefully
+- [2026-03-13T05:00:06Z] refactor(cache): extract multi-tier redis session cache
