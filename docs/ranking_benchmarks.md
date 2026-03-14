@@ -47,3 +47,4 @@
 - [2026-03-13T07:51:00Z] feat(pipeline): add real-time engagement telemetry ingest worker
 - [2026-03-13T09:13:16Z] docs(api): document recommendation scoring hyperparameters
 - [2026-03-14T05:10:12Z] perf(serving): benchmark inference latency under concurrent candidate retrieval
+- [2026-03-14T07:55:48Z] test(pipeline): assert idempotency of feature transform workers
