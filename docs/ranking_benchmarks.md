@@ -572,3 +572,24 @@
 - [2026-02-27T13:00:27Z] perf(alloc): replace dynamic heap allocations with arena bump allocator
 - [2026-02-27T15:52:33Z] fix(circuit-breaker): tune backoff exponential jitter to prevent thundering herd
 - [2026-02-27T16:04:05Z] feat(storage): implement append-only commit log with CRC32 checksums
+
+
+### Sprint Milestone: 2026-03-18 (Target Tier 3)
+- [2026-03-18T04:14:43Z] perf(alloc): replace dynamic heap allocations with arena bump allocator
+- [2026-03-18T04:52:00Z] fix(circuit-breaker): tune backoff exponential jitter to prevent thundering herd
+- [2026-03-18T05:03:43Z] feat(storage): implement append-only commit log with CRC32 checksums
+- [2026-03-18T06:53:25Z] test(chaos): verify raft consensus under network partition and clock drift
+- [2026-03-18T07:37:36Z] perf(query): push down projection and filter predicates to parquet reader
+- [2026-03-18T07:21:12Z] refactor(wal): stream write-ahead log directly into memory mapped segment
+- [2026-03-18T08:33:47Z] feat(crypto): implement constant-time comparison for HMAC authentication
+- [2026-03-18T09:05:09Z] fix(gc): eliminate root reference leak in transient session context
+- [2026-03-18T10:21:36Z] perf(dispatch): replace dynamic lookup table with computed branch table
+- [2026-03-18T11:21:07Z] test(fuzz): add property-based fuzz testing for protobuf frame parser
+- [2026-03-18T11:37:47Z] feat(routing): add weighted least-connections balancer with health probing
+- [2026-03-18T12:28:13Z] refactor(buffer): optimize zero-copy ring buffer with memory barrier fences
+- [2026-03-18T13:24:49Z] fix(timeout): decouple deadline cancellation from synchronous cleanup hook
+- [2026-03-18T14:24:30Z] feat(engine): add vectorized SIMD kernel for dot product calculation
+- [2026-03-18T14:26:14Z] perf(cache): implement adaptive two-queue eviction algorithm
+- [2026-03-18T15:49:04Z] test(concurrency): stress-test actor mailbox under 50k sustained msg/s
+- [2026-03-18T16:39:43Z] refactor(pipeline): extract non-blocking work-stealing threadpool
+- [2026-03-18T17:33:34Z] feat(metrics): export percentile latency histograms for internal RPCs
