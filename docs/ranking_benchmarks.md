@@ -269,3 +269,4 @@
 - [2026-03-22T12:14:44Z] fix(drift): clamp seasonal baseline drift in anomaly detector
 - [2026-03-22T12:28:42Z] feat(metrics): track p99 tail latency across service boundary
 - [2026-03-22T13:32:56Z] perf(indexing): optimize compound B-tree index for query latency
+- [2026-03-22T14:16:13Z] perf(kernel): vectorize sparse matrix multiplication for similarity lookup
