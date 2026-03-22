@@ -252,3 +252,4 @@
 - [2026-02-16T16:28:29Z] perf(indexing): optimize compound B-tree index for query latency
 - [2026-02-16T17:00:26Z] perf(kernel): vectorize sparse matrix multiplication for similarity lookup
 - [2026-03-22T04:33:52Z] feat(metrics): track p99 tail latency across service boundary
+- [2026-03-22T04:06:41Z] test(boundary): fuzz input validation for malformed network frames
