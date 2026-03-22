@@ -261,3 +261,4 @@
 - [2026-03-22T07:08:16Z] perf(kernel): vectorize sparse matrix multiplication for similarity lookup
 - [2026-03-22T08:02:55Z] feat(metrics): track p99 tail latency across service boundary
 - [2026-03-22T09:14:33Z] perf(indexing): optimize compound B-tree index for query latency
+- [2026-03-22T09:45:37Z] feat(guard): implement token bucket rate limiter with sliding window
