@@ -300,3 +300,4 @@
 - [2026-03-23T12:00:51Z] refactor(pipeline): decouple async ingestion workers from event loop
 - [2026-03-23T12:34:05Z] refactor(telemetry): introduce zero-copy memory ring buffer
 - [2026-03-23T12:15:39Z] perf(alloc): reduce heap fragmentation in batch deserializer
+- [2026-03-23T13:28:41Z] feat(cache): implement two-tier LFU cache eviction policy
