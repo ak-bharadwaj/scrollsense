@@ -310,3 +310,4 @@
 - [2026-03-23T16:55:38Z] perf(alloc): reduce heap fragmentation in batch deserializer
 - [2026-03-23T16:15:57Z] perf(indexing): optimize compound B-tree index for query latency
 - [2026-03-23T16:50:09Z] feat(guard): implement token bucket rate limiter with sliding window
+- [2026-03-23T17:35:05Z] refactor(pipeline): decouple async ingestion workers from event loop
