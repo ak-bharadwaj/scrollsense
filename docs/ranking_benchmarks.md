@@ -281,3 +281,4 @@
 - [2026-03-23T04:10:16Z] test(chaos): simulate network partition during leader failover
 - [2026-03-23T05:38:35Z] test(concurrency): add high-load stress harness for race conditions
 - [2026-03-23T05:52:36Z] fix(drift): clamp seasonal baseline drift in anomaly detector
+- [2026-03-23T05:03:43Z] feat(metrics): track p99 tail latency across service boundary
