@@ -306,3 +306,4 @@
 - [2026-03-23T14:45:03Z] test(boundary): fuzz input validation for malformed network frames
 - [2026-03-23T14:48:56Z] test(chaos): simulate network partition during leader failover
 - [2026-03-23T15:57:12Z] test(concurrency): add high-load stress harness for race conditions
+- [2026-03-23T15:04:25Z] fix(drift): clamp seasonal baseline drift in anomaly detector
