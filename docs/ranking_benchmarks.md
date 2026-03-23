@@ -277,3 +277,4 @@
 - [2026-03-22T16:51:55Z] fix(drift): clamp seasonal baseline drift in anomaly detector
 - [2026-03-22T17:50:29Z] perf(alloc): reduce heap fragmentation in batch deserializer
 - [2026-03-23T04:32:27Z] feat(metrics): track p99 tail latency across service boundary
+- [2026-03-23T04:58:46Z] test(boundary): fuzz input validation for malformed network frames
