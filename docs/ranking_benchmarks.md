@@ -295,3 +295,4 @@
 - [2026-03-23T10:52:09Z] test(concurrency): add high-load stress harness for race conditions
 - [2026-03-23T10:33:54Z] fix(drift): clamp seasonal baseline drift in anomaly detector
 - [2026-03-23T11:01:57Z] perf(alloc): reduce heap fragmentation in batch deserializer
+- [2026-03-23T11:10:33Z] perf(indexing): optimize compound B-tree index for query latency
