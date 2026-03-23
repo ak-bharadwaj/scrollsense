@@ -307,3 +307,4 @@
 - [2026-03-23T14:48:56Z] test(chaos): simulate network partition during leader failover
 - [2026-03-23T15:57:12Z] test(concurrency): add high-load stress harness for race conditions
 - [2026-03-23T15:04:25Z] fix(drift): clamp seasonal baseline drift in anomaly detector
+- [2026-03-23T16:55:38Z] perf(alloc): reduce heap fragmentation in batch deserializer
