@@ -304,3 +304,4 @@
 - [2026-03-23T13:13:41Z] perf(kernel): vectorize sparse matrix multiplication for similarity lookup
 - [2026-03-23T14:05:25Z] feat(metrics): track p99 tail latency across service boundary
 - [2026-03-23T14:45:03Z] test(boundary): fuzz input validation for malformed network frames
+- [2026-03-23T14:48:56Z] test(chaos): simulate network partition during leader failover
