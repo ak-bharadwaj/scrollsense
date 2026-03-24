@@ -315,3 +315,4 @@
 - [2026-03-24T04:57:13Z] feat(metrics): track p99 tail latency across service boundary
 - [2026-03-24T04:34:48Z] test(boundary): fuzz input validation for malformed network frames
 - [2026-03-24T05:17:36Z] feat(guard): implement token bucket rate limiter with sliding window
+- [2026-03-24T06:38:03Z] refactor(pipeline): decouple async ingestion workers from event loop
