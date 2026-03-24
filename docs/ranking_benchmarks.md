@@ -323,3 +323,4 @@
 - [2026-03-24T09:15:37Z] perf(alloc): reduce heap fragmentation in batch deserializer
 - [2026-03-24T10:30:26Z] feat(cache): implement two-tier LFU cache eviction policy
 - [2026-03-24T11:35:18Z] fix(drift): clamp seasonal baseline drift in anomaly detector
+- [2026-03-24T12:21:55Z] perf(alloc): reduce heap fragmentation in batch deserializer
