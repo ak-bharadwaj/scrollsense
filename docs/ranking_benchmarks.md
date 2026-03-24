@@ -314,3 +314,4 @@
 - [2026-03-23T17:54:31Z] refactor(telemetry): introduce zero-copy memory ring buffer
 - [2026-03-24T04:57:13Z] feat(metrics): track p99 tail latency across service boundary
 - [2026-03-24T04:34:48Z] test(boundary): fuzz input validation for malformed network frames
+- [2026-03-24T05:17:36Z] feat(guard): implement token bucket rate limiter with sliding window
