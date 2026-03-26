@@ -66,3 +66,4 @@
 - [2026-03-25T05:49:15Z] refactor(cache): extract multi-tier redis session cache
 - [2026-03-25T07:38:50Z] feat(pipeline): add real-time engagement telemetry ingest worker
 - [2026-03-25T08:02:19Z] docs(api): document recommendation scoring hyperparameters
+- [2026-03-26T05:50:35Z] perf(serving): benchmark inference latency under concurrent candidate retrieval
