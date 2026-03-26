@@ -68,3 +68,4 @@
 - [2026-03-25T08:02:19Z] docs(api): document recommendation scoring hyperparameters
 - [2026-03-26T05:50:35Z] perf(serving): benchmark inference latency under concurrent candidate retrieval
 - [2026-03-26T07:18:08Z] test(pipeline): assert idempotency of feature transform workers
+- [2026-03-26T08:31:41Z] feat(recommender): implement exponential decay on watch-time signals
