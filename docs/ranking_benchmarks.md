@@ -81,3 +81,4 @@
 - [2026-03-31T04:22:13Z] test(pipeline): assert idempotency of feature transform workers
 - [2026-03-31T07:24:19Z] feat(recommender): implement exponential decay on watch-time signals
 - [2026-03-31T08:58:22Z] test(ranking): add integration test for diversity reranker
+- [2026-03-31T11:54:48Z] fix(coldstart): handle empty interaction vector gracefully
