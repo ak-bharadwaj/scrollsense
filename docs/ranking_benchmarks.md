@@ -83,3 +83,4 @@
 - [2026-03-31T08:58:22Z] test(ranking): add integration test for diversity reranker
 - [2026-03-31T11:54:48Z] fix(coldstart): handle empty interaction vector gracefully
 - [2026-03-31T14:10:08Z] perf(serving): benchmark inference latency under concurrent candidate retrieval
+- [2026-04-02T04:13:11Z] refactor(cache): extract multi-tier redis session cache
