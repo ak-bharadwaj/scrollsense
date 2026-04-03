@@ -89,3 +89,4 @@
 - [2026-04-02T11:23:06Z] fix(metrics): fix NDCG calculation when relevancy scores are tied
 - [2026-04-02T15:52:28Z] perf(embeddings): optimize cosine similarity batch kernel
 - [2026-04-03T04:56:25Z] test(pipeline): assert idempotency of feature transform workers
+- [2026-04-03T06:00:43Z] feat(recommender): implement exponential decay on watch-time signals
