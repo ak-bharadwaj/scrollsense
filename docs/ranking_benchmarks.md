@@ -97,3 +97,4 @@
 - [2026-04-07T06:57:42Z] feat(pipeline): add real-time engagement telemetry ingest worker
 - [2026-04-07T09:34:58Z] docs(api): document recommendation scoring hyperparameters
 - [2026-04-07T11:37:32Z] fix(metrics): fix NDCG calculation when relevancy scores are tied
+- [2026-04-08T05:16:24Z] docs(api): document recommendation scoring hyperparameters
