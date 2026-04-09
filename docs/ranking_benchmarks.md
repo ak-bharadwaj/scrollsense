@@ -100,3 +100,4 @@
 - [2026-04-08T05:16:24Z] docs(api): document recommendation scoring hyperparameters
 - [2026-04-08T07:12:45Z] fix(metrics): fix NDCG calculation when relevancy scores are tied
 - [2026-04-08T09:30:33Z] perf(embeddings): optimize cosine similarity batch kernel
+- [2026-04-09T05:08:02Z] feat(recommender): implement exponential decay on watch-time signals
