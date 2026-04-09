@@ -101,3 +101,4 @@
 - [2026-04-08T07:12:45Z] fix(metrics): fix NDCG calculation when relevancy scores are tied
 - [2026-04-08T09:30:33Z] perf(embeddings): optimize cosine similarity batch kernel
 - [2026-04-09T05:08:02Z] feat(recommender): implement exponential decay on watch-time signals
+- [2026-04-09T07:38:34Z] test(ranking): add integration test for diversity reranker
