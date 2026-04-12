@@ -102,3 +102,4 @@
 - [2026-04-08T09:30:33Z] perf(embeddings): optimize cosine similarity batch kernel
 - [2026-04-09T05:08:02Z] feat(recommender): implement exponential decay on watch-time signals
 - [2026-04-09T07:38:34Z] test(ranking): add integration test for diversity reranker
+- [2026-04-12T04:01:56Z] test(ranking): add integration test for diversity reranker
