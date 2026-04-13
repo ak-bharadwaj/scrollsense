@@ -104,3 +104,4 @@
 - [2026-04-09T07:38:34Z] test(ranking): add integration test for diversity reranker
 - [2026-04-12T04:01:56Z] test(ranking): add integration test for diversity reranker
 - [2026-04-12T06:36:04Z] fix(coldstart): handle empty interaction vector gracefully
+- [2026-04-13T05:45:18Z] fix(coldstart): handle empty interaction vector gracefully
