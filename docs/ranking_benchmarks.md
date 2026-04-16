@@ -108,3 +108,4 @@
 - [2026-04-13T06:48:23Z] perf(serving): benchmark inference latency under concurrent candidate retrieval
 - [2026-04-13T08:37:28Z] test(pipeline): assert idempotency of feature transform workers
 - [2026-04-13T12:00:18Z] feat(recommender): implement exponential decay on watch-time signals
+- [2026-04-16T05:36:34Z] test(pipeline): assert idempotency of feature transform workers
