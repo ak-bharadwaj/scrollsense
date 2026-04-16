@@ -347,3 +347,4 @@
 - [2026-04-16T12:07:03Z] feat(guard): implement token bucket rate limiter with sliding window
 - [2026-04-16T13:04:44Z] refactor(pipeline): decouple async ingestion workers from event loop
 - [2026-04-16T14:42:50Z] test(boundary): fuzz input validation for malformed network frames
+- [2026-04-16T14:52:11Z] test(chaos): simulate network partition during leader failover
