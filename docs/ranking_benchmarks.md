@@ -333,3 +333,4 @@
 - [2026-03-24T17:38:10Z] test(boundary): fuzz input validation for malformed network frames
 - [2026-04-16T04:01:01Z] feat(metrics): track p99 tail latency across service boundary
 - [2026-04-16T04:19:08Z] test(boundary): fuzz input validation for malformed network frames
+- [2026-04-16T05:46:15Z] feat(guard): implement token bucket rate limiter with sliding window
