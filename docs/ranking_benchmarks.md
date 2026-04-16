@@ -343,3 +343,4 @@
 - [2026-04-16T10:07:49Z] feat(cache): implement two-tier LFU cache eviction policy
 - [2026-04-16T10:00:58Z] perf(kernel): vectorize sparse matrix multiplication for similarity lookup
 - [2026-04-16T11:47:18Z] feat(metrics): track p99 tail latency across service boundary
+- [2026-04-16T12:58:38Z] perf(indexing): optimize compound B-tree index for query latency
