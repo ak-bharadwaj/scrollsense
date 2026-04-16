@@ -335,3 +335,4 @@
 - [2026-04-16T04:19:08Z] test(boundary): fuzz input validation for malformed network frames
 - [2026-04-16T05:46:15Z] feat(guard): implement token bucket rate limiter with sliding window
 - [2026-04-16T06:37:58Z] refactor(pipeline): decouple async ingestion workers from event loop
+- [2026-04-16T06:40:28Z] refactor(telemetry): introduce zero-copy memory ring buffer
