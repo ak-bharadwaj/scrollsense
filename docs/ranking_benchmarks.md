@@ -340,3 +340,4 @@
 - [2026-04-16T08:39:36Z] test(concurrency): add high-load stress harness for race conditions
 - [2026-04-16T08:00:20Z] fix(drift): clamp seasonal baseline drift in anomaly detector
 - [2026-04-16T09:57:36Z] perf(alloc): reduce heap fragmentation in batch deserializer
+- [2026-04-16T10:07:49Z] feat(cache): implement two-tier LFU cache eviction policy
