@@ -350,3 +350,4 @@
 - [2026-04-16T14:52:11Z] test(chaos): simulate network partition during leader failover
 - [2026-04-16T15:25:50Z] test(concurrency): add high-load stress harness for race conditions
 - [2026-04-16T16:10:24Z] refactor(telemetry): introduce zero-copy memory ring buffer
+- [2026-04-16T16:56:43Z] perf(alloc): reduce heap fragmentation in batch deserializer
