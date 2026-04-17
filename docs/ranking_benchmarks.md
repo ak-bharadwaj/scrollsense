@@ -375,3 +375,4 @@
 - [2026-04-17T14:42:35Z] refactor(telemetry): introduce zero-copy memory ring buffer
 - [2026-04-17T14:15:02Z] perf(alloc): reduce heap fragmentation in batch deserializer
 - [2026-04-17T15:28:28Z] feat(cache): implement two-tier LFU cache eviction policy
+- [2026-04-17T15:16:22Z] perf(kernel): vectorize sparse matrix multiplication for similarity lookup
