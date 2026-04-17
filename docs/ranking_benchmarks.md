@@ -353,3 +353,4 @@
 - [2026-04-16T16:56:43Z] perf(alloc): reduce heap fragmentation in batch deserializer
 - [2026-04-16T17:21:54Z] feat(cache): implement two-tier LFU cache eviction policy
 - [2026-04-17T04:57:52Z] feat(metrics): track p99 tail latency across service boundary
+- [2026-04-17T04:11:04Z] test(boundary): fuzz input validation for malformed network frames
