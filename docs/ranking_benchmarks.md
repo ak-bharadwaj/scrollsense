@@ -368,3 +368,4 @@
 - [2026-04-17T10:19:58Z] perf(alloc): reduce heap fragmentation in batch deserializer
 - [2026-04-17T11:10:08Z] feat(cache): implement two-tier LFU cache eviction policy
 - [2026-04-17T11:36:31Z] perf(kernel): vectorize sparse matrix multiplication for similarity lookup
+- [2026-04-17T12:36:38Z] feat(metrics): track p99 tail latency across service boundary
