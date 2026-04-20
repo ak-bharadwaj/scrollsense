@@ -119,3 +119,4 @@
 - [2026-04-19T09:53:28Z] test(pipeline): assert idempotency of feature transform workers
 - [2026-04-19T11:30:18Z] feat(recommender): implement exponential decay on watch-time signals
 - [2026-04-19T15:04:24Z] test(ranking): add integration test for diversity reranker
+- [2026-04-20T05:49:20Z] fix(metrics): fix NDCG calculation when relevancy scores are tied
