@@ -122,3 +122,4 @@
 - [2026-04-20T05:49:20Z] fix(metrics): fix NDCG calculation when relevancy scores are tied
 - [2026-04-20T06:47:44Z] perf(embeddings): optimize cosine similarity batch kernel
 - [2026-04-21T05:22:24Z] perf(embeddings): optimize cosine similarity batch kernel
+- [2026-04-21T06:17:16Z] refactor(cache): extract multi-tier redis session cache
