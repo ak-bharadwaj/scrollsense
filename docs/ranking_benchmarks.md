@@ -127,3 +127,4 @@
 - [2026-04-22T04:34:25Z] fix(coldstart): handle empty interaction vector gracefully
 - [2026-04-22T06:34:03Z] perf(serving): benchmark inference latency under concurrent candidate retrieval
 - [2026-04-22T08:11:11Z] test(pipeline): assert idempotency of feature transform workers
+- [2026-04-22T12:25:15Z] feat(recommender): implement exponential decay on watch-time signals
