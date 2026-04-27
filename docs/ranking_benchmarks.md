@@ -132,3 +132,4 @@
 - [2026-04-24T07:05:19Z] feat(recommender): implement exponential decay on watch-time signals
 - [2026-04-27T04:38:52Z] feat(recommender): implement exponential decay on watch-time signals
 - [2026-04-27T06:30:02Z] test(ranking): add integration test for diversity reranker
+- [2026-04-27T09:24:24Z] fix(coldstart): handle empty interaction vector gracefully
