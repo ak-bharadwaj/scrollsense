@@ -637,3 +637,24 @@
 - [2026-04-19T16:53:48Z] test(chaos): verify raft consensus under network partition and clock drift
 - [2026-04-19T17:33:54Z] perf(query): push down projection and filter predicates to parquet reader
 - [2026-04-19T17:52:29Z] refactor(wal): stream write-ahead log directly into memory mapped segment
+
+
+### Sprint Milestone: 2026-04-27 (Target Tier 3)
+- [2026-04-27T04:52:27Z] test(chaos): verify raft consensus under network partition and clock drift
+- [2026-04-27T04:06:33Z] perf(query): push down projection and filter predicates to parquet reader
+- [2026-04-27T05:21:57Z] refactor(wal): stream write-ahead log directly into memory mapped segment
+- [2026-04-27T06:48:36Z] feat(crypto): implement constant-time comparison for HMAC authentication
+- [2026-04-27T07:17:45Z] fix(gc): eliminate root reference leak in transient session context
+- [2026-04-27T07:42:06Z] perf(dispatch): replace dynamic lookup table with computed branch table
+- [2026-04-27T08:19:52Z] test(fuzz): add property-based fuzz testing for protobuf frame parser
+- [2026-04-27T09:54:36Z] feat(routing): add weighted least-connections balancer with health probing
+- [2026-04-27T10:51:57Z] refactor(buffer): optimize zero-copy ring buffer with memory barrier fences
+- [2026-04-27T11:20:22Z] fix(timeout): decouple deadline cancellation from synchronous cleanup hook
+- [2026-04-27T11:38:09Z] feat(engine): add vectorized SIMD kernel for dot product calculation
+- [2026-04-27T12:16:47Z] perf(cache): implement adaptive two-queue eviction algorithm
+- [2026-04-27T13:15:39Z] test(concurrency): stress-test actor mailbox under 50k sustained msg/s
+- [2026-04-27T14:51:24Z] refactor(pipeline): extract non-blocking work-stealing threadpool
+- [2026-04-27T14:31:21Z] feat(metrics): export percentile latency histograms for internal RPCs
+- [2026-04-27T15:38:01Z] perf(alloc): replace dynamic heap allocations with arena bump allocator
+- [2026-04-27T16:28:44Z] fix(circuit-breaker): tune backoff exponential jitter to prevent thundering herd
+- [2026-04-27T17:48:01Z] feat(storage): implement append-only commit log with CRC32 checksums
