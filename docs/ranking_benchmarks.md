@@ -141,3 +141,4 @@
 - [2026-04-28T15:50:32Z] test(ranking): add integration test for diversity reranker
 - [2026-04-29T04:42:08Z] fix(metrics): fix NDCG calculation when relevancy scores are tied
 - [2026-04-29T07:06:45Z] perf(embeddings): optimize cosine similarity batch kernel
+- [2026-04-29T08:08:05Z] refactor(cache): extract multi-tier redis session cache
