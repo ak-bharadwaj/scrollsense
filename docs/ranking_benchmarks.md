@@ -142,3 +142,4 @@
 - [2026-04-29T04:42:08Z] fix(metrics): fix NDCG calculation when relevancy scores are tied
 - [2026-04-29T07:06:45Z] perf(embeddings): optimize cosine similarity batch kernel
 - [2026-04-29T08:08:05Z] refactor(cache): extract multi-tier redis session cache
+- [2026-04-29T11:30:43Z] feat(pipeline): add real-time engagement telemetry ingest worker
