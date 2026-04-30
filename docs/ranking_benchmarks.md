@@ -146,3 +146,4 @@
 - [2026-04-29T14:35:34Z] docs(api): document recommendation scoring hyperparameters
 - [2026-04-30T04:24:54Z] fix(coldstart): handle empty interaction vector gracefully
 - [2026-04-30T06:28:53Z] perf(serving): benchmark inference latency under concurrent candidate retrieval
+- [2026-04-30T08:22:25Z] test(pipeline): assert idempotency of feature transform workers
