@@ -149,3 +149,4 @@
 - [2026-04-30T08:22:25Z] test(pipeline): assert idempotency of feature transform workers
 - [2026-05-04T04:35:19Z] docs(api): document recommendation scoring hyperparameters
 - [2026-05-04T07:36:31Z] fix(metrics): fix NDCG calculation when relevancy scores are tied
+- [2026-05-04T09:02:07Z] perf(embeddings): optimize cosine similarity batch kernel
