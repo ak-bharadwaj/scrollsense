@@ -692,3 +692,16 @@
 - [2026-05-12T15:48:50Z] perf(cache): implement adaptive two-queue eviction algorithm
 - [2026-05-12T16:47:29Z] test(concurrency): stress-test actor mailbox under 50k sustained msg/s
 - [2026-05-12T17:48:02Z] refactor(pipeline): extract non-blocking work-stealing threadpool
+
+
+### Sprint Milestone: 2026-05-07 (Target Tier 2)
+- [2026-05-07T04:07:45Z] feat(crypto): implement constant-time comparison for HMAC authentication
+- [2026-05-07T05:52:01Z] fix(gc): eliminate root reference leak in transient session context
+- [2026-05-07T06:02:36Z] perf(dispatch): replace dynamic lookup table with computed branch table
+- [2026-05-07T08:03:57Z] test(fuzz): add property-based fuzz testing for protobuf frame parser
+- [2026-05-07T09:50:30Z] feat(routing): add weighted least-connections balancer with health probing
+- [2026-05-07T11:10:51Z] refactor(buffer): optimize zero-copy ring buffer with memory barrier fences
+- [2026-05-07T12:05:37Z] fix(timeout): decouple deadline cancellation from synchronous cleanup hook
+- [2026-05-07T13:10:39Z] feat(engine): add vectorized SIMD kernel for dot product calculation
+- [2026-05-07T15:01:36Z] perf(cache): implement adaptive two-queue eviction algorithm
+- [2026-05-07T16:28:08Z] test(concurrency): stress-test actor mailbox under 50k sustained msg/s
