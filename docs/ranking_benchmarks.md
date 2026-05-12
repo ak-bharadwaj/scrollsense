@@ -159,3 +159,4 @@
 - [2026-05-07T08:39:22Z] test(pipeline): assert idempotency of feature transform workers
 - [2026-05-07T11:55:51Z] feat(recommender): implement exponential decay on watch-time signals
 - [2026-05-12T04:03:52Z] test(pipeline): assert idempotency of feature transform workers
+- [2026-05-12T07:30:07Z] feat(recommender): implement exponential decay on watch-time signals
