@@ -671,3 +671,24 @@
 - [2026-04-22T13:26:04Z] feat(metrics): export percentile latency histograms for internal RPCs
 - [2026-04-22T15:34:15Z] perf(alloc): replace dynamic heap allocations with arena bump allocator
 - [2026-04-22T16:12:42Z] fix(circuit-breaker): tune backoff exponential jitter to prevent thundering herd
+
+
+### Sprint Milestone: 2026-05-12 (Target Tier 3)
+- [2026-05-12T04:35:05Z] feat(metrics): export percentile latency histograms for internal RPCs
+- [2026-05-12T04:17:30Z] perf(alloc): replace dynamic heap allocations with arena bump allocator
+- [2026-05-12T05:04:10Z] fix(circuit-breaker): tune backoff exponential jitter to prevent thundering herd
+- [2026-05-12T06:43:27Z] feat(storage): implement append-only commit log with CRC32 checksums
+- [2026-05-12T07:32:36Z] test(chaos): verify raft consensus under network partition and clock drift
+- [2026-05-12T07:01:00Z] perf(query): push down projection and filter predicates to parquet reader
+- [2026-05-12T08:22:41Z] refactor(wal): stream write-ahead log directly into memory mapped segment
+- [2026-05-12T09:04:06Z] feat(crypto): implement constant-time comparison for HMAC authentication
+- [2026-05-12T10:29:54Z] fix(gc): eliminate root reference leak in transient session context
+- [2026-05-12T11:57:27Z] perf(dispatch): replace dynamic lookup table with computed branch table
+- [2026-05-12T11:30:13Z] test(fuzz): add property-based fuzz testing for protobuf frame parser
+- [2026-05-12T12:27:26Z] feat(routing): add weighted least-connections balancer with health probing
+- [2026-05-12T13:26:01Z] refactor(buffer): optimize zero-copy ring buffer with memory barrier fences
+- [2026-05-12T14:32:49Z] fix(timeout): decouple deadline cancellation from synchronous cleanup hook
+- [2026-05-12T14:49:47Z] feat(engine): add vectorized SIMD kernel for dot product calculation
+- [2026-05-12T15:48:50Z] perf(cache): implement adaptive two-queue eviction algorithm
+- [2026-05-12T16:47:29Z] test(concurrency): stress-test actor mailbox under 50k sustained msg/s
+- [2026-05-12T17:48:02Z] refactor(pipeline): extract non-blocking work-stealing threadpool
