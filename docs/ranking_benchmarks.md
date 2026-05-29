@@ -705,3 +705,16 @@
 - [2026-05-07T13:10:39Z] feat(engine): add vectorized SIMD kernel for dot product calculation
 - [2026-05-07T15:01:36Z] perf(cache): implement adaptive two-queue eviction algorithm
 - [2026-05-07T16:28:08Z] test(concurrency): stress-test actor mailbox under 50k sustained msg/s
+
+
+### Sprint Milestone: 2026-05-29 (Target Tier 2)
+- [2026-05-29T04:57:51Z] feat(engine): add vectorized SIMD kernel for dot product calculation
+- [2026-05-29T05:34:22Z] perf(cache): implement adaptive two-queue eviction algorithm
+- [2026-05-29T06:40:25Z] test(concurrency): stress-test actor mailbox under 50k sustained msg/s
+- [2026-05-29T08:27:25Z] refactor(pipeline): extract non-blocking work-stealing threadpool
+- [2026-05-29T09:03:12Z] feat(metrics): export percentile latency histograms for internal RPCs
+- [2026-05-29T11:20:56Z] perf(alloc): replace dynamic heap allocations with arena bump allocator
+- [2026-05-29T12:17:03Z] fix(circuit-breaker): tune backoff exponential jitter to prevent thundering herd
+- [2026-05-29T13:57:18Z] feat(storage): implement append-only commit log with CRC32 checksums
+- [2026-05-29T15:21:02Z] test(chaos): verify raft consensus under network partition and clock drift
+- [2026-05-29T16:08:22Z] perf(query): push down projection and filter predicates to parquet reader
