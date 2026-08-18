@@ -30,6 +30,11 @@ class QualityScore(BaseModel):
         description="Score indicating surface vs conceptual vs technical depth",
     )
 
+    @property
+    def overall(self) -> float:
+        """Composite continuous substance score in [0, 1]."""
+        return round(0.5 * self.concept_anchor_score + 0.5 * self.depth_score, 4)
+
 
 class HypeScore(BaseModel):
     """Continuous hype and promotional language penalty."""
@@ -48,3 +53,21 @@ class HypeScore(BaseModel):
         le=1.0,
         description="Continuous score of marketing/promotional tone",
     )
+
+    @property
+    def overall(self) -> float:
+        """Composite continuous hype score in [0, 1]."""
+        return round(0.6 * self.pattern_penalty + 0.4 * self.promotional_language_score, 4)
+
+
+class GateResult(BaseModel):
+    """Complete evaluation result for a candidate from the Three-Tier Gate."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    candidate_id: str = Field(..., description="Target candidate reel ID")
+    passed: bool = Field(..., description="True if candidate cleared safety, quality, and hype gates")
+    safety: SafetyResult = Field(..., description="Safety evaluation result")
+    quality: QualityScore = Field(..., description="Continuous substance and quality score")
+    hype: HypeScore = Field(..., description="Continuous hype score")
+    rejection_reason: str | None = Field(default=None, description="Explicit reason if rejected, else None")

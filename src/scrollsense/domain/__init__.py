@@ -13,6 +13,7 @@ from scrollsense.domain.enums import (
 )
 from scrollsense.domain.feedback import FeedbackEvent
 from scrollsense.domain.gates import (
+    GateResult,
     HypeScore,
     QualityScore,
     SafetyResult,
@@ -40,6 +41,7 @@ __all__ = [
     "DepthLevel",
     "EvidenceType",
     "FeedbackOutcome",
+    "GateResult",
     "GraphEdge",
     "GraphNode",
     "HypeScore",
