@@ -30,6 +30,11 @@ where = ["src"]
 [tool.setuptools.package-data]
 "scrollsense" = ["api/static/*"]
 
+[tool.setuptools.data-files]
+"data" = ["data/inputs.json", "data/candidates.json", "data/identity_skill_graph.json"]
+"data/content" = ["data/content/manifest.json"]
+"data/content/accepted" = ["data/content/accepted/*.mp4"]
+
 [tool.pytest.ini_options]
 minversion = "8.0"
 testpaths = ["tests"]
