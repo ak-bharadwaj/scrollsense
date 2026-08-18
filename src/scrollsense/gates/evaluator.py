@@ -75,9 +75,9 @@ class CandidateGateEvaluator:
         self.substance_threshold = substance_rejection_threshold
         self.hype_threshold = hype_rejection_threshold
 
-    def evaluate(self, candidate_or_reel: Reel | Candidate) -> GateResult:
+    def evaluate(self, candidate_or_reel: Reel) -> GateResult:
         """Evaluate a candidate reel across all 3 tiers and determine pass/reject decision."""
-        reel = candidate_or_reel if isinstance(candidate_or_reel, Reel) else candidate_or_reel.reel
+        reel = candidate_or_reel
 
         # 1. Safety Gate
         safety = self.evaluate_safety(reel)

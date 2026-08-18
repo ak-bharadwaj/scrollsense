@@ -35,7 +35,7 @@ NODE_CONCEPT_MAPPINGS: dict[str, set[str]] = {
 class CandidateRepository:
     """In-memory candidate repository with structured indices for rapid deterministic matching."""
 
-    def __init__(self, candidates: Sequence[Reel]) -> None:
+    def __init__(self, candidates: Sequence[Reel] = ()) -> None:
         self._by_id: dict[str, Reel] = {}
         self._by_category: dict[str, list[Reel]] = {}
         self._by_tag: dict[str, list[Reel]] = {}
