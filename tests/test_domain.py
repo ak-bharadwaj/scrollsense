@@ -21,11 +21,13 @@ from scrollsense.domain import (
     ObjectiveScores,
     QualityScore,
     Recommendation,
+    RecommendationOutput,
     Reel,
     ReelSignal,
     RelationType,
     RetrievalSource,
     SafetyResult,
+    TechCategory,
 )
 
 
@@ -411,6 +413,91 @@ def test_recommendation_strictly_typed():
         )
 
 
+def test_recommendation_output_valid():
+    """Verify valid RecommendationOutput construction across required problem categories."""
+    output = RecommendationOutput(
+        current_reel="Java meme about NullPointerException",
+        interest_detected="Software Engineering (Backend Developer)",
+        why="User engaged with Java error-handling and developer workplace humor",
+        recommended_tech_reel="Distributed Caching with Redis Explained",
+        category=TechCategory.HLD,
+        why_this_recommendation="Broadens Java fundamentals toward backend system design without getting stuck in syntax repetition",
+        difficulty=DepthLevel.BEGINNER,
+        confidence=ConfidenceBucket.HIGH,
+    )
+    assert output.category == TechCategory.HLD
+    assert output.difficulty == DepthLevel.BEGINNER
+    assert output.confidence == ConfidenceBucket.HIGH
+
+
+@pytest.mark.parametrize(
+    "category",
+    [
+        TechCategory.AI,
+        TechCategory.DSA,
+        TechCategory.JAVA,
+        TechCategory.HLD,
+        TechCategory.CYBERSECURITY,
+        TechCategory.CLOUD,
+        TechCategory.HARDWARE,
+        TechCategory.CAREER,
+        TechCategory.OTHER,
+    ],
+)
+def test_recommendation_output_all_categories(category: TechCategory):
+    """Verify RecommendationOutput supports all 9 defined TechCategory values."""
+    output = RecommendationOutput(
+        current_reel="reel_001",
+        interest_detected="Tech Enthusiast",
+        why="Watched technical overview",
+        recommended_tech_reel="Intro to " + category.value,
+        category=category,
+        why_this_recommendation="Targeted technical progression",
+        difficulty=DepthLevel.INTERMEDIATE,
+        confidence=ConfidenceBucket.MEDIUM,
+    )
+    assert output.category == category
+
+
+def test_recommendation_output_invalid():
+    """Verify RecommendationOutput validation failures for invalid category, difficulty, confidence, and missing fields."""
+    valid_args = {
+        "current_reel": "reel_01",
+        "interest_detected": "SWE",
+        "why": "Watched developer vlog",
+        "recommended_tech_reel": "System Design Basics",
+        "category": TechCategory.HLD,
+        "why_this_recommendation": "Matches inferred identity",
+        "difficulty": DepthLevel.BEGINNER,
+        "confidence": ConfidenceBucket.HIGH,
+    }
+
+    # Empty string fields
+    for field in ["current_reel", "interest_detected", "why", "recommended_tech_reel", "why_this_recommendation"]:
+        invalid_args = dict(valid_args)
+        invalid_args[field] = ""
+        with pytest.raises(ValidationError):
+            RecommendationOutput(**invalid_args)
+
+    # Invalid category
+    invalid_cat = dict(valid_args)
+    invalid_cat["category"] = "DevOps"  # type: ignore[arg-type]
+    with pytest.raises(ValidationError):
+        RecommendationOutput(**invalid_cat)
+
+    # Invalid difficulty
+    invalid_diff = dict(valid_args)
+    invalid_diff["difficulty"] = "Hard"  # type: ignore[arg-type]
+    with pytest.raises(ValidationError):
+        RecommendationOutput(**invalid_diff)
+
+    # Invalid confidence
+    invalid_conf = dict(valid_args)
+    invalid_conf["confidence"] = "VeryHigh"  # type: ignore[arg-type]
+    with pytest.raises(ValidationError):
+        RecommendationOutput(**invalid_conf)
+
+
 def test_feedback_event_validation():
     """Verify FeedbackEvent construction and valid outcomes."""
     now = datetime.now(timezone.utc)
@@ -435,3 +522,16 @@ def test_forbid_extra_fields():
     """Verify that models reject unpermitted extra fields."""
     with pytest.raises(ValidationError):
         SafetyResult(passed=True, unexpected_field="foo")  # type: ignore[call-arg]
+
+    with pytest.raises(ValidationError):
+        RecommendationOutput(  # type: ignore[call-arg]
+            current_reel="reel_01",
+            interest_detected="SWE",
+            why="reason",
+            recommended_tech_reel="rec",
+            category=TechCategory.AI,
+            why_this_recommendation="why",
+            difficulty=DepthLevel.BEGINNER,
+            confidence=ConfidenceBucket.HIGH,
+            extra_field="unsupported",
+        )

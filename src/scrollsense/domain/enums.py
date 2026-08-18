@@ -11,6 +11,20 @@ class DepthLevel(StrEnum):
     ADVANCED = "Advanced"
 
 
+class TechCategory(StrEnum):
+    """Target technical domains required by the problem statement."""
+
+    AI = "AI"
+    DSA = "DSA"
+    JAVA = "Java"
+    HLD = "HLD"
+    CYBERSECURITY = "Cybersecurity"
+    CLOUD = "Cloud"
+    HARDWARE = "Hardware"
+    CAREER = "Career"
+    OTHER = "Other"
+
+
 class NodeType(StrEnum):
     """Types of nodes in the Identity/Skill Graph."""
 

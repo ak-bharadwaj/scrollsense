@@ -9,6 +9,7 @@ from scrollsense.domain.enums import (
     NodeType,
     RelationType,
     RetrievalSource,
+    TechCategory,
 )
 from scrollsense.domain.feedback import FeedbackEvent
 from scrollsense.domain.gates import (
@@ -23,7 +24,10 @@ from scrollsense.domain.graph import (
 )
 from scrollsense.domain.persona import InterestState
 from scrollsense.domain.ranking import ObjectiveScores
-from scrollsense.domain.recommendation import Recommendation
+from scrollsense.domain.recommendation import (
+    Recommendation,
+    RecommendationOutput,
+)
 from scrollsense.domain.reels import (
     InterestEvidence,
     Reel,
@@ -46,9 +50,11 @@ __all__ = [
     "ObjectiveScores",
     "QualityScore",
     "Recommendation",
+    "RecommendationOutput",
     "Reel",
     "ReelSignal",
     "RelationType",
     "RetrievalSource",
     "SafetyResult",
+    "TechCategory",
 ]
