@@ -11,3 +11,5 @@ services:
         value: gemini-3.5-flash
       - key: GEMINI_API_KEY
         sync: false
+      - key: SCROLLSENSE_DATA_DIR
+        value: data

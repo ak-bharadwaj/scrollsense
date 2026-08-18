@@ -15,9 +15,31 @@ from scrollsense.graph.loader import GraphLoader
 from scrollsense.ingestion.manifest import AssetManifest, ValidationStatus
 from scrollsense.retrieval.repository import CandidateRepository
 
-load_dotenv()
+def _resolve_data_dir() -> Path:
+    """Resolve data directory robustly across local source runs, package installs, and cloud containers."""
+    load_dotenv()
+    env_data = os.getenv("SCROLLSENSE_DATA_DIR")
+    if env_data and Path(env_data).exists():
+        return Path(env_data).resolve()
 
-DATA_DIR = Path(__file__).resolve().parent.parent.parent.parent / "data"
+    cwd_data = Path.cwd() / "data"
+    if (cwd_data / "identity_skill_graph.json").exists():
+        return cwd_data.resolve()
+
+    src_data = Path(__file__).resolve().parent.parent.parent.parent / "data"
+    if (src_data / "identity_skill_graph.json").exists():
+        return src_data.resolve()
+
+    for base in [Path(__file__).resolve(), Path.cwd().resolve()]:
+        for parent in [base] + list(base.parents):
+            candidate = parent / "data"
+            if (candidate / "identity_skill_graph.json").exists():
+                return candidate.resolve()
+
+    return (Path.cwd() / "data").resolve()
+
+
+DATA_DIR = _resolve_data_dir()
 
 DEFAULT_DEV_CORS_ORIGINS = [
     "http://localhost:3000",
