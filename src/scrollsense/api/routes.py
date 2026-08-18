@@ -1,9 +1,9 @@
-"""FastAPI router implementing ScrollSense REST API endpoints."""
+"""FastAPI router implementing ScrollSense REST API endpoints with hardened security and accepted-content boundaries."""
 
 from pathlib import Path
 import re
 from typing import Sequence
-from fastapi import APIRouter, HTTPException, Query, Request, status
+from fastapi import APIRouter, HTTPException, Query, status
 from fastapi.responses import FileResponse
 
 from scrollsense.api.schemas import (
@@ -16,7 +16,7 @@ from scrollsense.api.schemas import (
 )
 from scrollsense.domain.reels import Reel
 from scrollsense.engine import NoEligibleCandidatesError, ScrollSenseEngine
-from scrollsense.ingestion.manifest import AssetManifest
+from scrollsense.ingestion.manifest import AssetManifest, HumanQCStatus, ValidationStatus
 
 
 FILENAME_REGEX = re.compile(r"^[a-zA-Z0-9_\-\.]+$")
@@ -35,10 +35,14 @@ def create_router(
     def _resolve_feed_item(reel: Reel) -> FeedItemResponse:
         """Construct FeedItemResponse for a domain Reel entity."""
         manifest_item = manifest.get_by_reel_id(reel.reel_id) if manifest else None
-        creator = manifest_item.creator if manifest_item else "ScrollSense Creator"
+        creator = manifest_item.creator if manifest_item else None
 
-        # Construct safe media endpoint URL
-        video_url = f"/media/accepted/{reel.reel_id}.mp4"
+        # Resolve media URL strictly from manifest asset path
+        video_url = None
+        if manifest_item and manifest_item.asset_path:
+            asset_path = Path(manifest_item.asset_path)
+            if asset_path.exists():
+                video_url = f"/media/accepted/{asset_path.name}"
 
         return FeedItemResponse(
             reel_id=reel.reel_id,
@@ -59,7 +63,7 @@ def create_router(
         return ReelDetailResponse(
             reel_id=base_item.reel_id,
             title=base_item.title,
-            creator=base_item.creator,
+            creator=manifest_item.creator if manifest_item else None,
             category=base_item.category,
             difficulty=base_item.difficulty,
             thumbnail_url=base_item.thumbnail_url,
@@ -67,7 +71,7 @@ def create_router(
             duration_seconds=base_item.duration_seconds,
             transcript=reel.transcript,
             concept_tags=reel.concept_tags,
-            license=manifest_item.license if manifest_item else "CC-BY-4.0",
+            license=manifest_item.license if manifest_item else None,  # No fabricated license defaults
             source_url=manifest_item.source_url if manifest_item else None,
         )
 
@@ -81,17 +85,32 @@ def create_router(
             "version": "1.0.0",
         }
 
-    # 2. General Feed Endpoint
+    # 2. Accepted Content Feed Endpoint
     @router.get("/api/v1/feed", response_model=list[FeedItemResponse], tags=["Feed"])
     async def get_feed(
         limit: int = Query(default=20, ge=1, le=50, description="Max feed items to return"),
     ) -> list[FeedItemResponse]:
-        """Return available accepted Reel items for the simulated vertical feed.
+        """Return available accepted Reel items for the vertical feed.
 
-        Note: Items returned are general available feed content, not personalized recommendations.
+        Items are sourced exclusively from verified, human-QC-accepted manifest items with valid assets on disk.
         """
-        all_reels = list(corpus_reels.values())[:limit]
-        return [_resolve_feed_item(r) for r in all_reels]
+        if not manifest:
+            return []
+
+        accepted_feed_items: list[FeedItemResponse] = []
+        for item in manifest.items.values():
+            if (
+                item.validation_status == ValidationStatus.ACCEPTED
+                and item.human_qc_status == HumanQCStatus.ACCEPTED
+                and Path(item.asset_path).exists()
+            ):
+                reel = corpus_reels.get(item.reel_id) or item.to_domain_reel()
+                accepted_feed_items.append(_resolve_feed_item(reel))
+
+            if len(accepted_feed_items) >= limit:
+                break
+
+        return accepted_feed_items
 
     # 3. Individual Reel Detail Endpoint
     @router.get("/api/v1/reels/{reel_id}", response_model=ReelDetailResponse, tags=["Reels"])
@@ -169,11 +188,11 @@ def create_router(
             recommended_feed_item = FeedItemResponse(
                 reel_id=top_rec.reel_id,
                 title=top_rec.title,
-                creator="ScrollSense Recommended",
+                creator=None,
                 category=primary_output.category.value,
                 difficulty=primary_output.difficulty.value,
                 thumbnail_url=None,
-                video_url=f"/media/accepted/{top_rec.reel_id}.mp4",
+                video_url=None,
                 duration_seconds=45.0,
             )
         else:
@@ -203,7 +222,7 @@ def create_router(
             explainability=explainability,
         )
 
-    # 5. Secure Media Endpoint (Restricted strictly to data/content/accepted/)
+    # 5. Secure Media Endpoint (Restricted strictly to data/content/accepted/ via manifest)
     @router.get("/media/accepted/{filename}", tags=["Media"])
     async def stream_media(filename: str) -> FileResponse:
         """Stream validated media assets strictly from the accepted content directory."""
@@ -219,10 +238,30 @@ def create_router(
                 detail="Media repository not configured",
             )
 
-        target_file = (accepted_dir / filename).resolve()
+        # Verify filename belongs to an accepted manifest entry
+        if not manifest:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Asset manifest not found",
+            )
 
-        # Strict containment check: target must be inside accepted_dir
-        if not str(target_file).startswith(str(accepted_dir)):
+        accepted_items = [
+            item for item in manifest.items.values()
+            if item.validation_status == ValidationStatus.ACCEPTED and item.human_qc_status == HumanQCStatus.ACCEPTED
+        ]
+        matching_item = next((item for item in accepted_items if Path(item.asset_path).name == filename), None)
+        if not matching_item:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Media asset not found in accepted manifest",
+            )
+
+        target_file = Path(matching_item.asset_path).resolve()
+
+        # Path containment validation using relative_to
+        try:
+            target_file.relative_to(accepted_dir.resolve())
+        except ValueError:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="Access denied",
@@ -231,7 +270,7 @@ def create_router(
         if not target_file.exists() or not target_file.is_file():
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail="Media asset not found",
+                detail="Media asset file missing on disk",
             )
 
         return FileResponse(path=target_file, media_type="video/mp4")

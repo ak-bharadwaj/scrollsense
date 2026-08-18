@@ -1,7 +1,9 @@
 """FastAPI application factory for ScrollSense."""
 
 import json
+import os
 from pathlib import Path
+from typing import Sequence
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -14,6 +16,13 @@ from scrollsense.retrieval.repository import CandidateRepository
 
 DATA_DIR = Path(__file__).resolve().parent.parent.parent.parent / "data"
 
+DEFAULT_DEV_CORS_ORIGINS = [
+    "http://localhost:3000",
+    "http://localhost:5173",
+    "http://127.0.0.1:3000",
+    "http://127.0.0.1:5173",
+]
+
 
 def create_app(
     engine: ScrollSenseEngine | None = None,
@@ -21,6 +30,7 @@ def create_app(
     inputs_path: Path | str | None = None,
     candidates_path: Path | str | None = None,
     graph_path: Path | str | None = None,
+    allowed_origins: Sequence[str] | None = None,
 ) -> FastAPI:
     """Factory creating and configuring the production ScrollSense FastAPI application."""
     app = FastAPI(
@@ -31,13 +41,22 @@ def create_app(
         redoc_url="/redoc",
     )
 
-    # CORS configuration for frontend web client
+    # Configure explicit CORS origins (no wildcard with credentials)
+    if allowed_origins is not None:
+        origins = list(allowed_origins)
+    else:
+        env_origins = os.getenv("SCROLLSENSE_CORS_ORIGINS")
+        if env_origins:
+            origins = [o.strip() for o in env_origins.split(",") if o.strip()]
+        else:
+            origins = list(DEFAULT_DEV_CORS_ORIGINS)
+
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=["*"],
+        allow_origins=origins,
         allow_credentials=True,
-        allow_methods=["*"],
-        allow_headers=["*"],
+        allow_methods=["GET", "POST", "OPTIONS"],
+        allow_headers=["Content-Type", "Authorization", "Accept"],
     )
 
     base_content_dir = Path(content_dir) if content_dir else DATA_DIR / "content"

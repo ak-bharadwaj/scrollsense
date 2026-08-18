@@ -14,11 +14,11 @@ class FeedItemResponse(BaseModel):
 
     reel_id: str = Field(..., min_length=1, description="Deterministic reel identifier")
     title: str = Field(..., min_length=1, description="Content title")
-    creator: str = Field(..., description="Creator or channel attribution")
+    creator: str | None = Field(default=None, description="Creator or channel attribution")
     category: str = Field(..., description="Topic category")
     difficulty: str = Field(..., description="Technical depth level (e.g., Beginner, Intermediate, Advanced)")
     thumbnail_url: str | None = Field(default=None, description="Poster or thumbnail image URL")
-    video_url: str = Field(..., description="Streaming / media playback URL")
+    video_url: str | None = Field(default=None, description="Streaming / media playback URL if media exists")
     duration_seconds: float | None = Field(default=None, description="Video playback duration in seconds")
 
 
