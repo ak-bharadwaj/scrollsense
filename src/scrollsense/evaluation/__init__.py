@@ -2,9 +2,12 @@
 
 from scrollsense.evaluation.baselines import (
     B0_LiteralTopicBaseline,
-    B1_SemanticSimilarityBaseline,
+    B1_EmbeddingSemanticSimilarityBaseline,
     B2_ScrollSenseBaseline,
     BaselineRecommendation,
+    DeterministicDenseEmbeddingProvider,
+    EmbeddingProvider,
+    FakeEmbeddingProvider,
 )
 from scrollsense.evaluation.candidate_pool import (
     get_evaluation_candidate_reels,
@@ -27,12 +30,15 @@ from scrollsense.evaluation.scenarios import (
 
 __all__ = [
     "B0_LiteralTopicBaseline",
-    "B1_SemanticSimilarityBaseline",
+    "B1_EmbeddingSemanticSimilarityBaseline",
     "B2_ScrollSenseBaseline",
     "BaselineRecommendation",
     "BenchmarkReportGenerator",
     "BenchmarkSummary",
+    "DeterministicDenseEmbeddingProvider",
+    "EmbeddingProvider",
     "EvaluationHarness",
+    "FakeEmbeddingProvider",
     "MetricCalculator",
     "Scenario",
     "ScenarioEvaluationRecord",

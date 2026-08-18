@@ -11,9 +11,10 @@ from scrollsense.domain.reels import Reel
 from scrollsense.engine import EngineResult, ScrollSenseEngine
 from scrollsense.evaluation.baselines import (
     B0_LiteralTopicBaseline,
-    B1_SemanticSimilarityBaseline,
+    B1_EmbeddingSemanticSimilarityBaseline,
     B2_ScrollSenseBaseline,
     BaselineRecommendation,
+    EmbeddingProvider,
 )
 from scrollsense.evaluation.candidate_pool import (
     get_evaluation_candidate_reels,
@@ -69,6 +70,7 @@ class EvaluationHarness:
         self,
         graph_store: GraphStore,
         scenarios: list[Scenario] | None = None,
+        embedding_provider: EmbeddingProvider | None = None,
     ) -> None:
         self.graph_store = graph_store
         self.scenarios = scenarios or get_all_scenarios()
@@ -78,7 +80,10 @@ class EvaluationHarness:
 
         # Initialize Baselines
         self.b0_baseline = B0_LiteralTopicBaseline(self.candidate_reels)
-        self.b1_baseline = B1_SemanticSimilarityBaseline(self.candidate_reels)
+        self.b1_baseline = B1_EmbeddingSemanticSimilarityBaseline(
+            self.candidate_reels,
+            embedding_provider=embedding_provider,
+        )
 
         # Initialize ScrollSense Engine
         self.engine = ScrollSenseEngine.create_default(

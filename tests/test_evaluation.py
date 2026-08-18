@@ -1,6 +1,5 @@
 """Unit and integration tests for evaluation harness, baselines, metrics, scenarios, and isolation."""
 
-from collections import Counter
 from copy import deepcopy
 from pathlib import Path
 import pytest
@@ -9,11 +8,13 @@ from scrollsense.domain.enums import TechCategory
 from scrollsense.domain.reels import Reel
 from scrollsense.evaluation import (
     B0_LiteralTopicBaseline,
-    B1_SemanticSimilarityBaseline,
+    B1_EmbeddingSemanticSimilarityBaseline,
     B2_ScrollSenseBaseline,
     BenchmarkReportGenerator,
     BenchmarkSummary,
+    DeterministicDenseEmbeddingProvider,
     EvaluationHarness,
+    FakeEmbeddingProvider,
     get_all_scenarios,
     get_evaluation_candidate_reels,
     get_evaluation_candidate_repository,
@@ -93,27 +94,54 @@ def test_b0_actual_jaccard_similarity_calculation(candidate_reels: list[Reel]):
     assert rec.baseline_id == "B0"
     assert rec.recommended_reel_id == "reel_java_syntax_basics"
     assert rec.category == TechCategory.JAVA
-    assert 0.0 < rec.similarity_score <= 1.0
+    assert 0.0 < rec.score <= 1.0
 
 
-def test_b1_semantic_cosine_similarity_calculation(candidate_reels: list[Reel]):
-    """Verify B1 baseline calculates genuine term-vector cosine similarity without graph or persona logic."""
+def test_b1_embedding_semantic_similarity_with_fake_provider(candidate_reels: list[Reel]):
+    """Verify B1 baseline uses dense embeddings and cosine similarity correctly with a FakeEmbeddingProvider."""
     # 1. Exact cosine similarity unit test
-    vec_a = Counter({"transformer": 3, "neural": 2, "attention": 1})
-    vec_b = Counter({"transformer": 3, "neural": 2, "attention": 1})
-    assert B1_SemanticSimilarityBaseline.calculate_cosine_similarity(vec_a, vec_b) == 1.0
+    vec_a = [1.0, 0.0, 0.0, 0.0]
+    vec_b = [1.0, 0.0, 0.0, 0.0]
+    # identical vectors -> cosine = 1.0 -> normalized = (1.0 + 1.0)/2 = 1.0
+    assert B1_EmbeddingSemanticSimilarityBaseline.calculate_cosine_similarity(vec_a, vec_b) == 1.0
 
-    vec_c = Counter({"gaming": 5, "keyboard": 2})
-    assert B1_SemanticSimilarityBaseline.calculate_cosine_similarity(vec_a, vec_c) == 0.0
+    vec_c = [-1.0, 0.0, 0.0, 0.0]
+    # opposite vectors -> raw cosine = -1.0 -> normalized = 0.0
+    assert B1_EmbeddingSemanticSimilarityBaseline.calculate_cosine_similarity(vec_a, vec_c) == 0.0
 
-    # 2. Recommendation test on AI scenario
+    # 2. Inject fake provider with deterministic embedding map
+    target_cand = candidate_reels[0]
+    target_text = B1_EmbeddingSemanticSimilarityBaseline.build_text_representation(target_cand)
+
+    fake_provider = FakeEmbeddingProvider(
+        fixed_dim=4,
+        preset_embeddings={
+            "query": [1.0, 0.0, 0.0, 0.0],
+            target_text: [1.0, 0.0, 0.0, 0.0],
+        },
+    )
+
+    b1_fake = B1_EmbeddingSemanticSimilarityBaseline(candidate_reels, embedding_provider=fake_provider)
+    rec = b1_fake.recommend([target_cand])
+    assert rec.baseline_id == "B1"
+    assert rec.recommended_reel_id == target_cand.reel_id
+    assert rec.score == 1.0
+
+
+def test_b1_dense_embedding_provider_execution(candidate_reels: list[Reel]):
+    """Verify B1 baseline operates deterministically with DeterministicDenseEmbeddingProvider without network access."""
+    provider = DeterministicDenseEmbeddingProvider(dimension=64)
+    emb = provider.embed("System Design Redis Caching")
+    assert len(emb) == 64
+    assert any(x != 0.0 for x in emb)
+
     scenarios = get_all_scenarios()
     ai_scenario = scenarios[2]
 
-    b1 = B1_SemanticSimilarityBaseline(candidate_reels)
+    b1 = B1_EmbeddingSemanticSimilarityBaseline(candidate_reels, embedding_provider=provider)
     rec = b1.recommend(ai_scenario.input_reels)
     assert rec.baseline_id == "B1"
-    assert rec.similarity_score > 0.0
+    assert 0.0 <= rec.score <= 1.0
     assert isinstance(rec.category, TechCategory)
 
 

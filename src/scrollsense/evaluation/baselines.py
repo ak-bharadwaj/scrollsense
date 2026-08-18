@@ -1,9 +1,9 @@
-"""Baseline recommendation algorithms (B0: Literal Jaccard, B1: Semantic Cosine Similarity, B2: ScrollSense)."""
+"""Baseline recommendation algorithms (B0: Literal Jaccard, B1: Embedding Semantic Similarity, B2: ScrollSense)."""
 
-from collections import Counter
+import hashlib
 import math
 import re
-from typing import Sequence
+from typing import Protocol, Sequence
 from pydantic import BaseModel, ConfigDict, Field
 
 from scrollsense.domain.enums import TechCategory
@@ -11,6 +11,79 @@ from scrollsense.domain.recommendation import RecommendationOutput
 from scrollsense.domain.reels import Reel
 from scrollsense.engine import EngineResult, ScrollSenseEngine
 from scrollsense.selection.category_mapper import map_reel_to_tech_category
+
+
+class EmbeddingProvider(Protocol):
+    """Protocol interface for embedding models."""
+
+    def embed(self, text: str) -> list[float]:
+        """Generate dense vector embedding for a single text."""
+        ...
+
+    def embed_batch(self, texts: Sequence[str]) -> list[list[float]]:
+        """Generate dense vector embeddings for multiple texts."""
+        ...
+
+
+class DeterministicDenseEmbeddingProvider:
+    """Deterministic dense embedding provider using multi-hash token feature projection and L2 normalization.
+
+    Generates dense, continuous D-dimensional vectors without external model downloads or network access.
+    """
+
+    def __init__(self, dimension: int = 128) -> None:
+        self.dimension = dimension
+
+    def _embed_single(self, text: str) -> list[float]:
+        tokens = re.findall(r"\b[a-zA-Z0-9_]+\b", text.lower())
+        if not tokens:
+            return [0.0] * self.dimension
+
+        vec = [0.0] * self.dimension
+        for idx, tok in enumerate(tokens):
+            # Deterministic multi-hash feature projection
+            h1 = int(hashlib.sha256(tok.encode("utf-8")).hexdigest(), 16)
+            h2 = int(hashlib.md5(tok.encode("utf-8")).hexdigest(), 16)
+
+            dim_idx1 = h1 % self.dimension
+            dim_idx2 = h2 % self.dimension
+            sign1 = 1.0 if (h1 >> 8) % 2 == 0 else -1.0
+            sign2 = 1.0 if (h2 >> 8) % 2 == 0 else -1.0
+
+            # Weight token significance with positional attenuation
+            pos_weight = 1.0 / (1.0 + 0.05 * math.log(idx + 1))
+            vec[dim_idx1] += sign1 * pos_weight
+            vec[dim_idx2] += sign2 * pos_weight * 0.5
+
+        # L2 Normalization
+        norm = math.sqrt(sum(x * x for x in vec))
+        if norm > 0.0:
+            return [round(x / norm, 6) for x in vec]
+        return vec
+
+    def embed(self, text: str) -> list[float]:
+        return self._embed_single(text)
+
+    def embed_batch(self, texts: Sequence[str]) -> list[list[float]]:
+        return [self._embed_single(t) for t in texts]
+
+
+class FakeEmbeddingProvider:
+    """Mock embedding provider with pre-configured or deterministic static embeddings for testing."""
+
+    def __init__(self, fixed_dim: int = 4, preset_embeddings: dict[str, list[float]] | None = None) -> None:
+        self.fixed_dim = fixed_dim
+        self.preset_embeddings = preset_embeddings or {}
+
+    def embed(self, text: str) -> list[float]:
+        if text in self.preset_embeddings:
+            return self.preset_embeddings[text]
+        # Return deterministic vector based on text length
+        val = (len(text) % 10) / 10.0
+        return [val] * self.fixed_dim
+
+    def embed_batch(self, texts: Sequence[str]) -> list[list[float]]:
+        return [self.embed(t) for t in texts]
 
 
 class BaselineRecommendation(BaseModel):
@@ -23,7 +96,12 @@ class BaselineRecommendation(BaseModel):
     recommended_reel_id: str = Field(..., description="ID of the recommended reel")
     recommended_title: str = Field(..., description="Title of the recommended reel")
     category: TechCategory = Field(..., description="Mapped technical category")
-    similarity_score: float = Field(..., ge=0.0, le=1.0, description="Underlying similarity or rank score")
+    score: float = Field(
+        ...,
+        ge=0.0,
+        le=1.0,
+        description="Underlying score produced by the baseline (Jaccard similarity, Cosine similarity, or Multi-Objective ranking score)",
+    )
     rationale: str = Field(..., description="Explanation of why this candidate was selected by the baseline")
 
 
@@ -72,24 +150,31 @@ class B0_LiteralTopicBaseline:
             recommended_reel_id=best_candidate.reel_id,
             recommended_title=best_candidate.title,
             category=map_reel_to_tech_category(best_candidate),
-            similarity_score=top_score,
+            score=top_score,
             rationale=f"Selected based on maximum concept-tag Jaccard similarity ({top_score:.4f}) against input history.",
         )
 
 
-class B1_SemanticSimilarityBaseline:
-    """Baseline 1: Pure semantic term-vector cosine similarity baseline over text representations."""
+class B1_EmbeddingSemanticSimilarityBaseline:
+    """Baseline 1: Dense embedding-based semantic similarity baseline over text representations.
 
-    def __init__(self, candidate_pool: Sequence[Reel]) -> None:
+    Uses dense continuous vector embeddings of reel text (title + transcript + concept tags + category)
+    and computes cosine similarity between candidate embeddings and the centroid of watched history.
+    Does not use ScrollSense graphs, persona inference, gates, or heuristic ranking objectives.
+    """
+
+    def __init__(
+        self,
+        candidate_pool: Sequence[Reel],
+        embedding_provider: EmbeddingProvider | None = None,
+    ) -> None:
         self.candidate_pool = list(candidate_pool)
-
-    @staticmethod
-    def _tokenize(text: str) -> list[str]:
-        """Extract alphanumeric words from text."""
-        return re.findall(r"\b[a-zA-Z0-9_]+\b", text.lower())
+        self.provider: EmbeddingProvider = embedding_provider or DeterministicDenseEmbeddingProvider()
+        self._candidate_embeddings: list[tuple[Reel, list[float]]] = []
+        self._precompute_candidate_embeddings()
 
     @classmethod
-    def _build_text_representation(cls, reel: Reel) -> str:
+    def build_text_representation(cls, reel: Reel) -> str:
         """Build concatenated text representation: title + transcript + concept tags + category."""
         parts = [reel.title]
         if reel.transcript:
@@ -99,38 +184,50 @@ class B1_SemanticSimilarityBaseline:
         parts.append(reel.category)
         return " ".join(parts)
 
-    @classmethod
-    def calculate_cosine_similarity(cls, vec_a: Counter[str], vec_b: Counter[str]) -> float:
-        """Compute cosine similarity between two term-frequency counter vectors."""
-        if not vec_a or not vec_b:
+    def _precompute_candidate_embeddings(self) -> None:
+        texts = [self.build_text_representation(c) for c in self.candidate_pool]
+        embeddings = self.provider.embed_batch(texts)
+        self._candidate_embeddings = list(zip(self.candidate_pool, embeddings, strict=True))
+
+    @staticmethod
+    def calculate_cosine_similarity(vec_a: Sequence[float], vec_b: Sequence[float]) -> float:
+        """Compute cosine similarity between two dense vectors: (u · v) / (||u|| ||v||)."""
+        if not vec_a or not vec_b or len(vec_a) != len(vec_b):
             return 0.0
 
-        dot_product = sum(count * vec_b.get(term, 0) for term, count in vec_a.items())
-        norm_a = math.sqrt(sum(count ** 2 for count in vec_a.values()))
-        norm_b = math.sqrt(sum(count ** 2 for count in vec_b.values()))
+        dot_product = sum(a * b for a, b in zip(vec_a, vec_b, strict=True))
+        norm_a = math.sqrt(sum(a * a for a in vec_a))
+        norm_b = math.sqrt(sum(b * b for b in vec_b))
 
         if norm_a == 0.0 or norm_b == 0.0:
             return 0.0
 
-        return round(dot_product / (norm_a * norm_b), 4)
+        # Cosine similarity mapped to [0, 1] range for normalized scoring
+        raw_cos = dot_product / (norm_a * norm_b)
+        normalized_cos = (raw_cos + 1.0) / 2.0
+        return round(normalized_cos, 4)
 
     def recommend(self, input_reels: Sequence[Reel]) -> BaselineRecommendation:
-        """Select candidate with maximum cosine similarity between history centroid vector and candidate vector."""
+        """Compute history embedding centroid and select candidate with maximum cosine similarity."""
         if not input_reels:
             raise ValueError("Input reels cannot be empty")
 
-        # Build history term vector from all input reels
-        history_vec: Counter[str] = Counter()
-        for r in input_reels:
-            tokens = self._tokenize(self._build_text_representation(r))
-            for tok in tokens:
-                history_vec[tok] += 1
+        # 1. Compute embeddings for all watched history reels
+        history_texts = [self.build_text_representation(r) for r in input_reels]
+        history_embeddings = self.provider.embed_batch(history_texts)
 
+        # 2. Compute history centroid vector
+        dim = len(history_embeddings[0])
+        centroid = [0.0] * dim
+        for emb in history_embeddings:
+            for d in range(dim):
+                centroid[d] += emb[d]
+        centroid = [x / len(history_embeddings) for x in centroid]
+
+        # 3. Score all candidates by cosine similarity against history centroid
         scored_candidates: list[tuple[float, str, Reel]] = []
-        for cand in self.candidate_pool:
-            cand_tokens = self._tokenize(self._build_text_representation(cand))
-            cand_vec = Counter(cand_tokens)
-            cos_sim = self.calculate_cosine_similarity(history_vec, cand_vec)
+        for cand, cand_emb in self._candidate_embeddings:
+            cos_sim = self.calculate_cosine_similarity(centroid, cand_emb)
             scored_candidates.append((cos_sim, cand.reel_id, cand))
 
         # Deterministic sorting: (-cosine_sim, reel_id ascending)
@@ -140,12 +237,12 @@ class B1_SemanticSimilarityBaseline:
 
         return BaselineRecommendation(
             baseline_id="B1",
-            baseline_name="Semantic Cosine Similarity",
+            baseline_name="Embedding Semantic Similarity",
             recommended_reel_id=best_candidate.reel_id,
             recommended_title=best_candidate.title,
             category=map_reel_to_tech_category(best_candidate),
-            similarity_score=top_score,
-            rationale=f"Selected based on maximum text semantic cosine similarity ({top_score:.4f}) with history centroid.",
+            score=top_score,
+            rationale=f"Selected based on maximum embedding cosine similarity ({top_score:.4f}) with history centroid vector.",
         )
 
 
@@ -167,7 +264,7 @@ class B2_ScrollSenseBaseline:
             recommended_reel_id=engine_result.internal_recommendations[0].reel_id,
             recommended_title=top_output.recommended_tech_reel,
             category=top_output.category,
-            similarity_score=final_score,
+            score=final_score,
             rationale=top_output.why_this_recommendation,
         )
         return baseline_rec, engine_result
