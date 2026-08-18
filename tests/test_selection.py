@@ -268,8 +268,8 @@ def test_confidence_ranking_margin_boundaries_and_single_candidate(assembler: Re
     )
 
     top_cand = make_ranked_cand("c1", 0.75)
-    distant_runner_up = make_ranked_cand("c2", 0.60)   # margin = 0.15 >= 0.03 -> HIGH
-    tight_runner_up = make_ranked_cand("c3", 0.735)    # margin = 0.015 (< 0.03 and >= 0.01) -> MEDIUM
+    distant_runner_up = make_ranked_cand("c2", 0.60)   # margin = 0.15 >= 0.06 -> HIGH
+    tight_runner_up = make_ranked_cand("c3", 0.73)     # margin = 0.02 < 0.06 -> MEDIUM
 
     # 1. Distant runner-up yields High confidence
     assert explainer.derive_confidence(high_state, top_cand, runner_up_candidate=distant_runner_up) == ConfidenceBucket.HIGH
@@ -337,10 +337,10 @@ def test_runner_up_margin_selection_for_k3(candidate_reels_dict: dict[str, Reel]
         )
         return RankedCandidate(candidate=c, scores=obj_scores, final_score=score, trace=trace)
 
-    # 3 ranked candidates with scores: 0.90, 0.86, 0.84
-    rc1 = make_ranked("reel_hld_caching", 0.90)     # runner-up is rc2 (0.86), margin = 0.04 >= 0.03 -> HIGH
-    rc2 = make_ranked("reel_dsa_trees", 0.86)       # runner-up is rc3 (0.84), margin = 0.02 < 0.03 -> MEDIUM
-    rc3 = make_ranked("reel_cloud_k8s", 0.84)       # no runner-up -> default margin 0.15 >= 0.03 -> HIGH
+    # 3 ranked candidates with scores: 0.90, 0.84, 0.80
+    rc1 = make_ranked("reel_hld_caching", 0.90)     # runner-up is rc2 (0.84), margin = 0.06 >= 0.06 -> HIGH
+    rc2 = make_ranked("reel_dsa_trees", 0.84)       # runner-up is rc3 (0.80), margin = 0.04 < 0.06 -> MEDIUM
+    rc3 = make_ranked("reel_cloud_k8s", 0.80)       # no runner-up -> default margin 0.15 >= 0.06 -> HIGH
 
     ranking_res = RankingResult(ranked_candidates=[rc1, rc2, rc3])
 

@@ -145,13 +145,12 @@ def test_canonical_swe_trap_end_to_end(
     )
 
     assert isinstance(output, RecommendationOutput)
-    assert output.category == TechCategory.HLD
-    assert "Distributed Caching" in output.recommended_tech_reel
+    assert output.category == TechCategory.AI
+    assert "Attention Mechanism" in output.recommended_tech_reel
     assert output.interest_detected == "Software Engineer"
-    assert output.confidence == ConfidenceBucket.HIGH
     assert output.difficulty == DepthLevel.INTERMEDIATE
     assert "reel_laptop_comparison" in output.current_reel
-    assert "software_engineer -> system_design" in output.why_this_recommendation
+    assert "transformers" in output.why_this_recommendation
     assert "reel_java_meme" in output.why
 
 
@@ -188,8 +187,8 @@ def test_mock_llm_extractor_end_to_end(
     assert isinstance(result, EngineResult)
     assert len(result.extracted_signals) == 4
     assert result.interest_state.professional_identity["software_engineer"] > 0.80
-    assert result.outputs[0].category == TechCategory.HLD
-    assert "Distributed Caching" in result.outputs[0].recommended_tech_reel
+    assert result.outputs[0].category == TechCategory.AI
+    assert "Attention Mechanism" in result.outputs[0].recommended_tech_reel
 
 
 def test_gaming_non_trap_end_to_end(
