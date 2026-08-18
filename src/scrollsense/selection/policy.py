@@ -33,13 +33,13 @@ class SelectionPolicy(BaseModel):
         description="Minimum top identity weight for Medium confidence",
     )
     high_confidence_min_margin: float = Field(
-        default=0.06,
+        default=0.03,
         ge=0.0,
         le=1.0,
         description="Minimum final_score margin over runner-up for High confidence",
     )
     medium_confidence_min_margin: float = Field(
-        default=0.02,
+        default=0.01,
         ge=0.0,
         le=1.0,
         description="Minimum final_score margin over runner-up for Medium confidence",

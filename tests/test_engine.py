@@ -1,0 +1,276 @@
+"""Integration tests for the full end-to-end ScrollSense recommendation engine."""
+
+from datetime import datetime, timezone
+import json
+from pathlib import Path
+from typing import Any
+from pydantic import BaseModel
+import pytest
+
+from scrollsense.domain.enums import ConfidenceBucket, DepthLevel, TechCategory
+from scrollsense.domain.recommendation import RecommendationOutput
+from scrollsense.domain.reels import Reel
+from scrollsense.engine import EngineResult, NoEligibleCandidatesError, ScrollSenseEngine
+from scrollsense.graph.loader import GraphLoader
+from scrollsense.graph.store import GraphStore
+from scrollsense.retrieval.repository import CandidateRepository
+from scrollsense.signals.llm_extractor import LLMStructuredSignalExtractor
+
+DATA_DIR = Path(__file__).resolve().parent.parent / "data"
+GRAPH_PATH = DATA_DIR / "identity_skill_graph.json"
+INPUTS_PATH = DATA_DIR / "inputs.json"
+CANDIDATES_PATH = DATA_DIR / "candidates.json"
+
+
+@pytest.fixture
+def graph_store() -> GraphStore:
+    """Fixture providing initialized GraphStore."""
+    return GraphLoader.load_from_json(GRAPH_PATH)
+
+
+@pytest.fixture
+def candidate_repo() -> CandidateRepository:
+    """Fixture providing CandidateRepository."""
+    return CandidateRepository.load_from_json(CANDIDATES_PATH)
+
+
+@pytest.fixture
+def all_input_reels() -> dict[str, Reel]:
+    """Fixture providing input reels by reel_id."""
+    reels: dict[str, Reel] = {}
+    with open(INPUTS_PATH, "r", encoding="utf-8") as f:
+        for item in json.load(f):
+            r = Reel.model_validate(item)
+            reels[r.reel_id] = r
+    return reels
+
+
+@pytest.fixture
+def default_engine(graph_store: GraphStore, candidate_repo: CandidateRepository) -> ScrollSenseEngine:
+    """Fixture providing default deterministic ScrollSenseEngine."""
+    return ScrollSenseEngine.create_default(
+        graph_store=graph_store,
+        candidate_repo=candidate_repo,
+    )
+
+
+class MockLLMProvider:
+    """Mock LLM provider for deterministic end-to-end integration testing."""
+
+    def __init__(self, responses: dict[str, Any], model_name: str = "gemini-3.5-flash") -> None:
+        self._responses = responses
+        self._model_name = model_name
+
+    @property
+    def model_name(self) -> str:
+        return self._model_name
+
+    def generate_structured_json(self, prompt: str, schema: type[BaseModel]) -> dict[str, Any]:
+        for reel_id, response in self._responses.items():
+            if f"- Reel ID: {reel_id}" in prompt:
+                return response
+        raise RuntimeError(f"No mock response configured for prompt: {prompt[:100]}...")
+
+
+@pytest.fixture
+def mock_trap_provider() -> MockLLMProvider:
+    trap_responses = {
+        "reel_java_meme": {
+            "topic": "java_meme",
+            "format": "meme",
+            "tone": "humorous",
+            "depth": "Beginner",
+            "concept_tags": ["java", "exception_handling", "production_debugging"],
+            "interest_evidence": [
+                {"evidence_type": "topic_implies_identity", "value": "software_engineer", "weight": 0.65},
+                {"evidence_type": "domain_signal", "value": "java", "weight": 0.80},
+                {"evidence_type": "domain_signal", "value": "backend", "weight": 0.60},
+            ],
+        },
+        "reel_swe_lifestyle": {
+            "topic": "swe_lifestyle",
+            "format": "vlog",
+            "tone": "casual",
+            "depth": "Beginner",
+            "concept_tags": ["software_engineering", "workplace_culture"],
+            "interest_evidence": [
+                {"evidence_type": "topic_implies_identity", "value": "software_engineer", "weight": 0.85},
+                {"evidence_type": "professional_identity_signal", "value": "backend_developer", "weight": 0.80},
+                {"evidence_type": "domain_signal", "value": "backend", "weight": 0.75},
+            ],
+        },
+        "reel_interview_joke": {
+            "topic": "interview_joke",
+            "format": "interview_joke",
+            "tone": "humorous",
+            "depth": "Beginner",
+            "concept_tags": ["coding_interviews", "dsa", "career_prep"],
+            "interest_evidence": [
+                {"evidence_type": "career_stage_signal", "value": "candidate", "weight": 0.80},
+                {"evidence_type": "goal_signal", "value": "career_prep", "weight": 0.85},
+                {"evidence_type": "topic_implies_identity", "value": "software_engineer", "weight": 0.70},
+            ],
+        },
+        "reel_laptop_comparison": {
+            "topic": "laptop_comparison",
+            "format": "hardware_comparison",
+            "tone": "technical",
+            "depth": "Intermediate",
+            "concept_tags": ["hardware", "developer_workstation", "docker", "local_development"],
+            "interest_evidence": [
+                {"evidence_type": "professional_identity_signal", "value": "software_engineer", "weight": 0.70},
+                {"evidence_type": "domain_signal", "value": "hardware", "weight": 0.60},
+                {"evidence_type": "domain_signal", "value": "cloud_infrastructure", "weight": 0.50},
+            ],
+        },
+    }
+    return MockLLMProvider(trap_responses)
+
+
+def test_canonical_swe_trap_end_to_end(
+    default_engine: ScrollSenseEngine,
+    all_input_reels: dict[str, Reel],
+):
+    """Test 1: Canonical SWE trap end-to-end integration produces HLD recommendation."""
+    trap_inputs = [
+        all_input_reels["reel_java_meme"],
+        all_input_reels["reel_swe_lifestyle"],
+        all_input_reels["reel_interview_joke"],
+        all_input_reels["reel_laptop_comparison"],
+    ]
+
+    output = default_engine.recommend(
+        student_id="student_swe_trap",
+        input_reels=trap_inputs,
+    )
+
+    assert isinstance(output, RecommendationOutput)
+    assert output.category == TechCategory.HLD
+    assert "Distributed Caching" in output.recommended_tech_reel
+    assert output.interest_detected == "Software Engineer"
+    assert output.confidence == ConfidenceBucket.HIGH
+    assert output.difficulty == DepthLevel.INTERMEDIATE
+    assert "reel_laptop_comparison" in output.current_reel
+    assert "software_engineer -> system_design" in output.why_this_recommendation
+    assert "reel_java_meme" in output.why
+
+
+def test_mock_llm_extractor_end_to_end(
+    graph_store: GraphStore,
+    candidate_repo: CandidateRepository,
+    all_input_reels: dict[str, Reel],
+    mock_trap_provider: MockLLMProvider,
+):
+    """Test 2: LLMStructuredSignalExtractor with mock provider integrates seamlessly into engine."""
+    llm_extractor = LLMStructuredSignalExtractor(
+        provider=mock_trap_provider,
+        graph=graph_store,
+    )
+
+    engine = ScrollSenseEngine.create_default(
+        graph_store=graph_store,
+        candidate_repo=candidate_repo,
+        extractor=llm_extractor,
+    )
+
+    trap_inputs = [
+        all_input_reels["reel_java_meme"],
+        all_input_reels["reel_swe_lifestyle"],
+        all_input_reels["reel_interview_joke"],
+        all_input_reels["reel_laptop_comparison"],
+    ]
+
+    result = engine.recommend_full(
+        student_id="student_swe_trap_llm",
+        input_reels=trap_inputs,
+    )
+
+    assert isinstance(result, EngineResult)
+    assert len(result.extracted_signals) == 4
+    assert result.interest_state.professional_identity["software_engineer"] > 0.80
+    assert result.outputs[0].category == TechCategory.HLD
+    assert "Distributed Caching" in result.outputs[0].recommended_tech_reel
+
+
+def test_gaming_non_trap_end_to_end(
+    default_engine: ScrollSenseEngine,
+    all_input_reels: dict[str, Reel],
+):
+    """Test 3: Gaming clip history recommends hardware/gear and never recommends SWE HLD."""
+    gaming_inputs = [all_input_reels["reel_gaming_clip"]]
+
+    output = default_engine.recommend(
+        student_id="student_gamer",
+        input_reels=gaming_inputs,
+    )
+
+    assert output.category == TechCategory.HARDWARE
+    assert "mechanical keyboard" in output.recommended_tech_reel.lower()
+    assert "system design" not in output.why_this_recommendation.lower()
+
+
+def test_hype_rejection_end_to_end(
+    default_engine: ScrollSenseEngine,
+    all_input_reels: dict[str, Reel],
+):
+    """Test 4: Hype candidates retrieved via topical AI search are rejected at the gate and never recommended."""
+    ai_inputs = [
+        all_input_reels["reel_ai_prompt_hacks"],
+    ]
+
+    result = default_engine.recommend_full(
+        student_id="student_ai",
+        input_reels=ai_inputs,
+    )
+
+    # reel_ai_hype_trap must be in ineligible_traces, not outputs
+    output_titles = [o.recommended_tech_reel for o in result.outputs]
+    assert not any("10 AI Tools That Will Replace" in t for t in output_titles)
+    ineligible_ids = [t.candidate_id for t in result.ranking_result.ineligible_traces]
+    assert "reel_ai_hype_trap" in ineligible_ids
+
+
+def test_empty_input_history_raises_value_error(default_engine: ScrollSenseEngine):
+    """Test 5: Empty input reel sequence raises ValueError."""
+    with pytest.raises(ValueError) as exc:
+        default_engine.recommend(student_id="student_empty", input_reels=[])
+    assert "input_reels sequence cannot be empty" in str(exc.value)
+
+
+def test_no_eligible_candidates_raises_no_eligible_candidates_error(
+    graph_store: GraphStore,
+    all_input_reels: dict[str, Reel],
+):
+    """Test 6: When candidate repository has no eligible surviving candidates, NoEligibleCandidatesError is raised."""
+    empty_repo = CandidateRepository(candidates=[])
+
+    engine = ScrollSenseEngine.create_default(
+        graph_store=graph_store,
+        candidate_repo=empty_repo,
+    )
+
+    with pytest.raises(NoEligibleCandidatesError) as exc:
+        engine.recommend(
+            student_id="student_empty_repo",
+            input_reels=[all_input_reels["reel_java_meme"]],
+        )
+    assert "No eligible candidates survived" in str(exc.value)
+
+
+def test_deterministic_repeated_execution(
+    default_engine: ScrollSenseEngine,
+    all_input_reels: dict[str, Reel],
+):
+    """Test 7: Repeated execution with identical inputs produces identical recommendations and traces."""
+    trap_inputs = [
+        all_input_reels["reel_java_meme"],
+        all_input_reels["reel_swe_lifestyle"],
+        all_input_reels["reel_interview_joke"],
+        all_input_reels["reel_laptop_comparison"],
+    ]
+
+    fixed_time = datetime(2026, 8, 18, 12, 0, 0, tzinfo=timezone.utc)
+    run_1 = default_engine.recommend_full(student_id="student_repro", input_reels=trap_inputs, generated_at=fixed_time)
+    run_2 = default_engine.recommend_full(student_id="student_repro", input_reels=trap_inputs, generated_at=fixed_time)
+
+    assert run_1.model_dump() == run_2.model_dump()

@@ -218,15 +218,23 @@ class MultiObjectiveRanker:
 
         best_match = 0.0
 
+        backend_tags = {"system_design", "distributed_systems", "redis", "cache_invalidation"}
+        cloud_tags = {"kubernetes", "cloud_networking", "docker", "microservices"}
+        security_tags = {"cybersecurity", "oauth2", "jwt", "api_security"}
+        dsa_tags = {"dsa", "binary_trees", "dynamic_programming"}
+        ai_tags = {"transformers", "neural_networks", "attention_mechanism", "ai_architecture"}
+
         # Direct domain match
         for dom, weight in state.domains.items():
             dom_norm = dom.lower()
             if dom_norm == cat_norm or dom_norm in tags:
                 best_match = max(best_match, weight)
-            elif dom_norm == "coding" and (cat_norm in ("coding", "system_design", "dsa", "cloud", "cybersecurity", "ai") or tags.intersection(CORE_ENGINEERING_CONCEPTS)):
-                best_match = max(best_match, weight * 0.9)
-            elif dom_norm == "backend" and (cat_norm in ("coding", "system_design", "cloud", "cybersecurity", "java") or tags.intersection(CORE_ENGINEERING_CONCEPTS)):
+            elif dom_norm == "backend" and (cat_norm in ("system_design", "hld") or tags.intersection(backend_tags)):
                 best_match = max(best_match, weight * 0.95)
+            elif dom_norm == "cloud_infrastructure" and tags.intersection(cloud_tags):
+                best_match = max(best_match, weight * 0.90)
+            elif dom_norm == "coding" and tags.intersection(CORE_ENGINEERING_CONCEPTS):
+                best_match = max(best_match, weight * 0.85)
 
         # Baseline topical score
         if best_match > 0.0:
@@ -235,7 +243,7 @@ class MultiObjectiveRanker:
         # Fallback for technology candidates when user has tech domains
         has_tech_domain = any(d in ("coding", "backend", "java", "hardware", "ai") for d in state.domains)
         if has_tech_domain and (cat_norm == "coding" or tags.intersection(CORE_ENGINEERING_CONCEPTS)):
-            return 0.55
+            return 0.45
 
         return 0.10
 
@@ -322,13 +330,11 @@ class MultiObjectiveRanker:
 
     def _compute_novelty(self, candidate: Candidate, reel: Reel, state: InterestState) -> float:
         """Reward candidates that move beyond literal repeated topics while remaining grounded."""
-        contributing = candidate.contributing_sources
-
-        if RetrievalSource.SOURCE_C_BOUNDARY_EXPLORATION in contributing:
+        if candidate.source == RetrievalSource.SOURCE_C_BOUNDARY_EXPLORATION:
             return 0.95
-        elif RetrievalSource.SOURCE_B_IDENTITY_ADJACENT in contributing:
+        elif candidate.source == RetrievalSource.SOURCE_B_IDENTITY_ADJACENT:
             return 0.85
-        elif RetrievalSource.SOURCE_A_TOPICAL in contributing:
+        elif candidate.source == RetrievalSource.SOURCE_A_TOPICAL:
             cat_norm = reel.category.lower()
             if cat_norm in state.domains or "java" in state.domains:
                 return 0.30
