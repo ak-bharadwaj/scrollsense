@@ -225,8 +225,9 @@ function renderRecommendation(data) {
   outDifficulty.textContent = `DIFFICULTY: ${contract.difficulty}`;
   outWhyThisRec.textContent = contract.why_this_recommendation;
 
+  const confClass = contract.confidence === 'High' ? 'conf-high' : contract.confidence === 'Medium' ? 'conf-medium' : 'conf-low';
   recConfidencePill.textContent = `Confidence: ${contract.confidence}`;
-  recConfidencePill.className = `badge-confidence ${contract.confidence === 'High' ? 'conf-high' : 'conf-medium'}`;
+  recConfidencePill.className = `badge-confidence ${confClass}`;
 
   // Make Play Recommendation button active
   if (btnPlayRec && data.recommended_reel) {

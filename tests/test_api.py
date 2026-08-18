@@ -324,3 +324,19 @@ def test_root_frontend_endpoint(client: TestClient):
     assert "ScrollSense" in response.text
     assert "Official Recommendation Contract" in response.text
 
+
+def test_frontend_confidence_rendering_classes(client: TestClient):
+    """Test 10: Verify static CSS and JS include distinct high, medium, and low confidence classes."""
+    css_res = client.get("/static/style.css")
+    assert css_res.status_code == 200
+    assert ".conf-high" in css_res.text
+    assert ".conf-medium" in css_res.text
+    assert ".conf-low" in css_res.text
+
+    js_res = client.get("/static/app.js")
+    assert js_res.status_code == 200
+    assert "conf-low" in js_res.text
+    assert "conf-medium" in js_res.text
+    assert "conf-high" in js_res.text
+
+
