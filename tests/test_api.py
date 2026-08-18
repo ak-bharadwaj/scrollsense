@@ -322,5 +322,5 @@ def test_root_frontend_endpoint(client: TestClient):
     response = client.get("/")
     assert response.status_code == 200
     assert "ScrollSense" in response.text
-    assert "Vertical Reel Feed" in response.text
+    assert "Official Recommendation Contract" in response.text
 

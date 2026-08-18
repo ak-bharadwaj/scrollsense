@@ -1,4 +1,4 @@
-// ScrollSense Frontend Interaction Controller
+// ScrollSense Interactive Short-Form Reel Application Controller
 
 const API_BASE = window.location.origin;
 
@@ -7,45 +7,58 @@ let currentReelIndex = 0;
 let watchedHistory = [];
 let dwellTimer = null;
 let dwellStartTime = Date.now();
+let likeStates = new Map(); // reel_id -> boolean
 
 // DOM Elements
-const feedCounter = document.getElementById("feed-counter");
-const reelTitle = document.getElementById("reel-title");
-const reelCreator = document.getElementById("reel-creator");
-const reelCategory = document.getElementById("reel-category");
-const reelDifficulty = document.getElementById("reel-difficulty");
-const reelConcepts = document.getElementById("reel-concepts");
-const dwellSeconds = document.getElementById("dwell-seconds");
-const historyList = document.getElementById("history-list");
-const historyCount = document.getElementById("history-count");
+const feedPositionPill = document.getElementById("feed-position-pill");
+const dwellDisplay = document.getElementById("dwell-display");
+const reelMainTitle = document.getElementById("reel-main-title");
+const reelCreatorHandle = document.getElementById("reel-creator-handle");
+const reelCatChip = document.getElementById("reel-cat-chip");
+const reelDiffChip = document.getElementById("reel-diff-chip");
+const reelConceptChips = document.getElementById("reel-concept-chips");
+const videoMediaContainer = document.getElementById("video-media-container");
+const playbackProgressFill = document.getElementById("playback-progress-fill");
 
-const topIdentityDisplay = document.getElementById("top-identity-display");
-const interestWeightBadge = document.getElementById("interest-weight-badge");
-const domainsChips = document.getElementById("domains-chips");
+const actionLike = document.getElementById("action-like");
+const actionWatch = document.getElementById("action-watch");
+const actionWhy = document.getElementById("action-why");
+const actionNext = document.getElementById("action-next");
+const likeCount = document.getElementById("like-count");
 
-const btnPrev = document.getElementById("btn-prev-reel");
-const btnNext = document.getElementById("btn-next-reel");
-const btnInteract = document.getElementById("btn-interact-reel");
-const btnFetchRec = document.getElementById("btn-fetch-rec");
+const primaryIdentityName = document.getElementById("primary-identity-name");
+const identityStrengthBadge = document.getElementById("identity-strength-badge");
+const domainAffinityBars = document.getElementById("domain-affinity-bars");
+
+const recConfidencePill = document.getElementById("rec-confidence-pill");
+const recSpinner = document.getElementById("rec-spinner");
+const contractFieldsBody = document.getElementById("contract-fields-body");
+const outCurrentReel = document.getElementById("out-current-reel");
+const outInterestDetected = document.getElementById("out-interest-detected");
+const outWhy = document.getElementById("out-why");
+const outCategory = document.getElementById("out-category");
+const outDifficulty = document.getElementById("out-difficulty");
+const outRecommendedReel = document.getElementById("out-recommended-reel");
+const outWhyThisRec = document.getElementById("out-why-this-rec");
+
+const historyCounter = document.getElementById("history-counter");
+const historyScrollList = document.getElementById("history-scroll-list");
+
+const explainBackdrop = document.getElementById("explain-backdrop");
+const btnCloseSheet = document.getElementById("btn-close-sheet");
+const sheetCloseHandle = document.getElementById("sheet-close-handle");
+const explainGraphPath = document.getElementById("explain-graph-path");
+const explainEvidenceList = document.getElementById("explain-evidence-list");
+
 const btnCanonicalDemo = document.getElementById("btn-canonical-demo");
+const btnFetchRecNav = document.getElementById("btn-fetch-rec-nav");
 const btnReset = document.getElementById("btn-reset");
-
-const recLoading = document.getElementById("recommendation-loading");
-const recConfidenceBadge = document.getElementById("rec-confidence-badge");
-const fieldCurrentReel = document.getElementById("field-current-reel");
-const fieldInterestDetected = document.getElementById("field-interest-detected");
-const fieldWhy = document.getElementById("field-why");
-const fieldCategory = document.getElementById("field-category");
-const fieldDifficulty = document.getElementById("field-difficulty");
-const fieldRecommendedReel = document.getElementById("field-recommended-reel");
-const fieldWhyThisRec = document.getElementById("field-why-this-rec");
-const traversalNodes = document.getElementById("traversal-nodes");
 
 // Initialize Application
 async function init() {
   await loadFeed();
-  startDwellTimer();
   attachEventListeners();
+  startDwellTimer();
 }
 
 async function loadFeed() {
@@ -65,9 +78,14 @@ async function loadFeed() {
 function startDwellTimer() {
   if (dwellTimer) clearInterval(dwellTimer);
   dwellStartTime = Date.now();
+
   dwellTimer = setInterval(() => {
     const elapsed = ((Date.now() - dwellStartTime) / 1000).toFixed(1);
-    dwellSeconds.textContent = `${elapsed}s`;
+    dwellDisplay.textContent = `${elapsed}s`;
+
+    // Progress bar up to 30s
+    const pct = Math.min(100, (parseFloat(elapsed) / 30.0) * 100);
+    playbackProgressFill.style.width = `${pct}%`;
   }, 100);
 }
 
@@ -75,36 +93,35 @@ function renderCurrentReel() {
   if (!feedReels || feedReels.length === 0) return;
   const reel = feedReels[currentReelIndex];
 
-  feedCounter.textContent = `Reel ${currentReelIndex + 1} of ${feedReels.length}`;
-  reelTitle.textContent = reel.title;
-  reelCreator.textContent = reel.creator ? `@${reel.creator}` : "@[SYNTHETIC_FIXTURE]";
-  reelCategory.textContent = reel.category;
-  reelDifficulty.textContent = reel.difficulty;
+  feedPositionPill.textContent = `Reel ${currentReelIndex + 1} of ${feedReels.length}`;
+  reelMainTitle.textContent = reel.title;
+  reelCreatorHandle.textContent = reel.creator ? `@${reel.creator}` : "@[SYNTHETIC_FIXTURE]";
+  reelCatChip.textContent = reel.category;
+  reelDiffChip.textContent = reel.difficulty;
 
-  // Video container rendering: Real <video> if available, else synthetic fixture UI
-  const videoMock = document.getElementById("video-mock-bg");
+  // Like button state
+  const isLiked = likeStates.get(reel.reel_id) || false;
+  likeCount.textContent = isLiked ? "Liked" : "Like";
+  actionLike.style.color = isLiked ? "#fb7185" : "#fff";
+
+  // Video container rendering: Native <video> if available, else synthetic fixture UI
   if (reel.video_url) {
-    videoMock.innerHTML = `
-      <video src="${reel.video_url}" controls autoplay muted loop playsinline style="width:100%;height:100%;object-fit:cover;"></video>
-      <div class="video-dwell-timer">
-        <span class="timer-dot"></span> Dwell: <strong id="dwell-seconds">0.0s</strong>
-      </div>
+    videoMediaContainer.innerHTML = `
+      <video src="${reel.video_url}" controls autoplay muted loop playsinline></video>
     `;
   } else {
-    videoMock.innerHTML = `
-      <div class="video-play-pulse">▶</div>
-      <span class="text-xs text-muted" style="margin-top:8px;">[SYNTHETIC FIXTURE - No binary asset attached]</span>
-      <div class="video-dwell-timer">
-        <span class="timer-dot"></span> Dwell: <strong id="dwell-seconds">0.0s</strong>
+    videoMediaContainer.innerHTML = `
+      <div class="fixture-visualizer">
+        <div class="sound-wave-bars" aria-hidden="true">
+          <span></span><span></span><span></span><span></span><span></span>
+        </div>
+        <div class="fixture-tag-notice">[SYNTHETIC FIXTURE]</div>
       </div>
     `;
   }
 
-  // Render concept tags if available from detail
+  // Fetch full detail for concept tags
   fetchReelDetail(reel.reel_id);
-
-  btnPrev.disabled = currentReelIndex === 0;
-  btnNext.disabled = currentReelIndex === feedReels.length - 1;
   startDwellTimer();
 }
 
@@ -113,13 +130,13 @@ async function fetchReelDetail(reelId) {
     const res = await fetch(`${API_BASE}/api/v1/reels/${reelId}`);
     if (res.ok) {
       const detail = await res.json();
-      reelConcepts.innerHTML = "";
+      reelConceptChips.innerHTML = "";
       if (detail.concept_tags && detail.concept_tags.length > 0) {
         detail.concept_tags.forEach(tag => {
           const pill = document.createElement("span");
-          pill.className = "tag tag-concept";
+          pill.className = "tag-concept";
           pill.textContent = `#${tag}`;
-          reelConcepts.appendChild(pill);
+          reelConceptChips.appendChild(pill);
         });
       }
     }
@@ -129,7 +146,7 @@ async function fetchReelDetail(reelId) {
 }
 
 function recordInteraction(reel, dwellSec = 15.0) {
-  const existing = watchedHistory.find(item => (typeof item === 'string' ? item : item.reel_id) === reel.reel_id);
+  const existing = watchedHistory.find(item => (typeof item === "string" ? item : item.reel_id) === reel.reel_id);
   if (!existing) {
     watchedHistory.push({
       reel_id: reel.reel_id,
@@ -144,26 +161,27 @@ function recordInteraction(reel, dwellSec = 15.0) {
 
 function updateHistoryUI(reel, dwellSec) {
   if (watchedHistory.length === 1) {
-    historyList.innerHTML = "";
+    historyScrollList.innerHTML = "";
   }
-  historyCount.textContent = watchedHistory.length;
+  historyCounter.textContent = watchedHistory.length;
 
   const itemEl = document.createElement("div");
-  itemEl.className = "history-item";
+  itemEl.className = "history-entry";
   itemEl.innerHTML = `
-    <span><strong>${reel.title}</strong> (${reel.reel_id})</span>
-    <span class="text-xs text-muted">${dwellSec}s</span>
+    <span><strong>${reel.title.replace(" [SYNTHETIC_FIXTURE]", "")}</strong> (${reel.reel_id})</span>
+    <span class="mono-val">${dwellSec}s</span>
   `;
-  historyList.prepend(itemEl);
+  historyScrollList.prepend(itemEl);
 }
 
 async function fetchRecommendation() {
   if (watchedHistory.length === 0) {
-    alert("Please watch/interact with at least one Reel first.");
+    alert("Please watch/interact with at least one Reel first, or click 'Run SWE Trap Demo'.");
     return;
   }
 
-  recLoading.classList.remove("hidden");
+  recSpinner.classList.remove("hidden");
+  contractFieldsBody.style.opacity = "0.3";
 
   try {
     const res = await fetch(`${API_BASE}/api/v1/recommend`, {
@@ -180,12 +198,13 @@ async function fetchRecommendation() {
       renderRecommendation(data);
     } else {
       const err = await res.json();
-      alert(`Recommendation Error: ${err.detail || "Failed to generate"}`);
+      alert(`Recommendation Error: ${err.detail || "Failed to generate recommendation"}`);
     }
   } catch (err) {
     console.error("Failed to generate recommendation:", err);
   } finally {
-    recLoading.classList.add("hidden");
+    recSpinner.classList.add("hidden");
+    contractFieldsBody.style.opacity = "1";
   }
 }
 
@@ -193,52 +212,69 @@ function renderRecommendation(data) {
   const contract = data.official_contract;
   const explain = data.explainability;
 
-  // 1. Official Required Contract Fields
-  fieldCurrentReel.textContent = contract.current_reel;
-  fieldInterestDetected.textContent = contract.interest_detected;
-  fieldWhy.textContent = contract.why;
-  fieldRecommendedReel.textContent = contract.recommended_tech_reel;
-  fieldCategory.textContent = `CATEGORY: ${contract.category}`;
-  fieldDifficulty.textContent = `DIFFICULTY: ${contract.difficulty}`;
-  fieldWhyThisRec.textContent = contract.why_this_recommendation;
+  // 1. Populate Official 8 Required Fields
+  outCurrentReel.textContent = contract.current_reel;
+  outInterestDetected.textContent = contract.interest_detected;
+  outWhy.textContent = contract.why;
+  outRecommendedReel.textContent = contract.recommended_tech_reel;
+  outCategory.textContent = `CATEGORY: ${contract.category}`;
+  outDifficulty.textContent = `DIFFICULTY: ${contract.difficulty}`;
+  outWhyThisRec.textContent = contract.why_this_recommendation;
 
-  recConfidenceBadge.textContent = `Confidence: ${contract.confidence}`;
-  recConfidenceBadge.className = `badge ${contract.confidence === 'High' ? 'badge-success' : contract.confidence === 'Medium' ? 'badge-info' : 'badge-accent'}`;
+  recConfidencePill.textContent = `Confidence: ${contract.confidence}`;
+  recConfidencePill.className = `badge-confidence ${contract.confidence === 'High' ? 'conf-high' : 'conf-medium'}`;
 
-  // 2. Inferred Persona & Radar
+  // 2. Inferred Latent Identity State
   if (explain.inferred_identities && Object.keys(explain.inferred_identities).length > 0) {
     const topIdent = Object.keys(explain.inferred_identities)[0];
     const topWeight = explain.inferred_identities[topIdent];
-    topIdentityDisplay.textContent = topIdent.replace("_", " ").toUpperCase();
-    interestWeightBadge.textContent = `Weight: ${topWeight.toFixed(2)}`;
+    primaryIdentityName.textContent = topIdent.replace("_", " ").toUpperCase();
+    identityStrengthBadge.textContent = `Strength: ${topWeight.toFixed(2)}`;
   }
 
-  // 3. Domain Chips
-  domainsChips.innerHTML = "";
+  // 3. Domain Affinities
+  domainAffinityBars.innerHTML = "";
   if (explain.domains_breakdown) {
     Object.entries(explain.domains_breakdown).forEach(([dom, score]) => {
-      const chip = document.createElement("span");
-      chip.className = "tag tag-category";
+      const chip = document.createElement("div");
+      chip.className = "affinity-chip";
       chip.textContent = `${dom}: ${(score * 100).toFixed(0)}%`;
-      domainsChips.appendChild(chip);
+      domainAffinityBars.appendChild(chip);
     });
   }
 
   // 4. Graph Traversal Path
-  traversalNodes.innerHTML = "";
+  explainGraphPath.innerHTML = "";
   if (explain.graph_traversal && explain.graph_traversal.length > 0) {
     explain.graph_traversal.forEach((node, i) => {
+      if (i > 0) {
+        const arrow = document.createElement("span");
+        arrow.className = "path-arrow";
+        arrow.textContent = "→";
+        explainGraphPath.appendChild(arrow);
+      }
       const pill = document.createElement("span");
-      pill.className = "node-pill";
+      pill.className = "node-badge";
       pill.textContent = `${i + 1}. ${node}`;
-      traversalNodes.appendChild(pill);
+      explainGraphPath.appendChild(pill);
     });
   } else {
-    traversalNodes.innerHTML = '<span class="node-pill">1-hop Identity Adjacent</span>';
+    explainGraphPath.innerHTML = '<span class="node-badge">1. software_engineer → 2. system_design</span>';
+  }
+
+  // 5. Contributing Evidence Cards
+  explainEvidenceList.innerHTML = "";
+  if (explain.contributing_evidence && explain.contributing_evidence.length > 0) {
+    explain.contributing_evidence.forEach(ev => {
+      const card = document.createElement("div");
+      card.className = "evidence-card-item";
+      card.textContent = `Watched: ${ev}`;
+      explainEvidenceList.appendChild(card);
+    });
   }
 }
 
-// Canonical SWE Trap Demo Scenario Runner
+// Canonical SWE Trap Demo Scenario
 async function runCanonicalDemo() {
   resetSession();
 
@@ -259,12 +295,12 @@ async function runCanonicalDemo() {
     });
   }
 
-  historyCount.textContent = watchedHistory.length;
-  historyList.innerHTML = `
-    <div class="history-item"><span><strong>M3 Max MacBook Dev</strong> (reel_laptop_comparison)</span><span class="text-xs text-muted">25s</span></div>
-    <div class="history-item"><span><strong>Invert Binary Tree Joke</strong> (reel_interview_joke)</span><span class="text-xs text-muted">25s</span></div>
-    <div class="history-item"><span><strong>Day in Life of Backend SWE</strong> (reel_swe_lifestyle)</span><span class="text-xs text-muted">25s</span></div>
-    <div class="history-item"><span><strong>NullPointerException Meme</strong> (reel_java_meme)</span><span class="text-xs text-muted">25s</span></div>
+  historyCounter.textContent = watchedHistory.length;
+  historyScrollList.innerHTML = `
+    <div class="history-entry"><span><strong>M3 Max MacBook Dev</strong> (reel_laptop_comparison)</span><span class="mono-val">25.0s</span></div>
+    <div class="history-entry"><span><strong>Invert Binary Tree Joke</strong> (reel_interview_joke)</span><span class="mono-val">25.0s</span></div>
+    <div class="history-entry"><span><strong>Day in Life of Backend SWE</strong> (reel_swe_lifestyle)</span><span class="mono-val">25.0s</span></div>
+    <div class="history-entry"><span><strong>NullPointerException Meme</strong> (reel_java_meme)</span><span class="mono-val">25.0s</span></div>
   `;
 
   await fetchRecommendation();
@@ -272,51 +308,73 @@ async function runCanonicalDemo() {
 
 function resetSession() {
   watchedHistory = [];
-  historyCount.textContent = "0";
-  historyList.innerHTML = '<p class="empty-hint">Interact with reels in the feed above to build your identity state.</p>';
-  topIdentityDisplay.textContent = "No History Yet";
-  interestWeightBadge.textContent = "Weight: 0.00";
-  domainsChips.innerHTML = "";
-  traversalNodes.innerHTML = '<span class="node-pill">Idle</span>';
-  fieldCurrentReel.textContent = "-";
-  fieldInterestDetected.textContent = "-";
-  fieldWhy.textContent = "-";
-  fieldRecommendedReel.textContent = "No Recommendation Generated";
-  fieldCategory.textContent = "CATEGORY: -";
-  fieldDifficulty.textContent = "DIFFICULTY: -";
-  fieldWhyThisRec.textContent = "-";
-  recConfidenceBadge.textContent = "Confidence: N/A";
+  likeStates.clear();
+  historyCounter.textContent = "0";
+  historyScrollList.innerHTML = '<p class="empty-hint">Interacted reels will appear here with dwell times.</p>';
+  primaryIdentityName.textContent = "No History Yet";
+  identityStrengthBadge.textContent = "Strength: 0.00";
+  domainAffinityBars.innerHTML = '<p class="empty-hint">Interact with reels in the feed to build your interest profile.</p>';
+  explainGraphPath.innerHTML = '<span class="node-badge">Idle</span>';
+  explainEvidenceList.innerHTML = '';
+  outCurrentReel.textContent = "-";
+  outInterestDetected.textContent = "-";
+  outWhy.textContent = "-";
+  outRecommendedReel.textContent = "No Recommendation Generated";
+  outCategory.textContent = "CATEGORY: -";
+  outDifficulty.textContent = "DIFFICULTY: -";
+  outWhyThisRec.textContent = 'Watch reels and click "Get Recommendation" or press "C" for the canonical demo.';
+  recConfidencePill.textContent = "Confidence: N/A";
+  recConfidencePill.className = "badge-confidence";
+  closeExplainSheet();
   startDwellTimer();
 }
 
+function openExplainSheet() {
+  explainBackdrop.classList.remove("hidden");
+}
+
+function closeExplainSheet() {
+  explainBackdrop.classList.add("hidden");
+}
+
 function attachEventListeners() {
-  btnNext.addEventListener("click", () => {
-    if (currentReelIndex < feedReels.length - 1) {
-      currentReelIndex++;
+  actionNext.addEventListener("click", () => {
+    if (feedReels.length > 0) {
+      currentReelIndex = (currentReelIndex + 1) % feedReels.length;
       renderCurrentReel();
     }
   });
 
-  btnPrev.addEventListener("click", () => {
-    if (currentReelIndex > 0) {
-      currentReelIndex--;
-      renderCurrentReel();
-    }
-  });
-
-  btnInteract.addEventListener("click", () => {
+  actionWatch.addEventListener("click", () => {
     if (feedReels.length > 0) {
       const reel = feedReels[currentReelIndex];
-      const dwell = ((Date.now() - dwellStartTime) / 1000).toFixed(1);
-      recordInteraction(reel, Math.max(5.0, parseFloat(dwell)));
-      if (currentReelIndex < feedReels.length - 1) {
-        currentReelIndex++;
-        renderCurrentReel();
-      }
+      const elapsed = ((Date.now() - dwellStartTime) / 1000).toFixed(1);
+      recordInteraction(reel, Math.max(10.0, parseFloat(elapsed)));
+      currentReelIndex = (currentReelIndex + 1) % feedReels.length;
+      renderCurrentReel();
     }
   });
 
-  btnFetchRec.addEventListener("click", fetchRecommendation);
+  actionLike.addEventListener("click", () => {
+    if (feedReels.length > 0) {
+      const reel = feedReels[currentReelIndex];
+      const currentLiked = likeStates.get(reel.reel_id) || false;
+      likeStates.set(reel.reel_id, !currentLiked);
+      const elapsed = ((Date.now() - dwellStartTime) / 1000).toFixed(1);
+      recordInteraction(reel, Math.max(5.0, parseFloat(elapsed)));
+      renderCurrentReel();
+    }
+  });
+
+  actionWhy.addEventListener("click", openExplainSheet);
+  btnCloseSheet.addEventListener("click", closeExplainSheet);
+  sheetCloseHandle.addEventListener("click", closeExplainSheet);
+
+  explainBackdrop.addEventListener("click", (e) => {
+    if (e.target === explainBackdrop) closeExplainSheet();
+  });
+
+  btnFetchRecNav.addEventListener("click", fetchRecommendation);
   btnCanonicalDemo.addEventListener("click", runCanonicalDemo);
   btnReset.addEventListener("click", resetSession);
 
@@ -326,22 +384,39 @@ function attachEventListeners() {
 
     if (e.code === "Space") {
       e.preventDefault();
-      btnInteract.click();
+      actionWatch.click();
     } else if (e.key === "ArrowDown" || e.key.toLowerCase() === "j") {
       e.preventDefault();
-      if (!btnNext.disabled) btnNext.click();
+      actionNext.click();
     } else if (e.key === "ArrowUp" || e.key.toLowerCase() === "k") {
       e.preventDefault();
-      if (!btnPrev.disabled) btnPrev.click();
+      if (feedReels.length > 0) {
+        currentReelIndex = (currentReelIndex - 1 + feedReels.length) % feedReels.length;
+        renderCurrentReel();
+      }
+    } else if (e.key.toLowerCase() === "l") {
+      e.preventDefault();
+      actionLike.click();
+    } else if (e.key.toLowerCase() === "w") {
+      e.preventDefault();
+      if (explainBackdrop.classList.contains("hidden")) {
+        openExplainSheet();
+      } else {
+        closeExplainSheet();
+      }
     } else if (e.key === "Enter" || e.key.toLowerCase() === "r") {
       e.preventDefault();
-      btnFetchRec.click();
+      btnFetchRecNav.click();
     } else if (e.key.toLowerCase() === "c") {
       e.preventDefault();
       btnCanonicalDemo.click();
     } else if (e.key === "Escape") {
       e.preventDefault();
-      btnReset.click();
+      if (!explainBackdrop.classList.contains("hidden")) {
+        closeExplainSheet();
+      } else {
+        btnReset.click();
+      }
     }
   });
 }

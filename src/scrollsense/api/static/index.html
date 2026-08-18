@@ -3,174 +3,240 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ScrollSense | Identity-Aware Latent Skill Graph Recommender</title>
+  <title>ScrollSense | Identity-Aware Reel Recommender</title>
   <link rel="stylesheet" href="/static/style.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 </head>
 <body>
-  <div class="app-container">
-    <!-- Navigation / Header -->
-    <header class="app-header">
+  <div class="app-layout">
+    <!-- Top Navigation Header -->
+    <header class="app-navbar" role="banner">
       <div class="brand">
-        <div class="brand-logo">⚡</div>
-        <div class="brand-text">
+        <div class="brand-badge" aria-hidden="true">⚡</div>
+        <div class="brand-info">
           <h1>ScrollSense</h1>
-          <span class="badge badge-accent">Identity-Aware Recommender</span>
+          <span class="sub-badge">AI Skill Graph Recommender</span>
         </div>
       </div>
-      <div class="header-actions">
-        <button id="btn-canonical-demo" class="btn btn-outline" title="Simulate watching the 8 canonical reels in sequence (Key: C)">
-          ⚡ Run Canonical SWE Trap Demo
+      <div class="nav-controls">
+        <button id="btn-canonical-demo" class="btn btn-demo" title="Run Canonical SWE Trap Demo (Key: C)" aria-label="Run Canonical Software Engineer Trap Demo">
+          ⚡ Run SWE Trap Demo
         </button>
-        <button id="btn-reset" class="btn btn-ghost" title="Reset watched history (Key: Esc)">
+        <button id="btn-fetch-rec-nav" class="btn btn-primary" title="Generate Tech Recommendation (Key: R)" aria-label="Generate Tech Recommendation">
+          🎯 Get Recommendation
+        </button>
+        <button id="btn-reset" class="btn btn-ghost" title="Reset Session (Key: Esc)" aria-label="Reset Session">
           🔄 Reset
         </button>
       </div>
     </header>
 
-    <!-- Keyboard Shortcuts Helper Banner -->
-    <div class="shortcuts-banner" role="region" aria-label="Keyboard Shortcuts">
-      <span class="shortcut-item"><kbd>Space</kbd> Watch (+Dwell)</span>
-      <span class="shortcut-item"><kbd>↓</kbd> / <kbd>J</kbd> Next</span>
-      <span class="shortcut-item"><kbd>↑</kbd> / <kbd>K</kbd> Prev</span>
-      <span class="shortcut-item"><kbd>Enter</kbd> / <kbd>R</kbd> Recommend</span>
-      <span class="shortcut-item"><kbd>C</kbd> Canonical Demo</span>
-    </div>
+    <!-- Keyboard Shortcuts Banner -->
+    <aside class="shortcuts-legend" aria-label="Keyboard Shortcuts">
+      <span><kbd>Space</kbd> Watch (+Dwell)</span>
+      <span><kbd>↓</kbd> / <kbd>J</kbd> Next Reel</span>
+      <span><kbd>↑</kbd> Prev Reel</span>
+      <span><kbd>L</kbd> Like</span>
+      <span><kbd>W</kbd> Why this Reel?</span>
+      <span><kbd>R</kbd> Recommend</span>
+      <span><kbd>C</kbd> Canonical Demo</span>
+    </aside>
 
-    <!-- Main Workspace -->
-    <main class="main-layout">
-      <!-- Left: Vertical Reel Feed Simulator -->
-      <section class="feed-column" aria-label="Vertical Reel Feed">
-        <div class="section-title-bar">
-          <h2>📱 Vertical Reel Feed</h2>
-          <span id="feed-counter" class="sub-text">Reel 1 of 8</span>
-        </div>
-
-        <div class="reel-player-card" id="reel-player">
-          <div class="video-container">
-            <div class="video-mock" id="video-mock-bg">
-              <div class="video-play-pulse">▶</div>
-              <div class="video-dwell-timer">
-                <span class="timer-dot"></span> Dwell Time: <strong id="dwell-seconds">0.0s</strong>
+    <!-- Main Experience Area -->
+    <main class="experience-grid" role="main">
+      <!-- Center: 9:16 Vertical Reel Player Phone Frame -->
+      <section class="reel-section" aria-label="Short Form Video Player">
+        <div class="phone-viewport" id="phone-viewport">
+          <!-- Live Playback Area -->
+          <div class="video-media-layer" id="video-media-container">
+            <!-- Native <video> inserted if media exists, else interactive fixture visualizer -->
+            <div class="fixture-visualizer" id="fixture-canvas-bg">
+              <div class="sound-wave-bars" aria-hidden="true">
+                <span></span><span></span><span></span><span></span><span></span>
               </div>
-            </div>
-            <div class="reel-overlay">
-              <div class="category-difficulty-row">
-                <span id="reel-category" class="tag tag-category">Category</span>
-                <span id="reel-difficulty" class="tag tag-difficulty">Difficulty</span>
-              </div>
-              <h3 id="reel-title" class="reel-title">Reel Title</h3>
-              <p id="reel-creator" class="reel-creator">@creator</p>
-              <div id="reel-concepts" class="concepts-row"></div>
+              <div class="fixture-tag-notice">[SYNTHETIC FIXTURE]</div>
             </div>
           </div>
 
-          <div class="feed-controls">
-            <button id="btn-prev-reel" class="btn btn-secondary" disabled>▲ Prev</button>
-            <button id="btn-interact-reel" class="btn btn-primary">✓ Watch Reel (+Dwell)</button>
-            <button id="btn-next-reel" class="btn btn-secondary">▼ Next</button>
+          <!-- Top Status Pill -->
+          <div class="reel-top-bar">
+            <span id="feed-position-pill" class="pill-badge" aria-live="polite">Reel 1 of 8</span>
+            <div class="dwell-live-pill" aria-label="Dwell Time">
+              <span class="pulse-indicator" aria-hidden="true"></span>
+              <span id="dwell-display">0.0s</span>
+            </div>
           </div>
-        </div>
 
-        <!-- Session Dwell History List -->
-        <div class="history-card">
-          <div class="card-header">
-            <h3>📜 Interacted Reels (<span id="history-count">0</span>)</h3>
+          <!-- Right Floating Action Rail -->
+          <nav class="action-rail" aria-label="Reel Actions">
+            <button id="action-like" class="rail-btn" aria-label="Like Reel (Key: L)">
+              <span class="rail-icon">❤️</span>
+              <span id="like-count" class="rail-label">Like</span>
+            </button>
+            <button id="action-watch" class="rail-btn rail-btn-primary" aria-label="Watch and Record Dwell (Key: Space)">
+              <span class="rail-icon">▶</span>
+              <span class="rail-label">Watch</span>
+            </button>
+            <button id="action-why" class="rail-btn rail-btn-glow" aria-label="Why this Reel? Explainability (Key: W)">
+              <span class="rail-icon">💡</span>
+              <span class="rail-label">Why?</span>
+            </button>
+            <button id="action-next" class="rail-btn" aria-label="Next Reel (Key: Down Arrow)">
+              <span class="rail-icon">⏭️</span>
+              <span class="rail-label">Next</span>
+            </button>
+          </nav>
+
+          <!-- Bottom Metadata Overlay -->
+          <div class="reel-info-overlay">
+            <div class="meta-tags-row">
+              <span id="reel-cat-chip" class="chip chip-cat">Category</span>
+              <span id="reel-diff-chip" class="chip chip-diff">Beginner</span>
+            </div>
+            <h2 id="reel-main-title" class="reel-main-heading">Loading reel...</h2>
+            <div class="creator-row">
+              <div class="creator-avatar" id="creator-avatar">⚡</div>
+              <span id="reel-creator-handle" class="creator-handle">@creator</span>
+            </div>
+            <div id="reel-concept-chips" class="concept-chips-container" aria-label="Technical Concepts"></div>
           </div>
-          <div id="history-list" class="history-list">
-            <p class="empty-hint">Interact with reels in the feed above to build your identity state.</p>
+
+          <!-- Bottom Playback Progress Bar -->
+          <div class="playback-progress-track" role="progressbar" aria-label="Watch Progress" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+            <div id="playback-progress-fill" class="playback-progress-fill"></div>
           </div>
         </div>
       </section>
 
-      <!-- Right: Real-Time Recommendation & Explainability -->
-      <section class="recommendation-column" aria-label="Recommendation & Explainability">
-        <!-- Live Persona Evolution Radar & State -->
-        <div class="card persona-card">
-          <div class="card-header">
-            <h3>🧠 Inferred Latent Identity State</h3>
-            <span id="interest-weight-badge" class="badge badge-info">Weight: 0.00</span>
-          </div>
-          <div class="persona-content">
-            <div class="identity-lead">
-              <span class="label">Top Latent Identity:</span>
-              <strong id="top-identity-display" class="highlight-text">No History Yet</strong>
+      <!-- Right Column: Real-Time Persona Radar & Official Recommendation Drawer -->
+      <section class="insights-section" aria-label="Recommendation and Intelligence Insights">
+        <!-- Live Persona & Latent Identity State -->
+        <div class="glass-card identity-card">
+          <div class="card-top">
+            <div class="card-title-group">
+              <span class="card-icon">🧠</span>
+              <h3>Inferred Latent Identity State</h3>
             </div>
-            <div id="domains-chips" class="domains-chips"></div>
+            <span id="identity-strength-badge" class="badge-glow">Strength: 0.00</span>
+          </div>
+
+          <div class="identity-spotlight">
+            <span class="meta-label">PRIMARY DETECTED PERSONA:</span>
+            <div id="primary-identity-name" class="identity-lead-text">No History Yet</div>
+          </div>
+
+          <div class="domain-affinity-container">
+            <span class="meta-label">DOMAIN AFFINITIES:</span>
+            <div id="domain-affinity-bars" class="affinity-bars-grid">
+              <p class="empty-hint">Interact with reels in the feed to build your interest profile.</p>
+            </div>
           </div>
         </div>
 
-        <!-- Official Recommendation Output Contract -->
-        <div class="card recommendation-card" id="recommendation-container">
-          <div class="card-header highlight-header">
-            <div class="header-with-badge">
-              <h3>🎯 Official Recommendation Contract</h3>
-              <span id="rec-confidence-badge" class="badge badge-success">Confidence: N/A</span>
+        <!-- Official Recommendation Output Hero Card -->
+        <div class="glass-card recommendation-card" id="rec-card-container">
+          <div class="card-top highlight-top">
+            <div class="card-title-group">
+              <span class="card-icon">🎯</span>
+              <h3>Official Recommendation Contract</h3>
             </div>
-            <button id="btn-fetch-rec" class="btn btn-primary btn-sm">⚡ Get Recommendation</button>
+            <span id="rec-confidence-pill" class="badge-confidence">Confidence: N/A</span>
           </div>
 
-          <div id="recommendation-loading" class="loading-state hidden">
-            <div class="spinner"></div>
+          <!-- Loading Spinner -->
+          <div id="rec-spinner" class="rec-loading-overlay hidden" aria-live="polite">
+            <div class="ring-spinner"></div>
             <p>Evaluating graph traversals & multi-objective ranking...</p>
           </div>
 
-          <div id="recommendation-body" class="rec-body">
-            <div class="contract-field">
-              <span class="field-label">CURRENT REEL</span>
-              <div id="field-current-reel" class="field-value mono-text">-</div>
+          <!-- Official Contract 8 Fields -->
+          <div class="contract-grid" id="contract-fields-body">
+            <div class="contract-row">
+              <span class="contract-label">CURRENT REEL</span>
+              <div id="out-current-reel" class="contract-value mono-val">-</div>
             </div>
 
-            <div class="contract-field">
-              <span class="field-label">INTEREST DETECTED</span>
-              <div id="field-interest-detected" class="field-value font-bold">-</div>
+            <div class="contract-row">
+              <span class="contract-label">INTEREST DETECTED</span>
+              <div id="out-interest-detected" class="contract-value font-bold text-accent">-</div>
             </div>
 
-            <div class="contract-field">
-              <span class="field-label">WHY (Contributing Evidence)</span>
-              <div id="field-why" class="field-value text-sm">-</div>
+            <div class="contract-row">
+              <span class="contract-label">WHY (Contributing Evidence)</span>
+              <div id="out-why" class="contract-value text-sm">-</div>
             </div>
 
-            <div class="recommended-hero-box">
-              <div class="rec-tag-row">
-                <span id="field-category" class="tag tag-category">CATEGORY: -</span>
-                <span id="field-difficulty" class="tag tag-difficulty">DIFFICULTY: -</span>
+            <!-- Recommended Reel Hero Spotlight -->
+            <div class="rec-hero-container">
+              <div class="rec-hero-tags">
+                <span id="out-category" class="chip chip-cat">CATEGORY: -</span>
+                <span id="out-difficulty" class="chip chip-diff">DIFFICULTY: -</span>
               </div>
-              <h4 id="field-recommended-reel" class="hero-title">No Recommendation Generated</h4>
-              <p id="field-why-this-rec" class="hero-explanation">-</p>
+              <h4 id="out-recommended-reel" class="rec-hero-title">No Recommendation Generated</h4>
+              <p id="out-why-this-rec" class="rec-hero-rationale">Watch reels and click "Get Recommendation" or press "C" for the canonical demo.</p>
             </div>
           </div>
         </div>
 
-        <!-- Explainability & Graph Traversal Drawer -->
-        <div class="card explainability-card">
-          <div class="card-header">
-            <h3>🔬 Graph Traversal & Integrity Filter Inspector</h3>
+        <!-- Session History Drawer -->
+        <div class="glass-card history-card">
+          <div class="card-top">
+            <div class="card-title-group">
+              <span class="card-icon">📜</span>
+              <h3>Watched History (<span id="history-counter">0</span>)</h3>
+            </div>
           </div>
-          <div class="explainability-content">
-            <div class="traversal-box">
-              <span class="field-label">SKILL GRAPH TRAVERSAL PATH:</span>
-              <div id="traversal-nodes" class="traversal-nodes">
-                <span class="node-pill">Idle</span>
-              </div>
-            </div>
-
-            <!-- Hype Gate Rejection Demo Notice -->
-            <div class="gate-inspector-box">
-              <div class="gate-status-row">
-                <span class="gate-badge-reject">🛡️ HYPE GATE ACTIVE</span>
-                <span class="text-xs text-muted">Automated 3-Tier Filter</span>
-              </div>
-              <p class="gate-desc">
-                Low-substance clickbait ("10 Secret AI Tools That Will Replace Programmers") is strictly filtered with zero chance of reaching user feeds.
-              </p>
-            </div>
+          <div id="history-scroll-list" class="history-items-list" role="log">
+            <p class="empty-hint">Interacted reels will appear here with dwell times.</p>
           </div>
         </div>
       </section>
     </main>
+
+    <!-- Slide-Up "Why this Reel?" Explainability Bottom Sheet -->
+    <div class="explainability-backdrop hidden" id="explain-backdrop" role="dialog" aria-modal="true" aria-labelledby="explain-sheet-title">
+      <div class="explain-sheet" id="explain-sheet">
+        <div class="sheet-handle" id="sheet-close-handle" aria-label="Close explainability drawer"></div>
+        <div class="sheet-header">
+          <div class="card-title-group">
+            <span class="card-icon">💡</span>
+            <h3 id="explain-sheet-title">Why this Recommendation? (Graph Explainability)</h3>
+          </div>
+          <button id="btn-close-sheet" class="btn-close" aria-label="Close sheet">✕</button>
+        </div>
+
+        <div class="sheet-content">
+          <!-- Graph Path -->
+          <div class="sheet-block">
+            <span class="meta-label">SKILL GRAPH REASONING TRAVERSAL:</span>
+            <div id="explain-graph-path" class="graph-path-pills">
+              <span class="node-badge">1. software_engineer</span>
+              <span class="path-arrow">→</span>
+              <span class="node-badge">2. distributed_systems</span>
+            </div>
+          </div>
+
+          <!-- Contributing Evidence -->
+          <div class="sheet-block">
+            <span class="meta-label">CONTRIBUTING WATCHED REELS & DWELL:</span>
+            <div id="explain-evidence-list" class="evidence-list-cards"></div>
+          </div>
+
+          <!-- Hype Gate Inspector -->
+          <div class="gate-notice-box">
+            <div class="gate-badge-row">
+              <span class="gate-tag-reject">🛡️ AUTOMATED HYPE INTEGRITY GATE ACTIVE</span>
+              <span class="gate-sub">3-Tier Verification</span>
+            </div>
+            <p class="gate-detail">
+              Sensationalist clickbait ("10 AI Tools That Guarantee $200k Job With ZERO Coding") is automatically intercepted and rejected with <code>low_substance_high_hype</code> failure code.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 
   <script src="/static/app.js"></script>
