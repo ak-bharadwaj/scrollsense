@@ -208,7 +208,11 @@ async function fetchRecommendation() {
   }
 }
 
+let lastRecommendationData = null;
+const btnPlayRec = document.getElementById("btn-play-rec");
+
 function renderRecommendation(data) {
+  lastRecommendationData = data;
   const contract = data.official_contract;
   const explain = data.explainability;
 
@@ -223,6 +227,22 @@ function renderRecommendation(data) {
 
   recConfidencePill.textContent = `Confidence: ${contract.confidence}`;
   recConfidencePill.className = `badge-confidence ${contract.confidence === 'High' ? 'conf-high' : 'conf-medium'}`;
+
+  // Make Play Recommendation button active
+  if (btnPlayRec && data.recommended_reel) {
+    btnPlayRec.classList.remove("hidden");
+    btnPlayRec.onclick = () => {
+      const existsIndex = feedReels.findIndex(r => r.reel_id === data.recommended_reel.reel_id);
+      if (existsIndex >= 0) {
+        currentReelIndex = existsIndex;
+      } else {
+        feedReels.unshift(data.recommended_reel);
+        currentReelIndex = 0;
+      }
+      renderCurrentReel();
+      recordInteraction(data.recommended_reel, 20.0);
+    };
+  }
 
   // 2. Inferred Latent Identity State
   if (explain.inferred_identities && Object.keys(explain.inferred_identities).length > 0) {
@@ -323,6 +343,8 @@ function resetSession() {
   outCategory.textContent = "CATEGORY: -";
   outDifficulty.textContent = "DIFFICULTY: -";
   outWhyThisRec.textContent = 'Watch reels and click "Get Recommendation" or press "C" for the canonical demo.';
+  if (btnPlayRec) btnPlayRec.classList.add("hidden");
+  lastRecommendationData = null;
   recConfidencePill.textContent = "Confidence: N/A";
   recConfidencePill.className = "badge-confidence";
   closeExplainSheet();
