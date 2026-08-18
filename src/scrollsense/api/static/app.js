@@ -300,6 +300,31 @@ function attachEventListeners() {
   btnFetchRec.addEventListener("click", fetchRecommendation);
   btnCanonicalDemo.addEventListener("click", runCanonicalDemo);
   btnReset.addEventListener("click", resetSession);
+
+  // Global Keyboard Shortcuts
+  document.addEventListener("keydown", (e) => {
+    if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA") return;
+
+    if (e.code === "Space") {
+      e.preventDefault();
+      btnInteract.click();
+    } else if (e.key === "ArrowDown" || e.key.toLowerCase() === "j") {
+      e.preventDefault();
+      if (!btnNext.disabled) btnNext.click();
+    } else if (e.key === "ArrowUp" || e.key.toLowerCase() === "k") {
+      e.preventDefault();
+      if (!btnPrev.disabled) btnPrev.click();
+    } else if (e.key === "Enter" || e.key.toLowerCase() === "r") {
+      e.preventDefault();
+      btnFetchRec.click();
+    } else if (e.key.toLowerCase() === "c") {
+      e.preventDefault();
+      btnCanonicalDemo.click();
+    } else if (e.key === "Escape") {
+      e.preventDefault();
+      btnReset.click();
+    }
+  });
 }
 
 document.addEventListener("DOMContentLoaded", init);
