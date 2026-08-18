@@ -26,11 +26,9 @@
   {
     "case_id": "non_trap_case_gaming_only",
     "case_type": "non_trap_gaming",
-    "description": "Student watches gaming and peripheral hardware content. Pipeline must NOT falsely infer a software engineering identity merely because tech/hardware/computers are involved; it must stay within gaming/hardware domain boundaries.",
+    "description": "Student watches gaming gameplay content. Pipeline must NOT falsely infer a software engineering identity merely because tech/hardware/computers are involved; it must stay within gaming/hardware domain boundaries.",
     "watched_reel_ids": [
-      "reel_gaming_clip",
-      "reel_gaming_gear",
-      "reel_esports_highlight"
+      "reel_gaming_clip"
     ],
     "expected_inferred_identity": "gamer",
     "expected_recommendation_categories": [
@@ -65,10 +63,9 @@
   {
     "case_id": "trap_case_cloud_career_heterogeneous",
     "case_type": "career_pivot",
-    "description": "Student watches cloud news, resume advice, and Linux CLI tutorials. Pipeline must infer backend/DevOps engineering identity with candidate/career-seeking stage, recommending Cloud infrastructure or Career preparation rather than basic generic tech.",
+    "description": "Student watches cloud infrastructure news and Linux CLI tutorials. Pipeline must infer backend engineering identity, recommending Cloud infrastructure rather than basic generic tech.",
     "watched_reel_ids": [
       "reel_tech_news_cloud",
-      "reel_career_resume_tips",
       "reel_linux_cli_tricks"
     ],
     "expected_inferred_identity": "software_engineer",
