@@ -7,7 +7,7 @@
       "source_platform": "mixkit",
       "license": "Mixkit Stock Video Free License (Commercial and non-commercial use permitted)",
       "creator": "Mixkit / Mikael Blomkvist",
-      "download_date": "2026-08-18T07:26:17.568441+00:00",
+      "download_date": "2026-08-18T07:45:48.993317+00:00",
       "title": "Programmer working with codes on a computer",
       "transcript": "Visual stock footage of a software developer editing source code and debugging functions on a computer monitor in a dark office setting.",
       "extraction_method": "visual_inspection",
@@ -24,7 +24,7 @@
       "human_qc_record": {
         "reviewer": "lead_curator_qc",
         "decision": "accepted",
-        "reviewed_at": "2026-08-18T07:26:17.572388+00:00",
+        "reviewed_at": "2026-08-18T07:45:48.996311+00:00",
         "notes": "Verified authentic stock visual footage and truthful title. License: Mixkit Stock Video Free License (Commercial and non-commercial use permitted)"
       },
       "extracted_signals": {
@@ -32,7 +32,7 @@
         "signal_version": "1.0.0",
         "ontology_version": "1.0.0",
         "model_version": "rule-based-baseline-v1",
-        "generated_at": "2026-08-18T07:26:17.563738Z",
+        "generated_at": "2026-08-18T07:45:48.989566Z",
         "topic": "coding",
         "format": "tutorial",
         "tone": "instructional",
@@ -47,7 +47,7 @@
         ]
       },
       "provenance": {
-        "ingested_at": "2026-08-18T07:26:17.567798+00:00",
+        "ingested_at": "2026-08-18T07:45:48.992755+00:00",
         "source_platform": "mixkit",
         "extraction_method": "visual_inspection",
         "gate_passed": true,
@@ -67,7 +67,7 @@
       "source_platform": "mixkit",
       "license": "Mixkit Stock Video Free License (Commercial and non-commercial use permitted)",
       "creator": "Mixkit / Mikael Blomkvist",
-      "download_date": "2026-08-18T07:26:17.581215+00:00",
+      "download_date": "2026-08-18T07:45:49.004306+00:00",
       "title": "Software developer working on a computer",
       "transcript": "Visual stock footage of a software developer at a modern workstation typing on keyboard and inspecting software application code.",
       "extraction_method": "visual_inspection",
@@ -84,7 +84,7 @@
       "human_qc_record": {
         "reviewer": "lead_curator_qc",
         "decision": "accepted",
-        "reviewed_at": "2026-08-18T07:26:17.584909+00:00",
+        "reviewed_at": "2026-08-18T07:45:49.007913+00:00",
         "notes": "Verified authentic stock visual footage and truthful title. License: Mixkit Stock Video Free License (Commercial and non-commercial use permitted)"
       },
       "extracted_signals": {
@@ -92,7 +92,7 @@
         "signal_version": "1.0.0",
         "ontology_version": "1.0.0",
         "model_version": "rule-based-baseline-v1",
-        "generated_at": "2026-08-18T07:26:17.578819Z",
+        "generated_at": "2026-08-18T07:45:49.002173Z",
         "topic": "coding",
         "format": "tutorial",
         "tone": "instructional",
@@ -107,7 +107,7 @@
         ]
       },
       "provenance": {
-        "ingested_at": "2026-08-18T07:26:17.580758+00:00",
+        "ingested_at": "2026-08-18T07:45:49.003942+00:00",
         "source_platform": "mixkit",
         "extraction_method": "visual_inspection",
         "gate_passed": true,
@@ -127,7 +127,7 @@
       "source_platform": "mixkit",
       "license": "Mixkit Stock Video Free License (Commercial and non-commercial use permitted)",
       "creator": "Mixkit / Mikael Blomkvist",
-      "download_date": "2026-08-18T07:26:17.598127+00:00",
+      "download_date": "2026-08-18T07:45:49.022664+00:00",
       "title": "A developer typing on a laptop, top view",
       "transcript": "Top view visual stock footage of hands typing code on a laptop keyboard placed on a wooden desk.",
       "extraction_method": "visual_inspection",
@@ -144,7 +144,7 @@
       "human_qc_record": {
         "reviewer": "lead_curator_qc",
         "decision": "accepted",
-        "reviewed_at": "2026-08-18T07:26:17.601297+00:00",
+        "reviewed_at": "2026-08-18T07:45:49.025822+00:00",
         "notes": "Verified authentic stock visual footage and truthful title. License: Mixkit Stock Video Free License (Commercial and non-commercial use permitted)"
       },
       "extracted_signals": {
@@ -152,7 +152,7 @@
         "signal_version": "1.0.0",
         "ontology_version": "1.0.0",
         "model_version": "rule-based-baseline-v1",
-        "generated_at": "2026-08-18T07:26:17.594253Z",
+        "generated_at": "2026-08-18T07:45:49.017908Z",
         "topic": "hardware",
         "format": "tutorial",
         "tone": "instructional",
@@ -167,7 +167,7 @@
         ]
       },
       "provenance": {
-        "ingested_at": "2026-08-18T07:26:17.597647+00:00",
+        "ingested_at": "2026-08-18T07:45:49.022124+00:00",
         "source_platform": "mixkit",
         "extraction_method": "visual_inspection",
         "gate_passed": true,
@@ -187,7 +187,7 @@
       "source_platform": "mixkit",
       "license": "Mixkit Stock Video Free License (Commercial and non-commercial use permitted)",
       "creator": "Mixkit / Mikael Blomkvist",
-      "download_date": "2026-08-18T07:26:17.611018+00:00",
+      "download_date": "2026-08-18T07:45:49.037307+00:00",
       "title": "Hands of a programmer working on his computer",
       "transcript": "Close-up visual stock footage of hands typing on a backlit laptop keyboard in a dark room.",
       "extraction_method": "visual_inspection",
@@ -204,7 +204,7 @@
       "human_qc_record": {
         "reviewer": "lead_curator_qc",
         "decision": "accepted",
-        "reviewed_at": "2026-08-18T07:26:17.613745+00:00",
+        "reviewed_at": "2026-08-18T07:45:49.039654+00:00",
         "notes": "Verified authentic stock visual footage and truthful title. License: Mixkit Stock Video Free License (Commercial and non-commercial use permitted)"
       },
       "extracted_signals": {
@@ -212,7 +212,7 @@
         "signal_version": "1.0.0",
         "ontology_version": "1.0.0",
         "model_version": "rule-based-baseline-v1",
-        "generated_at": "2026-08-18T07:26:17.607895Z",
+        "generated_at": "2026-08-18T07:45:49.034812Z",
         "topic": "hardware",
         "format": "tutorial",
         "tone": "instructional",
@@ -227,7 +227,7 @@
         ]
       },
       "provenance": {
-        "ingested_at": "2026-08-18T07:26:17.610604+00:00",
+        "ingested_at": "2026-08-18T07:45:49.036947+00:00",
         "source_platform": "mixkit",
         "extraction_method": "visual_inspection",
         "gate_passed": true,
@@ -247,14 +247,14 @@
       "source_platform": "mixkit",
       "license": "Mixkit Stock Video Free License (Commercial and non-commercial use permitted)",
       "creator": "Mixkit / Tima Miroshnichenko",
-      "download_date": "2026-08-18T07:26:17.627936+00:00",
+      "download_date": "2026-08-18T07:45:49.055283+00:00",
       "title": "Man playing an online video game on his computer",
       "transcript": "Visual stock footage of an esports gamer wearing a gaming headset playing an online multiplayer action video game in RGB lighting.",
       "extraction_method": "visual_inspection",
       "category": "gaming",
       "concepts": [
-        "gamer",
-        "gaming"
+        "gaming",
+        "gamer"
       ],
       "difficulty": "Beginner",
       "quality": 0.425,
@@ -265,7 +265,7 @@
       "human_qc_record": {
         "reviewer": "lead_curator_qc",
         "decision": "accepted",
-        "reviewed_at": "2026-08-18T07:26:17.632162+00:00",
+        "reviewed_at": "2026-08-18T07:45:49.058844+00:00",
         "notes": "Verified authentic stock visual footage and truthful title. License: Mixkit Stock Video Free License (Commercial and non-commercial use permitted)"
       },
       "extracted_signals": {
@@ -273,7 +273,7 @@
         "signal_version": "1.0.0",
         "ontology_version": "1.0.0",
         "model_version": "rule-based-baseline-v1",
-        "generated_at": "2026-08-18T07:26:17.624608Z",
+        "generated_at": "2026-08-18T07:45:49.051280Z",
         "topic": "gaming",
         "format": "tutorial",
         "tone": "instructional",
@@ -293,7 +293,7 @@
         ]
       },
       "provenance": {
-        "ingested_at": "2026-08-18T07:26:17.627487+00:00",
+        "ingested_at": "2026-08-18T07:45:49.054571+00:00",
         "source_platform": "mixkit",
         "extraction_method": "visual_inspection",
         "gate_passed": true,
@@ -313,7 +313,7 @@
       "source_platform": "mixkit",
       "license": "Mixkit Stock Video Free License (Commercial and non-commercial use permitted)",
       "creator": "Mixkit / AI Studio",
-      "download_date": "2026-08-18T07:26:17.642395+00:00",
+      "download_date": "2026-08-18T07:45:49.067599+00:00",
       "title": "Futuristic robot face with artificial intelligence",
       "transcript": "Visual 3D animation stock footage of a futuristic cybernetic robot face with glowing network nodes and artificial intelligence patterns.",
       "extraction_method": "visual_inspection",
@@ -330,7 +330,7 @@
       "human_qc_record": {
         "reviewer": "lead_curator_qc",
         "decision": "accepted",
-        "reviewed_at": "2026-08-18T07:26:17.647207+00:00",
+        "reviewed_at": "2026-08-18T07:45:49.072107+00:00",
         "notes": "Verified authentic stock visual footage and truthful title. License: Mixkit Stock Video Free License (Commercial and non-commercial use permitted)"
       },
       "extracted_signals": {
@@ -338,7 +338,7 @@
         "signal_version": "1.0.0",
         "ontology_version": "1.0.0",
         "model_version": "rule-based-baseline-v1",
-        "generated_at": "2026-08-18T07:26:17.639952Z",
+        "generated_at": "2026-08-18T07:45:49.065362Z",
         "topic": "ai",
         "format": "tutorial",
         "tone": "instructional",
@@ -353,7 +353,7 @@
         ]
       },
       "provenance": {
-        "ingested_at": "2026-08-18T07:26:17.642026+00:00",
+        "ingested_at": "2026-08-18T07:45:49.067178+00:00",
         "source_platform": "mixkit",
         "extraction_method": "visual_inspection",
         "gate_passed": true,
@@ -373,7 +373,7 @@
       "source_platform": "mixkit",
       "license": "Mixkit Stock Video Free License (Commercial and non-commercial use permitted)",
       "creator": "Mixkit / Motion Studio",
-      "download_date": "2026-08-18T07:26:17.660010+00:00",
+      "download_date": "2026-08-18T07:45:49.085055+00:00",
       "title": "Matrix style falling green binary code",
       "transcript": "Motion graphics visual stock footage of falling green digital matrix binary code on a computer screen.",
       "extraction_method": "visual_inspection",
@@ -390,7 +390,7 @@
       "human_qc_record": {
         "reviewer": "lead_curator_qc",
         "decision": "accepted",
-        "reviewed_at": "2026-08-18T07:26:17.663011+00:00",
+        "reviewed_at": "2026-08-18T07:45:49.087822+00:00",
         "notes": "Verified authentic stock visual footage and truthful title. License: Mixkit Stock Video Free License (Commercial and non-commercial use permitted)"
       },
       "extracted_signals": {
@@ -398,7 +398,7 @@
         "signal_version": "1.0.0",
         "ontology_version": "1.0.0",
         "model_version": "rule-based-baseline-v1",
-        "generated_at": "2026-08-18T07:26:17.656818Z",
+        "generated_at": "2026-08-18T07:45:49.081150Z",
         "topic": "tech",
         "format": "tutorial",
         "tone": "instructional",
@@ -413,7 +413,7 @@
         ]
       },
       "provenance": {
-        "ingested_at": "2026-08-18T07:26:17.659587+00:00",
+        "ingested_at": "2026-08-18T07:45:49.084650+00:00",
         "source_platform": "mixkit",
         "extraction_method": "visual_inspection",
         "gate_passed": true,
@@ -433,13 +433,13 @@
       "source_platform": "mixkit",
       "license": "Mixkit Stock Video Free License (Commercial and non-commercial use permitted)",
       "creator": "Mixkit / Infra Studio",
-      "download_date": "2026-08-18T07:26:17.675602+00:00",
+      "download_date": "2026-08-18T07:45:49.099983+00:00",
       "title": "Server room with blinking lights on data servers",
       "transcript": "Visual stock footage of rack-mounted server hardware and blinking network LED indicators in a data center server room.",
       "extraction_method": "visual_inspection",
-      "category": "tech",
+      "category": "tech_news",
       "concepts": [
-        "tech"
+        "tech_news"
       ],
       "difficulty": "Beginner",
       "quality": 0.425,
@@ -450,7 +450,7 @@
       "human_qc_record": {
         "reviewer": "lead_curator_qc",
         "decision": "accepted",
-        "reviewed_at": "2026-08-18T07:26:17.679241+00:00",
+        "reviewed_at": "2026-08-18T07:45:49.103060+00:00",
         "notes": "Verified authentic stock visual footage and truthful title. License: Mixkit Stock Video Free License (Commercial and non-commercial use permitted)"
       },
       "extracted_signals": {
@@ -458,8 +458,8 @@
         "signal_version": "1.0.0",
         "ontology_version": "1.0.0",
         "model_version": "rule-based-baseline-v1",
-        "generated_at": "2026-08-18T07:26:17.671640Z",
-        "topic": "tech",
+        "generated_at": "2026-08-18T07:45:49.097252Z",
+        "topic": "tech_news",
         "format": "tutorial",
         "tone": "instructional",
         "depth": "Beginner",
@@ -467,13 +467,13 @@
         "interest_evidence": [
           {
             "evidence_type": "domain_signal",
-            "value": "tech",
+            "value": "tech_news",
             "weight": 0.5
           }
         ]
       },
       "provenance": {
-        "ingested_at": "2026-08-18T07:26:17.675251+00:00",
+        "ingested_at": "2026-08-18T07:45:49.099679+00:00",
         "source_platform": "mixkit",
         "extraction_method": "visual_inspection",
         "gate_passed": true,
@@ -485,6 +485,186 @@
         "file_size_bytes": 3383909
       },
       "file_sha256": "616412d9d7faa583d95b50c5335ef35c0e10b941cb634538e1a7dbbd0546ba24"
+    },
+    "reel_mixkit___mik_young_woman_drinking_cof_c24362c2": {
+      "reel_id": "reel_mixkit___mik_young_woman_drinking_cof_c24362c2",
+      "asset_path": "C:\\Users\\dorni\\OneDrive\\Desktop\\hack\\data\\content\\accepted\\reel_mixkit___mik_young_woman_drinking_cof_c24362c2.mp4",
+      "source_url": "https://mixkit.co/free-stock-video/young-woman-drinking-coffee-and-relaxing-4287/",
+      "source_platform": "mixkit",
+      "license": "Mixkit Stock Video Free License (Commercial and non-commercial use permitted)",
+      "creator": "Mixkit / Mikael Blomkvist",
+      "download_date": "2026-08-18T07:45:49.113029+00:00",
+      "title": "Young woman drinking coffee and relaxing",
+      "transcript": "Visual stock footage of a woman relaxing with a cup of coffee while enjoying a break in a cozy modern cafe setting.",
+      "extraction_method": "visual_inspection",
+      "category": "entertainment",
+      "concepts": [
+        "entertainment"
+      ],
+      "difficulty": "Beginner",
+      "quality": 0.425,
+      "hype": 0.16,
+      "safety": true,
+      "validation_status": "accepted",
+      "human_qc_status": "accepted",
+      "human_qc_record": {
+        "reviewer": "lead_curator_qc",
+        "decision": "accepted",
+        "reviewed_at": "2026-08-18T07:45:49.116035+00:00",
+        "notes": "Verified authentic stock visual footage and truthful title. License: Mixkit Stock Video Free License (Commercial and non-commercial use permitted)"
+      },
+      "extracted_signals": {
+        "reel_id": "reel_mixkit___mik_young_woman_drinking_cof_c24362c2",
+        "signal_version": "1.0.0",
+        "ontology_version": "1.0.0",
+        "model_version": "rule-based-baseline-v1",
+        "generated_at": "2026-08-18T07:45:49.110471Z",
+        "topic": "entertainment",
+        "format": "tutorial",
+        "tone": "instructional",
+        "depth": "Beginner",
+        "concept_tags": [],
+        "interest_evidence": [
+          {
+            "evidence_type": "domain_signal",
+            "value": "entertainment",
+            "weight": 0.5
+          }
+        ]
+      },
+      "provenance": {
+        "ingested_at": "2026-08-18T07:45:49.112640+00:00",
+        "source_platform": "mixkit",
+        "extraction_method": "visual_inspection",
+        "gate_passed": true,
+        "rejection_reason": null,
+        "quality_substance_score": 0.425,
+        "hype_score": 0.16,
+        "safety_passed": true,
+        "original_filename": "reel_mixkit_entertainment_coffee_4287.mp4",
+        "file_size_bytes": 1600573
+      },
+      "file_sha256": "c24362c2adb0dbcee7518b820959b2c1532a064d98e82b613a963647dc8c711e"
+    },
+    "reel_mixkit___tim_people_working_in_a_mode_1832efc2": {
+      "reel_id": "reel_mixkit___tim_people_working_in_a_mode_1832efc2",
+      "asset_path": "C:\\Users\\dorni\\OneDrive\\Desktop\\hack\\data\\content\\accepted\\reel_mixkit___tim_people_working_in_a_mode_1832efc2.mp4",
+      "source_url": "https://mixkit.co/free-stock-video/people-working-in-a-modern-office-43528/",
+      "source_platform": "mixkit",
+      "license": "Mixkit Stock Video Free License (Commercial and non-commercial use permitted)",
+      "creator": "Mixkit / Tima Miroshnichenko",
+      "download_date": "2026-08-18T07:45:49.131314+00:00",
+      "title": "People working in a modern office",
+      "transcript": "Visual stock footage of software professionals collaborating, discussing deliverables, and working on computers in a modern tech office.",
+      "extraction_method": "visual_inspection",
+      "category": "career",
+      "concepts": [
+        "career"
+      ],
+      "difficulty": "Beginner",
+      "quality": 0.425,
+      "hype": 0.16,
+      "safety": true,
+      "validation_status": "accepted",
+      "human_qc_status": "accepted",
+      "human_qc_record": {
+        "reviewer": "lead_curator_qc",
+        "decision": "accepted",
+        "reviewed_at": "2026-08-18T07:45:49.135579+00:00",
+        "notes": "Verified authentic stock visual footage and truthful title. License: Mixkit Stock Video Free License (Commercial and non-commercial use permitted)"
+      },
+      "extracted_signals": {
+        "reel_id": "reel_mixkit___tim_people_working_in_a_mode_1832efc2",
+        "signal_version": "1.0.0",
+        "ontology_version": "1.0.0",
+        "model_version": "rule-based-baseline-v1",
+        "generated_at": "2026-08-18T07:45:49.127779Z",
+        "topic": "career",
+        "format": "tutorial",
+        "tone": "instructional",
+        "depth": "Beginner",
+        "concept_tags": [],
+        "interest_evidence": [
+          {
+            "evidence_type": "domain_signal",
+            "value": "career",
+            "weight": 0.5
+          }
+        ]
+      },
+      "provenance": {
+        "ingested_at": "2026-08-18T07:45:49.130562+00:00",
+        "source_platform": "mixkit",
+        "extraction_method": "visual_inspection",
+        "gate_passed": true,
+        "rejection_reason": null,
+        "quality_substance_score": 0.425,
+        "hype_score": 0.16,
+        "safety_passed": true,
+        "original_filename": "reel_mixkit_career_office_43528.mp4",
+        "file_size_bytes": 5107466
+      },
+      "file_sha256": "1832efc21793eab6c6c74fd47ac9fa654afa624ffe0075f4285f707c7d3b4543"
+    },
+    "reel_mixkit___mik_a_man_laughing_while_loo_7114b6f1": {
+      "reel_id": "reel_mixkit___mik_a_man_laughing_while_loo_7114b6f1",
+      "asset_path": "C:\\Users\\dorni\\OneDrive\\Desktop\\hack\\data\\content\\accepted\\reel_mixkit___mik_a_man_laughing_while_loo_7114b6f1.mp4",
+      "source_url": "https://mixkit.co/free-stock-video/a-man-laughing-while-looking-at-his-smartphone-41655/",
+      "source_platform": "mixkit",
+      "license": "Mixkit Stock Video Free License (Commercial and non-commercial use permitted)",
+      "creator": "Mixkit / Mikael Blomkvist",
+      "download_date": "2026-08-18T07:45:49.145341+00:00",
+      "title": "A man laughing while looking at his smartphone",
+      "transcript": "Visual stock footage of a developer laughing amusedly at funny memes and viral reaction posts on his smartphone screen.",
+      "extraction_method": "visual_inspection",
+      "category": "programming_memes",
+      "concepts": [
+        "programming_memes"
+      ],
+      "difficulty": "Beginner",
+      "quality": 0.425,
+      "hype": 0.16,
+      "safety": true,
+      "validation_status": "accepted",
+      "human_qc_status": "accepted",
+      "human_qc_record": {
+        "reviewer": "lead_curator_qc",
+        "decision": "accepted",
+        "reviewed_at": "2026-08-18T07:45:49.149774+00:00",
+        "notes": "Verified authentic stock visual footage and truthful title. License: Mixkit Stock Video Free License (Commercial and non-commercial use permitted)"
+      },
+      "extracted_signals": {
+        "reel_id": "reel_mixkit___mik_a_man_laughing_while_loo_7114b6f1",
+        "signal_version": "1.0.0",
+        "ontology_version": "1.0.0",
+        "model_version": "rule-based-baseline-v1",
+        "generated_at": "2026-08-18T07:45:49.142649Z",
+        "topic": "programming_memes",
+        "format": "tutorial",
+        "tone": "instructional",
+        "depth": "Beginner",
+        "concept_tags": [],
+        "interest_evidence": [
+          {
+            "evidence_type": "domain_signal",
+            "value": "programming_memes",
+            "weight": 0.5
+          }
+        ]
+      },
+      "provenance": {
+        "ingested_at": "2026-08-18T07:45:49.144604+00:00",
+        "source_platform": "mixkit",
+        "extraction_method": "visual_inspection",
+        "gate_passed": true,
+        "rejection_reason": null,
+        "quality_substance_score": 0.425,
+        "hype_score": 0.16,
+        "safety_passed": true,
+        "original_filename": "reel_mixkit_meme_laughing_41655.mp4",
+        "file_size_bytes": 2523476
+      },
+      "file_sha256": "7114b6f1594fd637572205b8b3be86eb36180af04e752e62aff433bd5ffc89a3"
     }
   },
   "by_sha256": {
@@ -495,7 +675,10 @@
     "2be5b3ed014c878e4e4e9cff80fd8900c391d949507500c6c625aa20a23e3f22": "reel_mixkit___tim_man_playing_an_online_vi_2be5b3ed",
     "6c6f73541d15a88e49a45cac020910481fc73a0f815b9a2f1032cace523e4fac": "reel_mixkit___ai_futuristic_robot_face_wi_6c6f7354",
     "2c88702add0ccba751afb1659670ea326940198d907e17eb9f5914315fa72e40": "reel_mixkit___mot_matrix_style_falling_gre_2c88702a",
-    "616412d9d7faa583d95b50c5335ef35c0e10b941cb634538e1a7dbbd0546ba24": "reel_mixkit___inf_server_room_with_blinkin_616412d9"
+    "616412d9d7faa583d95b50c5335ef35c0e10b941cb634538e1a7dbbd0546ba24": "reel_mixkit___inf_server_room_with_blinkin_616412d9",
+    "c24362c2adb0dbcee7518b820959b2c1532a064d98e82b613a963647dc8c711e": "reel_mixkit___mik_young_woman_drinking_cof_c24362c2",
+    "1832efc21793eab6c6c74fd47ac9fa654afa624ffe0075f4285f707c7d3b4543": "reel_mixkit___tim_people_working_in_a_mode_1832efc2",
+    "7114b6f1594fd637572205b8b3be86eb36180af04e752e62aff433bd5ffc89a3": "reel_mixkit___mik_a_man_laughing_while_loo_7114b6f1"
   },
-  "last_updated": "2026-08-18T07:26:17.679715+00:00"
+  "last_updated": "2026-08-18T07:45:49.150052+00:00"
 }
