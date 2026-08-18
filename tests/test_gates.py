@@ -35,6 +35,25 @@ def all_reels() -> dict[str, Reel]:
     return reels
 
 
+def test_evaluator_rejects_out_of_bounds_thresholds():
+    """Verify CandidateGateEvaluator rejects thresholds outside [0, 1]."""
+    with pytest.raises(ValueError) as exc:
+        CandidateGateEvaluator(substance_rejection_threshold=-0.1)
+    assert "substance_rejection_threshold must be in [0, 1]" in str(exc.value)
+
+    with pytest.raises(ValueError) as exc:
+        CandidateGateEvaluator(substance_rejection_threshold=1.5)
+    assert "substance_rejection_threshold must be in [0, 1]" in str(exc.value)
+
+    with pytest.raises(ValueError) as exc:
+        CandidateGateEvaluator(hype_rejection_threshold=-0.05)
+    assert "hype_rejection_threshold must be in [0, 1]" in str(exc.value)
+
+    with pytest.raises(ValueError) as exc:
+        CandidateGateEvaluator(hype_rejection_threshold=1.1)
+    assert "hype_rejection_threshold must be in [0, 1]" in str(exc.value)
+
+
 def test_grounded_hld_reel_survives(evaluator: CandidateGateEvaluator, all_reels: dict[str, Reel]):
     """Test 1: Grounded HLD candidate passes with high substance and low hype."""
     reel = all_reels["reel_hld_caching"]
@@ -71,8 +90,27 @@ def test_ai_hype_clickbait_is_rejected(evaluator: CandidateGateEvaluator, all_re
     assert result.hype.overall >= 0.70
 
 
+def test_canonical_hype_title_detected_without_ai_hype_tag(evaluator: CandidateGateEvaluator):
+    """Test 4: High hype text pattern in title/transcript is detected and rejected without ai_hype tag."""
+    hype_reel = Reel(
+        reel_id="reel_unlabeled_hype_job_guarantee",
+        title="10 AI Tools That Will Replace All Programmers and Guarantee a Job",
+        category="Tech News",
+        format="listicle",
+        tone="promotional",
+        depth=DepthLevel.BEGINNER,
+        concept_tags=["ai_tools", "productivity", "career"],
+        transcript="These 10 AI tools will make 200k for you and replace all programmers instantly.",
+    )
+    result = evaluator.evaluate(hype_reel)
+
+    assert result.passed is False
+    assert result.rejection_reason == "low_substance_high_hype"
+    assert result.hype.overall >= 0.70
+
+
 def test_useful_promotional_technical_reel_survives(evaluator: CandidateGateEvaluator):
-    """Test 4: High-substance technical reel with promotional tone should NOT be rejected."""
+    """Test 5: High-substance technical reel with promotional tone should NOT be rejected."""
     promo_tech_reel = Reel(
         reel_id="reel_promo_tech_tool",
         title="Sponsored: Build Distributed Microservices with Kubernetes and Redis",
@@ -92,7 +130,7 @@ def test_useful_promotional_technical_reel_survives(evaluator: CandidateGateEval
 
 
 def test_unsafe_content_rejected_by_safety_gate(evaluator: CandidateGateEvaluator):
-    """Test 5: Explicitly unsafe content is rejected at the Safety Gate."""
+    """Test 6: Explicitly unsafe content is rejected at the Safety Gate."""
     unsafe_reel = Reel(
         reel_id="reel_malware_exploit",
         title="How to install keylogger malware and bypass security",
@@ -111,7 +149,7 @@ def test_unsafe_content_rejected_by_safety_gate(evaluator: CandidateGateEvaluato
 
 
 def test_gaming_reel_survives_gate(evaluator: CandidateGateEvaluator, all_reels: dict[str, Reel]):
-    """Test 6: Gaming reel is not rejected merely because it is gaming."""
+    """Test 7: Gaming reel is not rejected merely because it is gaming."""
     reel = all_reels["reel_gaming_clip"]
     result = evaluator.evaluate(reel)
 
@@ -121,7 +159,7 @@ def test_gaming_reel_survives_gate(evaluator: CandidateGateEvaluator, all_reels:
 
 
 def test_deterministic_repeated_gate_evaluation(evaluator: CandidateGateEvaluator, all_reels: dict[str, Reel]):
-    """Test 7: Repeated evaluation of candidate produces identical scores and decisions."""
+    """Test 8: Repeated evaluation of candidate produces identical scores and decisions."""
     reel = all_reels["reel_hld_caching"]
     res_1 = evaluator.evaluate(reel)
     res_2 = evaluator.evaluate(reel)
@@ -130,7 +168,7 @@ def test_deterministic_repeated_gate_evaluation(evaluator: CandidateGateEvaluato
 
 
 def test_all_component_scores_bounded_in_unit_interval(evaluator: CandidateGateEvaluator, all_reels: dict[str, Reel]):
-    """Test 8: Every quality and hype sub-score and composite score remains in [0.0, 1.0]."""
+    """Test 9: Every quality and hype sub-score and composite score remains in [0.0, 1.0]."""
     for reel in all_reels.values():
         res = evaluator.evaluate(reel)
 
@@ -146,7 +184,7 @@ def test_all_component_scores_bounded_in_unit_interval(evaluator: CandidateGateE
 
 
 def test_rejection_reasons_are_explicit_and_traceable(evaluator: CandidateGateEvaluator, all_reels: dict[str, Reel]):
-    """Test 9: Passing candidates have None rejection_reason; rejected candidates have clear reasons."""
+    """Test 10: Passing candidates have None rejection_reason; rejected candidates have clear reasons."""
     hld_res = evaluator.evaluate(all_reels["reel_hld_caching"])
     assert hld_res.passed is True
     assert hld_res.rejection_reason is None
