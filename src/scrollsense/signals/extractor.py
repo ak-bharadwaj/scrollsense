@@ -1,7 +1,7 @@
 """Semantic ReelSignal extraction interface and deterministic baseline extractor."""
 
 from datetime import datetime, timezone
-from typing import Protocol
+from typing import Protocol, runtime_checkable
 
 from scrollsense.domain.enums import DepthLevel, EvidenceType
 from scrollsense.domain.reels import InterestEvidence, Reel, ReelSignal
@@ -11,6 +11,7 @@ ONTOLOGY_VERSION = "1.0.0"
 MODEL_VERSION = "rule-based-baseline-v1"
 
 
+@runtime_checkable
 class SignalExtractor(Protocol):
     """Protocol for extracting semantic ReelSignals and InterestEvidence from structured Reel metadata."""
 
