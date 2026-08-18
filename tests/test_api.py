@@ -315,3 +315,12 @@ def test_malformed_and_empty_requests(client: TestClient):
 
     res_malformed = client.post("/api/v1/recommend", json={"student_id": "s1"})
     assert res_malformed.status_code == 422
+
+
+def test_root_frontend_endpoint(client: TestClient):
+    """Test 9: GET / serves the interactive frontend HTML page."""
+    response = client.get("/")
+    assert response.status_code == 200
+    assert "ScrollSense" in response.text
+    assert "Vertical Reel Feed" in response.text
+

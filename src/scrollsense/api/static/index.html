@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ScrollSense | Identity-Aware Latent Skill Graph Recommender</title>
+  <link rel="stylesheet" href="/static/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Navigation / Header -->
+    <header class="app-header">
+      <div class="brand">
+        <div class="brand-logo">⚡</div>
+        <div class="brand-text">
+          <h1>ScrollSense</h1>
+          <span class="badge badge-accent">Identity-Aware Recommender</span>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button id="btn-canonical-demo" class="btn btn-outline" title="Simulate watching the 8 canonical reels in sequence">
+          ⚡ Run Canonical SWE Trap Demo
+        </button>
+        <button id="btn-reset" class="btn btn-ghost" title="Reset watched history">
+          🔄 Reset Session
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Workspace -->
+    <main class="main-layout">
+      <!-- Left: Vertical Reel Feed Simulator -->
+      <section class="feed-column" aria-label="Vertical Reel Feed">
+        <div class="section-title-bar">
+          <h2>📱 Vertical Reel Feed</h2>
+          <span id="feed-counter" class="sub-text">Reel 1 of 8</span>
+        </div>
+
+        <div class="reel-player-card" id="reel-player">
+          <div class="video-container">
+            <div class="video-mock" id="video-mock-bg">
+              <div class="video-play-pulse">▶</div>
+              <div class="video-dwell-timer">
+                <span class="timer-dot"></span> Dwell Time: <strong id="dwell-seconds">0.0s</strong>
+              </div>
+            </div>
+            <div class="reel-overlay">
+              <div class="category-difficulty-row">
+                <span id="reel-category" class="tag tag-category">Category</span>
+                <span id="reel-difficulty" class="tag tag-difficulty">Difficulty</span>
+              </div>
+              <h3 id="reel-title" class="reel-title">Reel Title</h3>
+              <p id="reel-creator" class="reel-creator">@creator</p>
+              <div id="reel-concepts" class="concepts-row"></div>
+            </div>
+          </div>
+
+          <div class="feed-controls">
+            <button id="btn-prev-reel" class="btn btn-secondary" disabled>▲ Prev</button>
+            <button id="btn-interact-reel" class="btn btn-primary">✓ Watch Reel (+Dwell)</button>
+            <button id="btn-next-reel" class="btn btn-secondary">▼ Next</button>
+          </div>
+        </div>
+
+        <!-- Session Dwell History List -->
+        <div class="history-card">
+          <div class="card-header">
+            <h3>📜 Interacted Reels (<span id="history-count">0</span>)</h3>
+          </div>
+          <div id="history-list" class="history-list">
+            <p class="empty-hint">Interact with reels in the feed above to build your identity state.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Right: Real-Time Recommendation & Explainability -->
+      <section class="recommendation-column" aria-label="Recommendation & Explainability">
+        <!-- Live Persona Evolution Radar & State -->
+        <div class="card persona-card">
+          <div class="card-header">
+            <h3>🧠 Inferred Latent Identity State</h3>
+            <span id="interest-weight-badge" class="badge badge-info">Weight: 0.00</span>
+          </div>
+          <div class="persona-content">
+            <div class="identity-lead">
+              <span class="label">Top Latent Identity:</span>
+              <strong id="top-identity-display" class="highlight-text">No History Yet</strong>
+            </div>
+            <div id="domains-chips" class="domains-chips"></div>
+          </div>
+        </div>
+
+        <!-- Official Recommendation Output Contract -->
+        <div class="card recommendation-card" id="recommendation-container">
+          <div class="card-header highlight-header">
+            <div class="header-with-badge">
+              <h3>🎯 Official Recommendation Contract</h3>
+              <span id="rec-confidence-badge" class="badge badge-success">Confidence: N/A</span>
+            </div>
+            <button id="btn-fetch-rec" class="btn btn-primary btn-sm">⚡ Get Recommendation</button>
+          </div>
+
+          <div id="recommendation-loading" class="loading-state hidden">
+            <div class="spinner"></div>
+            <p>Evaluating graph traversals & multi-objective ranking...</p>
+          </div>
+
+          <div id="recommendation-body" class="rec-body">
+            <div class="contract-field">
+              <span class="field-label">CURRENT REEL</span>
+              <div id="field-current-reel" class="field-value mono-text">-</div>
+            </div>
+
+            <div class="contract-field">
+              <span class="field-label">INTEREST DETECTED</span>
+              <div id="field-interest-detected" class="field-value font-bold">-</div>
+            </div>
+
+            <div class="contract-field">
+              <span class="field-label">WHY (Contributing Evidence)</span>
+              <div id="field-why" class="field-value text-sm">-</div>
+            </div>
+
+            <div class="recommended-hero-box">
+              <div class="rec-tag-row">
+                <span id="field-category" class="tag tag-category">CATEGORY: -</span>
+                <span id="field-difficulty" class="tag tag-difficulty">DIFFICULTY: -</span>
+              </div>
+              <h4 id="field-recommended-reel" class="hero-title">No Recommendation Generated</h4>
+              <p id="field-why-this-rec" class="hero-explanation">-</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Explainability & Graph Traversal Drawer -->
+        <div class="card explainability-card">
+          <div class="card-header">
+            <h3>🔬 Graph Traversal & Integrity Filter Inspector</h3>
+          </div>
+          <div class="explainability-content">
+            <div class="traversal-box">
+              <span class="field-label">SKILL GRAPH TRAVERSAL PATH:</span>
+              <div id="traversal-nodes" class="traversal-nodes">
+                <span class="node-pill">Idle</span>
+              </div>
+            </div>
+
+            <!-- Hype Gate Rejection Demo Notice -->
+            <div class="gate-inspector-box">
+              <div class="gate-status-row">
+                <span class="gate-badge-reject">🛡️ HYPE GATE ACTIVE</span>
+                <span class="text-xs text-muted">Automated 3-Tier Filter</span>
+              </div>
+              <p class="gate-desc">
+                Low-substance clickbait ("10 Secret AI Tools That Will Replace Programmers") is strictly filtered with zero chance of reaching user feeds.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>

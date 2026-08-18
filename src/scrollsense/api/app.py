@@ -98,6 +98,18 @@ def create_app(
     )
     app.include_router(router)
 
+    # Mount static assets and root frontend page
+    static_dir = Path(__file__).resolve().parent / "static"
+    if static_dir.exists():
+        from fastapi.responses import FileResponse
+        from fastapi.staticfiles import StaticFiles
+
+        app.mount("/static", StaticFiles(directory=str(static_dir)), name="static")
+
+        @app.get("/", include_in_schema=False)
+        async def root_index() -> FileResponse:
+            return FileResponse(static_dir / "index.html")
+
     return app
 
 
