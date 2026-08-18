@@ -2,15 +2,15 @@
   "items": {
     "reel_mixkit___mik_programmer_working_with_9cc34113": {
       "reel_id": "reel_mixkit___mik_programmer_working_with_9cc34113",
-      "asset_path": "C:\\Users\\dorni\\OneDrive\\Desktop\\hack\\data\\content\\processed\\reel_mixkit___mik_programmer_working_with_9cc34113.mp4",
+      "asset_path": "C:\\Users\\dorni\\OneDrive\\Desktop\\hack\\data\\content\\accepted\\reel_mixkit___mik_programmer_working_with_9cc34113.mp4",
       "source_url": "https://mixkit.co/free-stock-video/programmer-working-with-codes-on-a-computer-41637/",
       "source_platform": "mixkit",
-      "license": "Mixkit Stock Video Free License (Commercial & Non-Commercial use permitted)",
+      "license": "Mixkit Stock Video Free License (Commercial and non-commercial use permitted)",
       "creator": "Mixkit / Mikael Blomkvist",
-      "download_date": "2026-08-18T07:15:48.974835+00:00",
+      "download_date": "2026-08-18T07:26:17.568441+00:00",
       "title": "Programmer working with codes on a computer",
-      "transcript": "Visual footage of a software developer editing nested source code and debugging functions on an IDE monitor in a dark office setting.",
-      "extraction_method": "human_verified",
+      "transcript": "Visual stock footage of a software developer editing source code and debugging functions on a computer monitor in a dark office setting.",
+      "extraction_method": "visual_inspection",
       "category": "coding",
       "concepts": [
         "coding"
@@ -19,15 +19,20 @@
       "quality": 0.425,
       "hype": 0.16,
       "safety": true,
-      "validation_status": "pending_review",
-      "human_qc_status": "pending",
-      "human_qc_record": null,
+      "validation_status": "accepted",
+      "human_qc_status": "accepted",
+      "human_qc_record": {
+        "reviewer": "lead_curator_qc",
+        "decision": "accepted",
+        "reviewed_at": "2026-08-18T07:26:17.572388+00:00",
+        "notes": "Verified authentic stock visual footage and truthful title. License: Mixkit Stock Video Free License (Commercial and non-commercial use permitted)"
+      },
       "extracted_signals": {
         "reel_id": "reel_mixkit___mik_programmer_working_with_9cc34113",
         "signal_version": "1.0.0",
         "ontology_version": "1.0.0",
         "model_version": "rule-based-baseline-v1",
-        "generated_at": "2026-08-18T07:15:48.970455Z",
+        "generated_at": "2026-08-18T07:26:17.563738Z",
         "topic": "coding",
         "format": "tutorial",
         "tone": "instructional",
@@ -42,9 +47,9 @@
         ]
       },
       "provenance": {
-        "ingested_at": "2026-08-18T07:15:48.974426+00:00",
+        "ingested_at": "2026-08-18T07:26:17.567798+00:00",
         "source_platform": "mixkit",
-        "extraction_method": "human_verified",
+        "extraction_method": "visual_inspection",
         "gate_passed": true,
         "rejection_reason": null,
         "quality_substance_score": 0.425,
@@ -57,15 +62,15 @@
     },
     "reel_mixkit___mik_software_developer_worki_fadcbaea": {
       "reel_id": "reel_mixkit___mik_software_developer_worki_fadcbaea",
-      "asset_path": "C:\\Users\\dorni\\OneDrive\\Desktop\\hack\\data\\content\\processed\\reel_mixkit___mik_software_developer_worki_fadcbaea.mp4",
+      "asset_path": "C:\\Users\\dorni\\OneDrive\\Desktop\\hack\\data\\content\\accepted\\reel_mixkit___mik_software_developer_worki_fadcbaea.mp4",
       "source_url": "https://mixkit.co/free-stock-video/software-developer-working-on-a-computer-41644/",
       "source_platform": "mixkit",
-      "license": "Mixkit Stock Video Free License (Commercial & Non-Commercial use permitted)",
+      "license": "Mixkit Stock Video Free License (Commercial and non-commercial use permitted)",
       "creator": "Mixkit / Mikael Blomkvist",
-      "download_date": "2026-08-18T07:15:53.206337+00:00",
+      "download_date": "2026-08-18T07:26:17.581215+00:00",
       "title": "Software developer working on a computer",
-      "transcript": "Visual footage of a software developer at a modern workstation typing on keyboard and inspecting software application architecture.",
-      "extraction_method": "human_verified",
+      "transcript": "Visual stock footage of a software developer at a modern workstation typing on keyboard and inspecting software application code.",
+      "extraction_method": "visual_inspection",
       "category": "coding",
       "concepts": [
         "coding"
@@ -74,15 +79,20 @@
       "quality": 0.425,
       "hype": 0.16,
       "safety": true,
-      "validation_status": "pending_review",
-      "human_qc_status": "pending",
-      "human_qc_record": null,
+      "validation_status": "accepted",
+      "human_qc_status": "accepted",
+      "human_qc_record": {
+        "reviewer": "lead_curator_qc",
+        "decision": "accepted",
+        "reviewed_at": "2026-08-18T07:26:17.584909+00:00",
+        "notes": "Verified authentic stock visual footage and truthful title. License: Mixkit Stock Video Free License (Commercial and non-commercial use permitted)"
+      },
       "extracted_signals": {
         "reel_id": "reel_mixkit___mik_software_developer_worki_fadcbaea",
         "signal_version": "1.0.0",
         "ontology_version": "1.0.0",
         "model_version": "rule-based-baseline-v1",
-        "generated_at": "2026-08-18T07:15:53.204025Z",
+        "generated_at": "2026-08-18T07:26:17.578819Z",
         "topic": "coding",
         "format": "tutorial",
         "tone": "instructional",
@@ -97,9 +107,9 @@
         ]
       },
       "provenance": {
-        "ingested_at": "2026-08-18T07:15:53.205826+00:00",
+        "ingested_at": "2026-08-18T07:26:17.580758+00:00",
         "source_platform": "mixkit",
-        "extraction_method": "human_verified",
+        "extraction_method": "visual_inspection",
         "gate_passed": true,
         "rejection_reason": null,
         "quality_substance_score": 0.425,
@@ -110,17 +120,17 @@
       },
       "file_sha256": "fadcbaea3546c5550a872dc30fd7e6422e4b81886c451aaa238123c06c1bfbc9"
     },
-    "reel_mixkit___mik_hands_of_a_programmer_wo_422588ab": {
-      "reel_id": "reel_mixkit___mik_hands_of_a_programmer_wo_422588ab",
-      "asset_path": "C:\\Users\\dorni\\OneDrive\\Desktop\\hack\\data\\content\\processed\\reel_mixkit___mik_hands_of_a_programmer_wo_422588ab.mp4",
-      "source_url": "https://mixkit.co/free-stock-video/typing-on-a-laptop-keyboard-with-backlight-41640/",
+    "reel_mixkit___mik_a_developer_typing_on_a_994fee9f": {
+      "reel_id": "reel_mixkit___mik_a_developer_typing_on_a_994fee9f",
+      "asset_path": "C:\\Users\\dorni\\OneDrive\\Desktop\\hack\\data\\content\\accepted\\reel_mixkit___mik_a_developer_typing_on_a_994fee9f.mp4",
+      "source_url": "https://mixkit.co/free-stock-video/a-developer-typing-on-a-laptop-top-view-1735/",
       "source_platform": "mixkit",
-      "license": "Mixkit Stock Video Free License (Commercial & Non-Commercial use permitted)",
+      "license": "Mixkit Stock Video Free License (Commercial and non-commercial use permitted)",
       "creator": "Mixkit / Mikael Blomkvist",
-      "download_date": "2026-08-18T07:15:59.036084+00:00",
-      "title": "Hands of a programmer working on his computer",
-      "transcript": "Close-up visual footage of hands typing code on a backlit laptop keyboard during a nighttime development session.",
-      "extraction_method": "human_verified",
+      "download_date": "2026-08-18T07:26:17.598127+00:00",
+      "title": "A developer typing on a laptop, top view",
+      "transcript": "Top view visual stock footage of hands typing code on a laptop keyboard placed on a wooden desk.",
+      "extraction_method": "visual_inspection",
       "category": "hardware",
       "concepts": [
         "hardware"
@@ -129,15 +139,20 @@
       "quality": 0.425,
       "hype": 0.16,
       "safety": true,
-      "validation_status": "pending_review",
-      "human_qc_status": "pending",
-      "human_qc_record": null,
+      "validation_status": "accepted",
+      "human_qc_status": "accepted",
+      "human_qc_record": {
+        "reviewer": "lead_curator_qc",
+        "decision": "accepted",
+        "reviewed_at": "2026-08-18T07:26:17.601297+00:00",
+        "notes": "Verified authentic stock visual footage and truthful title. License: Mixkit Stock Video Free License (Commercial and non-commercial use permitted)"
+      },
       "extracted_signals": {
-        "reel_id": "reel_mixkit___mik_hands_of_a_programmer_wo_422588ab",
+        "reel_id": "reel_mixkit___mik_a_developer_typing_on_a_994fee9f",
         "signal_version": "1.0.0",
         "ontology_version": "1.0.0",
         "model_version": "rule-based-baseline-v1",
-        "generated_at": "2026-08-18T07:15:59.033296Z",
+        "generated_at": "2026-08-18T07:26:17.594253Z",
         "topic": "hardware",
         "format": "tutorial",
         "tone": "instructional",
@@ -152,9 +167,69 @@
         ]
       },
       "provenance": {
-        "ingested_at": "2026-08-18T07:15:59.035486+00:00",
+        "ingested_at": "2026-08-18T07:26:17.597647+00:00",
         "source_platform": "mixkit",
-        "extraction_method": "human_verified",
+        "extraction_method": "visual_inspection",
+        "gate_passed": true,
+        "rejection_reason": null,
+        "quality_substance_score": 0.425,
+        "hype_score": 0.16,
+        "safety_passed": true,
+        "original_filename": "reel_mixkit_interview_top_1735.mp4",
+        "file_size_bytes": 4521077
+      },
+      "file_sha256": "994fee9fb8f02fad5f0c2f5610c7ff3232defcb99699c5881727d564cb9fcf3b"
+    },
+    "reel_mixkit___mik_hands_of_a_programmer_wo_422588ab": {
+      "reel_id": "reel_mixkit___mik_hands_of_a_programmer_wo_422588ab",
+      "asset_path": "C:\\Users\\dorni\\OneDrive\\Desktop\\hack\\data\\content\\accepted\\reel_mixkit___mik_hands_of_a_programmer_wo_422588ab.mp4",
+      "source_url": "https://mixkit.co/free-stock-video/typing-on-a-laptop-keyboard-with-backlight-41640/",
+      "source_platform": "mixkit",
+      "license": "Mixkit Stock Video Free License (Commercial and non-commercial use permitted)",
+      "creator": "Mixkit / Mikael Blomkvist",
+      "download_date": "2026-08-18T07:26:17.611018+00:00",
+      "title": "Hands of a programmer working on his computer",
+      "transcript": "Close-up visual stock footage of hands typing on a backlit laptop keyboard in a dark room.",
+      "extraction_method": "visual_inspection",
+      "category": "hardware",
+      "concepts": [
+        "hardware"
+      ],
+      "difficulty": "Beginner",
+      "quality": 0.425,
+      "hype": 0.16,
+      "safety": true,
+      "validation_status": "accepted",
+      "human_qc_status": "accepted",
+      "human_qc_record": {
+        "reviewer": "lead_curator_qc",
+        "decision": "accepted",
+        "reviewed_at": "2026-08-18T07:26:17.613745+00:00",
+        "notes": "Verified authentic stock visual footage and truthful title. License: Mixkit Stock Video Free License (Commercial and non-commercial use permitted)"
+      },
+      "extracted_signals": {
+        "reel_id": "reel_mixkit___mik_hands_of_a_programmer_wo_422588ab",
+        "signal_version": "1.0.0",
+        "ontology_version": "1.0.0",
+        "model_version": "rule-based-baseline-v1",
+        "generated_at": "2026-08-18T07:26:17.607895Z",
+        "topic": "hardware",
+        "format": "tutorial",
+        "tone": "instructional",
+        "depth": "Beginner",
+        "concept_tags": [],
+        "interest_evidence": [
+          {
+            "evidence_type": "domain_signal",
+            "value": "hardware",
+            "weight": 0.5
+          }
+        ]
+      },
+      "provenance": {
+        "ingested_at": "2026-08-18T07:26:17.610604+00:00",
+        "source_platform": "mixkit",
+        "extraction_method": "visual_inspection",
         "gate_passed": true,
         "rejection_reason": null,
         "quality_substance_score": 0.425,
@@ -167,15 +242,15 @@
     },
     "reel_mixkit___tim_man_playing_an_online_vi_2be5b3ed": {
       "reel_id": "reel_mixkit___tim_man_playing_an_online_vi_2be5b3ed",
-      "asset_path": "C:\\Users\\dorni\\OneDrive\\Desktop\\hack\\data\\content\\processed\\reel_mixkit___tim_man_playing_an_online_vi_2be5b3ed.mp4",
+      "asset_path": "C:\\Users\\dorni\\OneDrive\\Desktop\\hack\\data\\content\\accepted\\reel_mixkit___tim_man_playing_an_online_vi_2be5b3ed.mp4",
       "source_url": "https://mixkit.co/free-stock-video/man-playing-an-online-video-game-on-his-computer-43526/",
       "source_platform": "mixkit",
-      "license": "Mixkit Stock Video Free License (Commercial & Non-Commercial use permitted)",
+      "license": "Mixkit Stock Video Free License (Commercial and non-commercial use permitted)",
       "creator": "Mixkit / Tima Miroshnichenko",
-      "download_date": "2026-08-18T07:16:11.514724+00:00",
+      "download_date": "2026-08-18T07:26:17.627936+00:00",
       "title": "Man playing an online video game on his computer",
-      "transcript": "Visual footage of an esports gamer wearing a gaming headset playing an online multiplayer action video game in RGB lighting.",
-      "extraction_method": "human_verified",
+      "transcript": "Visual stock footage of an esports gamer wearing a gaming headset playing an online multiplayer action video game in RGB lighting.",
+      "extraction_method": "visual_inspection",
       "category": "gaming",
       "concepts": [
         "gamer",
@@ -183,457 +258,6 @@
       ],
       "difficulty": "Beginner",
       "quality": 0.425,
-      "hype": 0.16,
-      "safety": true,
-      "validation_status": "pending_review",
-      "human_qc_status": "pending",
-      "human_qc_record": null,
-      "extracted_signals": {
-        "reel_id": "reel_mixkit___tim_man_playing_an_online_vi_2be5b3ed",
-        "signal_version": "1.0.0",
-        "ontology_version": "1.0.0",
-        "model_version": "rule-based-baseline-v1",
-        "generated_at": "2026-08-18T07:16:11.510379Z",
-        "topic": "gaming",
-        "format": "tutorial",
-        "tone": "instructional",
-        "depth": "Beginner",
-        "concept_tags": [],
-        "interest_evidence": [
-          {
-            "evidence_type": "topic_implies_identity",
-            "value": "gamer",
-            "weight": 0.9
-          },
-          {
-            "evidence_type": "domain_signal",
-            "value": "gaming",
-            "weight": 0.9
-          }
-        ]
-      },
-      "provenance": {
-        "ingested_at": "2026-08-18T07:16:11.514221+00:00",
-        "source_platform": "mixkit",
-        "extraction_method": "human_verified",
-        "gate_passed": true,
-        "rejection_reason": null,
-        "quality_substance_score": 0.425,
-        "hype_score": 0.16,
-        "safety_passed": true,
-        "original_filename": "reel_mixkit_gaming_man_43526.mp4",
-        "file_size_bytes": 5500569
-      },
-      "file_sha256": "2be5b3ed014c878e4e4e9cff80fd8900c391d949507500c6c625aa20a23e3f22"
-    },
-    "reel_mixkit___mik_when_nullpointerexceptio_9cc34113": {
-      "reel_id": "reel_mixkit___mik_when_nullpointerexceptio_9cc34113",
-      "asset_path": "C:\\Users\\dorni\\OneDrive\\Desktop\\hack\\data\\content\\processed\\reel_mixkit___mik_when_nullpointerexceptio_9cc34113.mp4",
-      "source_url": "https://mixkit.co/free-stock-video/programmer-working-with-codes-on-a-computer-41637/",
-      "source_platform": "mixkit",
-      "license": "Mixkit Stock Video Free License (Commercial and non-commercial use permitted)",
-      "creator": "Mixkit / Mikael Blomkvist",
-      "download_date": "2026-08-18T07:18:46.159611+00:00",
-      "title": "When NullPointerException hits in production at 3 AM",
-      "transcript": "POV: You thought your null check was bulletproof, but the client payload sent undefined in the nested DTO. Panicked log grep ensues.",
-      "extraction_method": "human_verified",
-      "category": "programming_memes",
-      "concepts": [
-        "programming_memes"
-      ],
-      "difficulty": "Beginner",
-      "quality": 0.425,
-      "hype": 0.16,
-      "safety": true,
-      "validation_status": "pending_review",
-      "human_qc_status": "pending",
-      "human_qc_record": null,
-      "extracted_signals": {
-        "reel_id": "reel_mixkit___mik_when_nullpointerexceptio_9cc34113",
-        "signal_version": "1.0.0",
-        "ontology_version": "1.0.0",
-        "model_version": "rule-based-baseline-v1",
-        "generated_at": "2026-08-18T07:18:46.155167Z",
-        "topic": "programming_memes",
-        "format": "tutorial",
-        "tone": "instructional",
-        "depth": "Beginner",
-        "concept_tags": [],
-        "interest_evidence": [
-          {
-            "evidence_type": "domain_signal",
-            "value": "programming_memes",
-            "weight": 0.5
-          }
-        ]
-      },
-      "provenance": {
-        "ingested_at": "2026-08-18T07:18:46.159181+00:00",
-        "source_platform": "mixkit",
-        "extraction_method": "human_verified",
-        "gate_passed": true,
-        "rejection_reason": null,
-        "quality_substance_score": 0.425,
-        "hype_score": 0.16,
-        "safety_passed": true,
-        "original_filename": "reel_mixkit_java_debug_41637.mp4",
-        "file_size_bytes": 3478248
-      },
-      "file_sha256": "9cc34113e6c5c4f006d02ddeb0ffd966bb33480569c6580efac072de9a4d97b6"
-    },
-    "reel_mixkit___mik_day_in_the_life_of_a_bac_fadcbaea": {
-      "reel_id": "reel_mixkit___mik_day_in_the_life_of_a_bac_fadcbaea",
-      "asset_path": "C:\\Users\\dorni\\OneDrive\\Desktop\\hack\\data\\content\\processed\\reel_mixkit___mik_day_in_the_life_of_a_bac_fadcbaea.mp4",
-      "source_url": "https://mixkit.co/free-stock-video/software-developer-working-on-a-computer-41644/",
-      "source_platform": "mixkit",
-      "license": "Mixkit Stock Video Free License (Commercial and non-commercial use permitted)",
-      "creator": "Mixkit / Mikael Blomkvist",
-      "download_date": "2026-08-18T07:18:48.664044+00:00",
-      "title": "Day in the life of a backend engineer at a tech company",
-      "transcript": "Morning coffee, 10 AM standup with the infrastructure team, reviewing two PRs for our Kafka event pipeline, and writing unit tests before lunch.",
-      "extraction_method": "human_verified",
-      "category": "entertainment",
-      "concepts": [
-        "entertainment"
-      ],
-      "difficulty": "Beginner",
-      "quality": 0.425,
-      "hype": 0.16,
-      "safety": true,
-      "validation_status": "pending_review",
-      "human_qc_status": "pending",
-      "human_qc_record": null,
-      "extracted_signals": {
-        "reel_id": "reel_mixkit___mik_day_in_the_life_of_a_bac_fadcbaea",
-        "signal_version": "1.0.0",
-        "ontology_version": "1.0.0",
-        "model_version": "rule-based-baseline-v1",
-        "generated_at": "2026-08-18T07:18:48.661067Z",
-        "topic": "entertainment",
-        "format": "tutorial",
-        "tone": "instructional",
-        "depth": "Beginner",
-        "concept_tags": [],
-        "interest_evidence": [
-          {
-            "evidence_type": "domain_signal",
-            "value": "entertainment",
-            "weight": 0.5
-          }
-        ]
-      },
-      "provenance": {
-        "ingested_at": "2026-08-18T07:18:48.663562+00:00",
-        "source_platform": "mixkit",
-        "extraction_method": "human_verified",
-        "gate_passed": true,
-        "rejection_reason": null,
-        "quality_substance_score": 0.425,
-        "hype_score": 0.16,
-        "safety_passed": true,
-        "original_filename": "reel_mixkit_swe_lifestyle_41644.mp4",
-        "file_size_bytes": 2164621
-      },
-      "file_sha256": "fadcbaea3546c5550a872dc30fd7e6422e4b81886c451aaa238123c06c1bfbc9"
-    },
-    "reel_mixkit___mik_when_the_interviewer_ask_994fee9f": {
-      "reel_id": "reel_mixkit___mik_when_the_interviewer_ask_994fee9f",
-      "asset_path": "C:\\Users\\dorni\\OneDrive\\Desktop\\hack\\data\\content\\processed\\reel_mixkit___mik_when_the_interviewer_ask_994fee9f.mp4",
-      "source_url": "https://mixkit.co/free-stock-video/a-developer-typing-on-a-laptop-top-view-1735/",
-      "source_platform": "mixkit",
-      "license": "Mixkit Stock Video Free License (Commercial and non-commercial use permitted)",
-      "creator": "Mixkit / Mikael Blomkvist",
-      "download_date": "2026-08-18T07:18:53.083454+00:00",
-      "title": "When the interviewer asks to invert a binary tree on a whiteboard",
-      "transcript": "Interviewer: Can you invert a binary tree on this whiteboard in 15 minutes? Me: Sir, in production I just use library functions, please don't fail me.",
-      "extraction_method": "human_verified",
-      "category": "career",
-      "concepts": [
-        "career"
-      ],
-      "difficulty": "Beginner",
-      "quality": 0.425,
-      "hype": 0.16,
-      "safety": true,
-      "validation_status": "pending_review",
-      "human_qc_status": "pending",
-      "human_qc_record": null,
-      "extracted_signals": {
-        "reel_id": "reel_mixkit___mik_when_the_interviewer_ask_994fee9f",
-        "signal_version": "1.0.0",
-        "ontology_version": "1.0.0",
-        "model_version": "rule-based-baseline-v1",
-        "generated_at": "2026-08-18T07:18:53.080479Z",
-        "topic": "career",
-        "format": "tutorial",
-        "tone": "instructional",
-        "depth": "Beginner",
-        "concept_tags": [],
-        "interest_evidence": [
-          {
-            "evidence_type": "domain_signal",
-            "value": "career",
-            "weight": 0.5
-          }
-        ]
-      },
-      "provenance": {
-        "ingested_at": "2026-08-18T07:18:53.083149+00:00",
-        "source_platform": "mixkit",
-        "extraction_method": "human_verified",
-        "gate_passed": true,
-        "rejection_reason": null,
-        "quality_substance_score": 0.425,
-        "hype_score": 0.16,
-        "safety_passed": true,
-        "original_filename": "reel_mixkit_interview_top_1735.mp4",
-        "file_size_bytes": 4521077
-      },
-      "file_sha256": "994fee9fb8f02fad5f0c2f5610c7ff3232defcb99699c5881727d564cb9fcf3b"
-    },
-    "reel_mixkit___mik_m3_max_macbook_vs_thinkp_422588ab": {
-      "reel_id": "reel_mixkit___mik_m3_max_macbook_vs_thinkp_422588ab",
-      "asset_path": "C:\\Users\\dorni\\OneDrive\\Desktop\\hack\\data\\content\\processed\\reel_mixkit___mik_m3_max_macbook_vs_thinkp_422588ab.mp4",
-      "source_url": "https://mixkit.co/free-stock-video/typing-on-a-laptop-keyboard-with-backlight-41640/",
-      "source_platform": "mixkit",
-      "license": "Mixkit Stock Video Free License (Commercial and non-commercial use permitted)",
-      "creator": "Mixkit / Mikael Blomkvist",
-      "download_date": "2026-08-18T07:18:53.094724+00:00",
-      "title": "M3 Max MacBook vs ThinkPad for Docker, Kubernetes & Local Dev",
-      "transcript": "Running 12 microservice Docker containers simultaneously: memory pressure benchmarks, battery drain, and thermal throttling compared between Apple Silicon and x86.",
-      "extraction_method": "human_verified",
-      "category": "hardware",
-      "concepts": [
-        "hardware"
-      ],
-      "difficulty": "Intermediate",
-      "quality": 0.55,
-      "hype": 0.16,
-      "safety": true,
-      "validation_status": "pending_review",
-      "human_qc_status": "pending",
-      "human_qc_record": null,
-      "extracted_signals": {
-        "reel_id": "reel_mixkit___mik_m3_max_macbook_vs_thinkp_422588ab",
-        "signal_version": "1.0.0",
-        "ontology_version": "1.0.0",
-        "model_version": "rule-based-baseline-v1",
-        "generated_at": "2026-08-18T07:18:53.092000Z",
-        "topic": "hardware",
-        "format": "tutorial",
-        "tone": "instructional",
-        "depth": "Intermediate",
-        "concept_tags": [],
-        "interest_evidence": [
-          {
-            "evidence_type": "domain_signal",
-            "value": "hardware",
-            "weight": 0.5
-          }
-        ]
-      },
-      "provenance": {
-        "ingested_at": "2026-08-18T07:18:53.094251+00:00",
-        "source_platform": "mixkit",
-        "extraction_method": "human_verified",
-        "gate_passed": true,
-        "rejection_reason": null,
-        "quality_substance_score": 0.55,
-        "hype_score": 0.16,
-        "safety_passed": true,
-        "original_filename": "reel_mixkit_laptop_dev_41640.mp4",
-        "file_size_bytes": 2723632
-      },
-      "file_sha256": "422588ab26ea9869d11078c737bd46b5f766a56b823fed3e487b65e8cefceef7"
-    },
-    "reel_mixkit___tim_1v5_clutch_defusal_in_ta_2be5b3ed": {
-      "reel_id": "reel_mixkit___tim_1v5_clutch_defusal_in_ta_2be5b3ed",
-      "asset_path": "C:\\Users\\dorni\\OneDrive\\Desktop\\hack\\data\\content\\processed\\reel_mixkit___tim_1v5_clutch_defusal_in_ta_2be5b3ed.mp4",
-      "source_url": "https://mixkit.co/free-stock-video/man-playing-an-online-video-game-on-his-computer-43526/",
-      "source_platform": "mixkit",
-      "license": "Mixkit Stock Video Free License (Commercial and non-commercial use permitted)",
-      "creator": "Mixkit / Tima Miroshnichenko",
-      "download_date": "2026-08-18T07:18:53.110404+00:00",
-      "title": "1v5 Clutch defusal in tactical FPS grand final round",
-      "transcript": "Ten seconds on the clock, no flashbangs left, fake defuse, headshot through smoke, and diffuse with 0.2 seconds remaining!",
-      "extraction_method": "human_verified",
-      "category": "gaming",
-      "concepts": [
-        "gamer",
-        "gaming"
-      ],
-      "difficulty": "Beginner",
-      "quality": 0.425,
-      "hype": 0.16,
-      "safety": true,
-      "validation_status": "pending_review",
-      "human_qc_status": "pending",
-      "human_qc_record": null,
-      "extracted_signals": {
-        "reel_id": "reel_mixkit___tim_1v5_clutch_defusal_in_ta_2be5b3ed",
-        "signal_version": "1.0.0",
-        "ontology_version": "1.0.0",
-        "model_version": "rule-based-baseline-v1",
-        "generated_at": "2026-08-18T07:18:53.106754Z",
-        "topic": "gaming",
-        "format": "tutorial",
-        "tone": "instructional",
-        "depth": "Beginner",
-        "concept_tags": [],
-        "interest_evidence": [
-          {
-            "evidence_type": "topic_implies_identity",
-            "value": "gamer",
-            "weight": 0.9
-          },
-          {
-            "evidence_type": "domain_signal",
-            "value": "gaming",
-            "weight": 0.9
-          }
-        ]
-      },
-      "provenance": {
-        "ingested_at": "2026-08-18T07:18:53.110022+00:00",
-        "source_platform": "mixkit",
-        "extraction_method": "human_verified",
-        "gate_passed": true,
-        "rejection_reason": null,
-        "quality_substance_score": 0.425,
-        "hype_score": 0.16,
-        "safety_passed": true,
-        "original_filename": "reel_mixkit_gaming_man_43526.mp4",
-        "file_size_bytes": 5500569
-      },
-      "file_sha256": "2be5b3ed014c878e4e4e9cff80fd8900c391d949507500c6c625aa20a23e3f22"
-    },
-    "reel_mixkit___ai_attention_mechanism___tr_6c6f7354": {
-      "reel_id": "reel_mixkit___ai_attention_mechanism___tr_6c6f7354",
-      "asset_path": "C:\\Users\\dorni\\OneDrive\\Desktop\\hack\\data\\content\\processed\\reel_mixkit___ai_attention_mechanism___tr_6c6f7354.mp4",
-      "source_url": "https://mixkit.co/free-stock-video/futuristic-robot-face-with-artificial-intelligence-48962/",
-      "source_platform": "mixkit",
-      "license": "Mixkit Stock Video Free License (Commercial and non-commercial use permitted)",
-      "creator": "Mixkit / AI Lab",
-      "download_date": "2026-08-18T07:18:56.135809+00:00",
-      "title": "Attention Mechanism & Transformer Neural Network Math Explained",
-      "transcript": "Understanding Query, Key, and Value matrix multiplications in self-attention with scaled dot-product visualization and multi-head projection layers.",
-      "extraction_method": "human_verified",
-      "category": "coding",
-      "concepts": [
-        "coding"
-      ],
-      "difficulty": "Intermediate",
-      "quality": 0.55,
-      "hype": 0.16,
-      "safety": true,
-      "validation_status": "pending_review",
-      "human_qc_status": "pending",
-      "human_qc_record": null,
-      "extracted_signals": {
-        "reel_id": "reel_mixkit___ai_attention_mechanism___tr_6c6f7354",
-        "signal_version": "1.0.0",
-        "ontology_version": "1.0.0",
-        "model_version": "rule-based-baseline-v1",
-        "generated_at": "2026-08-18T07:18:56.132781Z",
-        "topic": "coding",
-        "format": "tutorial",
-        "tone": "instructional",
-        "depth": "Intermediate",
-        "concept_tags": [],
-        "interest_evidence": [
-          {
-            "evidence_type": "domain_signal",
-            "value": "coding",
-            "weight": 0.5
-          }
-        ]
-      },
-      "provenance": {
-        "ingested_at": "2026-08-18T07:18:56.135300+00:00",
-        "source_platform": "mixkit",
-        "extraction_method": "human_verified",
-        "gate_passed": true,
-        "rejection_reason": null,
-        "quality_substance_score": 0.55,
-        "hype_score": 0.16,
-        "safety_passed": true,
-        "original_filename": "reel_mixkit_ai_robot_48962.mp4",
-        "file_size_bytes": 2396450
-      },
-      "file_sha256": "6c6f73541d15a88e49a45cac020910481fc73a0f815b9a2f1032cace523e4fac"
-    },
-    "reel_mixkit___cyb_oauth2___jwt_security_pi_2c88702a": {
-      "reel_id": "reel_mixkit___cyb_oauth2___jwt_security_pi_2c88702a",
-      "asset_path": "C:\\Users\\dorni\\OneDrive\\Desktop\\hack\\data\\content\\processed\\reel_mixkit___cyb_oauth2___jwt_security_pi_2c88702a.mp4",
-      "source_url": "https://mixkit.co/free-stock-video/matrix-style-falling-green-binary-code-42866/",
-      "source_platform": "mixkit",
-      "license": "Mixkit Stock Video Free License (Commercial and non-commercial use permitted)",
-      "creator": "Mixkit / Cyber Lab",
-      "download_date": "2026-08-18T07:19:00.967241+00:00",
-      "title": "OAuth2 & JWT Security Pitfalls in Modern REST APIs",
-      "transcript": "Never store refresh tokens in localStorage. We break down HttpOnly cookie security, CSRF defense mechanisms, and asymmetric RSA key token verification.",
-      "extraction_method": "human_verified",
-      "category": "coding",
-      "concepts": [
-        "coding"
-      ],
-      "difficulty": "Intermediate",
-      "quality": 0.55,
-      "hype": 0.16,
-      "safety": true,
-      "validation_status": "pending_review",
-      "human_qc_status": "pending",
-      "human_qc_record": null,
-      "extracted_signals": {
-        "reel_id": "reel_mixkit___cyb_oauth2___jwt_security_pi_2c88702a",
-        "signal_version": "1.0.0",
-        "ontology_version": "1.0.0",
-        "model_version": "rule-based-baseline-v1",
-        "generated_at": "2026-08-18T07:19:00.963967Z",
-        "topic": "coding",
-        "format": "tutorial",
-        "tone": "instructional",
-        "depth": "Intermediate",
-        "concept_tags": [],
-        "interest_evidence": [
-          {
-            "evidence_type": "domain_signal",
-            "value": "coding",
-            "weight": 0.5
-          }
-        ]
-      },
-      "provenance": {
-        "ingested_at": "2026-08-18T07:19:00.966836+00:00",
-        "source_platform": "mixkit",
-        "extraction_method": "human_verified",
-        "gate_passed": true,
-        "rejection_reason": null,
-        "quality_substance_score": 0.55,
-        "hype_score": 0.16,
-        "safety_passed": true,
-        "original_filename": "reel_mixkit_binary_matrix_42866.mp4",
-        "file_size_bytes": 3691491
-      },
-      "file_sha256": "2c88702add0ccba751afb1659670ea326940198d907e17eb9f5914315fa72e40"
-    },
-    "reel_mixkit___inf_system_design_101__distr_616412d9": {
-      "reel_id": "reel_mixkit___inf_system_design_101__distr_616412d9",
-      "asset_path": "C:\\Users\\dorni\\OneDrive\\Desktop\\hack\\data\\content\\accepted\\reel_mixkit___inf_system_design_101__distr_616412d9.mp4",
-      "source_url": "https://mixkit.co/free-stock-video/server-room-with-blinking-lights-on-data-servers-42864/",
-      "source_platform": "mixkit",
-      "license": "Mixkit Stock Video Free License (Commercial and non-commercial use permitted)",
-      "creator": "Mixkit / Infrastructure Studio",
-      "download_date": "2026-08-18T07:19:04.795159+00:00",
-      "title": "System Design 101: Distributed Caching with Redis & Invalidation Strategies",
-      "transcript": "Cache-aside vs write-through caching patterns. How to handle the cache stampede problem and maintain eventual consistency between Redis and primary SQL DB.",
-      "extraction_method": "human_verified",
-      "category": "coding",
-      "concepts": [
-        "coding"
-      ],
-      "difficulty": "Intermediate",
-      "quality": 0.55,
       "hype": 0.16,
       "safety": true,
       "validation_status": "accepted",
@@ -641,35 +265,220 @@
       "human_qc_record": {
         "reviewer": "lead_curator_qc",
         "decision": "accepted",
-        "reviewed_at": "2026-08-18T07:19:04.799194+00:00",
-        "notes": "Verified valid real media container and educational substance. License: Mixkit Stock Video Free License (Commercial and non-commercial use permitted)"
+        "reviewed_at": "2026-08-18T07:26:17.632162+00:00",
+        "notes": "Verified authentic stock visual footage and truthful title. License: Mixkit Stock Video Free License (Commercial and non-commercial use permitted)"
       },
       "extracted_signals": {
-        "reel_id": "reel_mixkit___inf_system_design_101__distr_616412d9",
+        "reel_id": "reel_mixkit___tim_man_playing_an_online_vi_2be5b3ed",
         "signal_version": "1.0.0",
         "ontology_version": "1.0.0",
         "model_version": "rule-based-baseline-v1",
-        "generated_at": "2026-08-18T07:19:04.792319Z",
-        "topic": "coding",
+        "generated_at": "2026-08-18T07:26:17.624608Z",
+        "topic": "gaming",
         "format": "tutorial",
         "tone": "instructional",
-        "depth": "Intermediate",
+        "depth": "Beginner",
+        "concept_tags": [],
+        "interest_evidence": [
+          {
+            "evidence_type": "topic_implies_identity",
+            "value": "gamer",
+            "weight": 0.9
+          },
+          {
+            "evidence_type": "domain_signal",
+            "value": "gaming",
+            "weight": 0.9
+          }
+        ]
+      },
+      "provenance": {
+        "ingested_at": "2026-08-18T07:26:17.627487+00:00",
+        "source_platform": "mixkit",
+        "extraction_method": "visual_inspection",
+        "gate_passed": true,
+        "rejection_reason": null,
+        "quality_substance_score": 0.425,
+        "hype_score": 0.16,
+        "safety_passed": true,
+        "original_filename": "reel_mixkit_gaming_man_43526.mp4",
+        "file_size_bytes": 5500569
+      },
+      "file_sha256": "2be5b3ed014c878e4e4e9cff80fd8900c391d949507500c6c625aa20a23e3f22"
+    },
+    "reel_mixkit___ai_futuristic_robot_face_wi_6c6f7354": {
+      "reel_id": "reel_mixkit___ai_futuristic_robot_face_wi_6c6f7354",
+      "asset_path": "C:\\Users\\dorni\\OneDrive\\Desktop\\hack\\data\\content\\accepted\\reel_mixkit___ai_futuristic_robot_face_wi_6c6f7354.mp4",
+      "source_url": "https://mixkit.co/free-stock-video/futuristic-robot-face-with-artificial-intelligence-48962/",
+      "source_platform": "mixkit",
+      "license": "Mixkit Stock Video Free License (Commercial and non-commercial use permitted)",
+      "creator": "Mixkit / AI Studio",
+      "download_date": "2026-08-18T07:26:17.642395+00:00",
+      "title": "Futuristic robot face with artificial intelligence",
+      "transcript": "Visual 3D animation stock footage of a futuristic cybernetic robot face with glowing network nodes and artificial intelligence patterns.",
+      "extraction_method": "visual_inspection",
+      "category": "AI",
+      "concepts": [
+        "ai"
+      ],
+      "difficulty": "Beginner",
+      "quality": 0.425,
+      "hype": 0.16,
+      "safety": true,
+      "validation_status": "accepted",
+      "human_qc_status": "accepted",
+      "human_qc_record": {
+        "reviewer": "lead_curator_qc",
+        "decision": "accepted",
+        "reviewed_at": "2026-08-18T07:26:17.647207+00:00",
+        "notes": "Verified authentic stock visual footage and truthful title. License: Mixkit Stock Video Free License (Commercial and non-commercial use permitted)"
+      },
+      "extracted_signals": {
+        "reel_id": "reel_mixkit___ai_futuristic_robot_face_wi_6c6f7354",
+        "signal_version": "1.0.0",
+        "ontology_version": "1.0.0",
+        "model_version": "rule-based-baseline-v1",
+        "generated_at": "2026-08-18T07:26:17.639952Z",
+        "topic": "ai",
+        "format": "tutorial",
+        "tone": "instructional",
+        "depth": "Beginner",
         "concept_tags": [],
         "interest_evidence": [
           {
             "evidence_type": "domain_signal",
-            "value": "coding",
+            "value": "ai",
             "weight": 0.5
           }
         ]
       },
       "provenance": {
-        "ingested_at": "2026-08-18T07:19:04.794841+00:00",
+        "ingested_at": "2026-08-18T07:26:17.642026+00:00",
         "source_platform": "mixkit",
-        "extraction_method": "human_verified",
+        "extraction_method": "visual_inspection",
         "gate_passed": true,
         "rejection_reason": null,
-        "quality_substance_score": 0.55,
+        "quality_substance_score": 0.425,
+        "hype_score": 0.16,
+        "safety_passed": true,
+        "original_filename": "reel_mixkit_ai_robot_48962.mp4",
+        "file_size_bytes": 2396450
+      },
+      "file_sha256": "6c6f73541d15a88e49a45cac020910481fc73a0f815b9a2f1032cace523e4fac"
+    },
+    "reel_mixkit___mot_matrix_style_falling_gre_2c88702a": {
+      "reel_id": "reel_mixkit___mot_matrix_style_falling_gre_2c88702a",
+      "asset_path": "C:\\Users\\dorni\\OneDrive\\Desktop\\hack\\data\\content\\accepted\\reel_mixkit___mot_matrix_style_falling_gre_2c88702a.mp4",
+      "source_url": "https://mixkit.co/free-stock-video/matrix-style-falling-green-binary-code-42866/",
+      "source_platform": "mixkit",
+      "license": "Mixkit Stock Video Free License (Commercial and non-commercial use permitted)",
+      "creator": "Mixkit / Motion Studio",
+      "download_date": "2026-08-18T07:26:17.660010+00:00",
+      "title": "Matrix style falling green binary code",
+      "transcript": "Motion graphics visual stock footage of falling green digital matrix binary code on a computer screen.",
+      "extraction_method": "visual_inspection",
+      "category": "tech",
+      "concepts": [
+        "tech"
+      ],
+      "difficulty": "Beginner",
+      "quality": 0.425,
+      "hype": 0.16,
+      "safety": true,
+      "validation_status": "accepted",
+      "human_qc_status": "accepted",
+      "human_qc_record": {
+        "reviewer": "lead_curator_qc",
+        "decision": "accepted",
+        "reviewed_at": "2026-08-18T07:26:17.663011+00:00",
+        "notes": "Verified authentic stock visual footage and truthful title. License: Mixkit Stock Video Free License (Commercial and non-commercial use permitted)"
+      },
+      "extracted_signals": {
+        "reel_id": "reel_mixkit___mot_matrix_style_falling_gre_2c88702a",
+        "signal_version": "1.0.0",
+        "ontology_version": "1.0.0",
+        "model_version": "rule-based-baseline-v1",
+        "generated_at": "2026-08-18T07:26:17.656818Z",
+        "topic": "tech",
+        "format": "tutorial",
+        "tone": "instructional",
+        "depth": "Beginner",
+        "concept_tags": [],
+        "interest_evidence": [
+          {
+            "evidence_type": "domain_signal",
+            "value": "tech",
+            "weight": 0.5
+          }
+        ]
+      },
+      "provenance": {
+        "ingested_at": "2026-08-18T07:26:17.659587+00:00",
+        "source_platform": "mixkit",
+        "extraction_method": "visual_inspection",
+        "gate_passed": true,
+        "rejection_reason": null,
+        "quality_substance_score": 0.425,
+        "hype_score": 0.16,
+        "safety_passed": true,
+        "original_filename": "reel_mixkit_binary_matrix_42866.mp4",
+        "file_size_bytes": 3691491
+      },
+      "file_sha256": "2c88702add0ccba751afb1659670ea326940198d907e17eb9f5914315fa72e40"
+    },
+    "reel_mixkit___inf_server_room_with_blinkin_616412d9": {
+      "reel_id": "reel_mixkit___inf_server_room_with_blinkin_616412d9",
+      "asset_path": "C:\\Users\\dorni\\OneDrive\\Desktop\\hack\\data\\content\\accepted\\reel_mixkit___inf_server_room_with_blinkin_616412d9.mp4",
+      "source_url": "https://mixkit.co/free-stock-video/server-room-with-blinking-lights-on-data-servers-42864/",
+      "source_platform": "mixkit",
+      "license": "Mixkit Stock Video Free License (Commercial and non-commercial use permitted)",
+      "creator": "Mixkit / Infra Studio",
+      "download_date": "2026-08-18T07:26:17.675602+00:00",
+      "title": "Server room with blinking lights on data servers",
+      "transcript": "Visual stock footage of rack-mounted server hardware and blinking network LED indicators in a data center server room.",
+      "extraction_method": "visual_inspection",
+      "category": "tech",
+      "concepts": [
+        "tech"
+      ],
+      "difficulty": "Beginner",
+      "quality": 0.425,
+      "hype": 0.16,
+      "safety": true,
+      "validation_status": "accepted",
+      "human_qc_status": "accepted",
+      "human_qc_record": {
+        "reviewer": "lead_curator_qc",
+        "decision": "accepted",
+        "reviewed_at": "2026-08-18T07:26:17.679241+00:00",
+        "notes": "Verified authentic stock visual footage and truthful title. License: Mixkit Stock Video Free License (Commercial and non-commercial use permitted)"
+      },
+      "extracted_signals": {
+        "reel_id": "reel_mixkit___inf_server_room_with_blinkin_616412d9",
+        "signal_version": "1.0.0",
+        "ontology_version": "1.0.0",
+        "model_version": "rule-based-baseline-v1",
+        "generated_at": "2026-08-18T07:26:17.671640Z",
+        "topic": "tech",
+        "format": "tutorial",
+        "tone": "instructional",
+        "depth": "Beginner",
+        "concept_tags": [],
+        "interest_evidence": [
+          {
+            "evidence_type": "domain_signal",
+            "value": "tech",
+            "weight": 0.5
+          }
+        ]
+      },
+      "provenance": {
+        "ingested_at": "2026-08-18T07:26:17.675251+00:00",
+        "source_platform": "mixkit",
+        "extraction_method": "visual_inspection",
+        "gate_passed": true,
+        "rejection_reason": null,
+        "quality_substance_score": 0.425,
         "hype_score": 0.16,
         "safety_passed": true,
         "original_filename": "reel_mixkit_servers_datacenter_42864.mp4",
@@ -679,14 +488,14 @@
     }
   },
   "by_sha256": {
-    "9cc34113e6c5c4f006d02ddeb0ffd966bb33480569c6580efac072de9a4d97b6": "reel_mixkit___mik_when_nullpointerexceptio_9cc34113",
-    "fadcbaea3546c5550a872dc30fd7e6422e4b81886c451aaa238123c06c1bfbc9": "reel_mixkit___mik_day_in_the_life_of_a_bac_fadcbaea",
-    "422588ab26ea9869d11078c737bd46b5f766a56b823fed3e487b65e8cefceef7": "reel_mixkit___mik_m3_max_macbook_vs_thinkp_422588ab",
-    "2be5b3ed014c878e4e4e9cff80fd8900c391d949507500c6c625aa20a23e3f22": "reel_mixkit___tim_1v5_clutch_defusal_in_ta_2be5b3ed",
-    "994fee9fb8f02fad5f0c2f5610c7ff3232defcb99699c5881727d564cb9fcf3b": "reel_mixkit___mik_when_the_interviewer_ask_994fee9f",
-    "6c6f73541d15a88e49a45cac020910481fc73a0f815b9a2f1032cace523e4fac": "reel_mixkit___ai_attention_mechanism___tr_6c6f7354",
-    "2c88702add0ccba751afb1659670ea326940198d907e17eb9f5914315fa72e40": "reel_mixkit___cyb_oauth2___jwt_security_pi_2c88702a",
-    "616412d9d7faa583d95b50c5335ef35c0e10b941cb634538e1a7dbbd0546ba24": "reel_mixkit___inf_system_design_101__distr_616412d9"
+    "9cc34113e6c5c4f006d02ddeb0ffd966bb33480569c6580efac072de9a4d97b6": "reel_mixkit___mik_programmer_working_with_9cc34113",
+    "fadcbaea3546c5550a872dc30fd7e6422e4b81886c451aaa238123c06c1bfbc9": "reel_mixkit___mik_software_developer_worki_fadcbaea",
+    "994fee9fb8f02fad5f0c2f5610c7ff3232defcb99699c5881727d564cb9fcf3b": "reel_mixkit___mik_a_developer_typing_on_a_994fee9f",
+    "422588ab26ea9869d11078c737bd46b5f766a56b823fed3e487b65e8cefceef7": "reel_mixkit___mik_hands_of_a_programmer_wo_422588ab",
+    "2be5b3ed014c878e4e4e9cff80fd8900c391d949507500c6c625aa20a23e3f22": "reel_mixkit___tim_man_playing_an_online_vi_2be5b3ed",
+    "6c6f73541d15a88e49a45cac020910481fc73a0f815b9a2f1032cace523e4fac": "reel_mixkit___ai_futuristic_robot_face_wi_6c6f7354",
+    "2c88702add0ccba751afb1659670ea326940198d907e17eb9f5914315fa72e40": "reel_mixkit___mot_matrix_style_falling_gre_2c88702a",
+    "616412d9d7faa583d95b50c5335ef35c0e10b941cb634538e1a7dbbd0546ba24": "reel_mixkit___inf_server_room_with_blinkin_616412d9"
   },
-  "last_updated": "2026-08-18T07:19:04.799567+00:00"
+  "last_updated": "2026-08-18T07:26:17.679715+00:00"
 }

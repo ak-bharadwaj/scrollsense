@@ -92,6 +92,7 @@ class ReelIngestor:
         allow_duplicate: bool = False,
     ) -> IngestionResult:
         """Ingest raw asset payload, extract semantic signals, evaluate gates, and store in pending/rejected."""
+        self.manifest = AssetManifest.load_from_json(self.manifest_path)
         asset_file = Path(payload.file_path)
         if not asset_file.exists() or not asset_file.is_file():
             raise FileNotFoundError(f"Source media asset file not found: {asset_file}")
