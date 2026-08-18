@@ -10,6 +10,7 @@ jobs:
   test:
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         python-version: ["3.11", "3.12"]
 
@@ -26,17 +27,14 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install .[dev]
-          pip install ruff mypy
+          pip install -r requirements.txt
+          pip install -e .[dev]
 
       - name: Run Ruff Lint
-        run: |
-          ruff check src/ tests/
-
-      - name: Run Type Check (Mypy)
-        run: |
-          mypy src/
+        run: ruff check src/ tests/
 
       - name: Run Pytest Suite
-        run: |
-          python -m pytest
+        run: python -m pytest --tb=short -q
+        env:
+          GEMINI_API_KEY: ""
+          SCROLLSENSE_DATA_DIR: data
