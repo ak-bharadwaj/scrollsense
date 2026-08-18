@@ -92,9 +92,13 @@ class RecommendationAssembler:
         internal_recs: list[Recommendation] = []
         user_facing_outputs: list[RecommendationOutput] = []
 
-        current_reel_title = (
-            input_reels[-1].title if input_reels else "Watched History"
-        )
+        # Traceable current_reel representation: `<reel_id> — <title>`
+        if input_reels:
+            latest_reel = input_reels[-1]
+            current_reel_ref = f"{latest_reel.reel_id} — {latest_reel.title}"
+        else:
+            current_reel_ref = "Unknown — Watched History"
+
         interest_label = (
             list(interest_state.professional_identity.keys())[0].replace("_", " ").title()
             if interest_state.professional_identity
@@ -103,10 +107,22 @@ class RecommendationAssembler:
 
         why_detected = self.explainer.build_why_explanation(interest_state, input_reels)
 
-        for rc in selected_ranked:
+        for rc_idx, rc in enumerate(selected_ranked):
             reel = self._resolve_reel(rc.candidate.reel_id, reels_map)
             cat = map_reel_to_tech_category(reel)
-            confidence = self.explainer.derive_confidence(interest_state, rc)
+
+            # Determine runner-up from original ranked list for margin calculation
+            runner_up = None
+            for other_rc in ranking_result.ranked_candidates:
+                if other_rc.candidate.reel_id != rc.candidate.reel_id:
+                    runner_up = other_rc
+                    break
+
+            confidence = self.explainer.derive_confidence(
+                interest_state,
+                rc,
+                runner_up_candidate=runner_up,
+            )
             why_this_rec = self.explainer.build_why_this_recommendation(rc, reel, interest_state)
 
             # Internal domain contract
@@ -125,7 +141,7 @@ class RecommendationAssembler:
 
             # Problem statement user-facing output
             user_output = RecommendationOutput(
-                current_reel=current_reel_title,
+                current_reel=current_reel_ref,
                 interest_detected=interest_label,
                 why=why_detected,
                 recommended_tech_reel=reel.title,

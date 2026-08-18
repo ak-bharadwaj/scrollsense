@@ -9,10 +9,17 @@ from scrollsense.domain.candidates import Candidate
 from scrollsense.domain.enums import ConfidenceBucket, DepthLevel, RetrievalSource, TechCategory
 from scrollsense.domain.gates import GateResult, HypeScore, QualityScore, SafetyResult
 from scrollsense.domain.persona import InterestState
+from scrollsense.domain.ranking import ObjectiveScores
 from scrollsense.domain.recommendation import Recommendation, RecommendationOutput
 from scrollsense.domain.reels import Reel
 from scrollsense.gates import CandidateGateEvaluator
-from scrollsense.ranking import MultiObjectiveRanker
+from scrollsense.ranking import (
+    MultiObjectiveRanker,
+    RankedCandidate,
+    RankingResult,
+    RankingTrace,
+    RankingWeights,
+)
 from scrollsense.selection import (
     DeterministicExplainer,
     RecommendationAssembler,
@@ -76,7 +83,7 @@ def gate_evaluator() -> CandidateGateEvaluator:
     return CandidateGateEvaluator()
 
 
-def test_hld_selected_over_repeated_java(
+def test_hld_selected_over_repeated_java_and_traceable_current_reel(
     ranker: MultiObjectiveRanker,
     gate_evaluator: CandidateGateEvaluator,
     assembler: RecommendationAssembler,
@@ -84,7 +91,7 @@ def test_hld_selected_over_repeated_java(
     input_reels: list[Reel],
     swe_trap_state: InterestState,
 ):
-    """Test 1: System Design / HLD candidate is selected as the top recommendation for SWE trap."""
+    """Test 1: System Design / HLD candidate is selected as top recommendation and current_reel is formatted."""
     candidates = [
         Candidate(
             reel_id="reel_hld_caching",
@@ -117,6 +124,10 @@ def test_hld_selected_over_repeated_java(
     assert selected_output.confidence == ConfidenceBucket.HIGH
     assert selected_output.difficulty == DepthLevel.INTERMEDIATE
 
+    # Verify current_reel contains both reel_id and title
+    assert "reel_laptop_comparison" in selected_output.current_reel
+    assert " — " in selected_output.current_reel
+
 
 def test_multiple_candidates_are_diversified(
     ranker: MultiObjectiveRanker,
@@ -142,7 +153,6 @@ def test_multiple_candidates_are_diversified(
 
     assert len(outputs) == 3
     selected_cats = [o.category for o in outputs]
-    # Verify diversity across categories
     assert len(set(selected_cats)) == len(selected_cats)
 
 
@@ -221,37 +231,29 @@ def test_explanation_references_real_reel_ids_and_graph_path(
     recs, outputs = assembler.select_and_assemble(ranking_res, swe_trap_state, trap_inputs)
 
     out = outputs[0]
-    # Check why explains latent identity and observed reels
     assert "Software Engineer" in out.interest_detected
     assert "reel_java_meme" in out.why
     assert "reel_swe_lifestyle" in out.why
-
-    # Check why_this_recommendation explains graph path and concepts
     assert "software_engineer -> system_design" in out.why_this_recommendation
     assert "redis" in out.why_this_recommendation
     assert "cache_invalidation" in out.why_this_recommendation
 
 
-def test_confidence_boundary_cases(assembler: RecommendationAssembler, candidate_reels_dict: dict[str, Reel]):
-    """Test 8: Confidence correctly buckets into High, Medium, and Low based on evidence and weight."""
+def test_confidence_ranking_margin_boundaries_and_single_candidate(assembler: RecommendationAssembler):
+    """Test 8: Confidence derivation correctly responds to score margins and handles single-candidate case."""
     explainer = assembler.explainer
-    hld_reel = candidate_reels_dict["reel_hld_caching"]
 
-    from scrollsense.domain.ranking import ObjectiveScores
-    from scrollsense.ranking.models import RankedCandidate, RankingTrace
-    from scrollsense.ranking.weights import RankingWeights
-
-    def make_ranked_cand(score: float) -> RankedCandidate:
-        cand = Candidate(reel_id="reel_hld_caching", source=RetrievalSource.SOURCE_B_IDENTITY_ADJACENT)
+    def make_ranked_cand(cand_id: str, score: float) -> RankedCandidate:
+        cand = Candidate(reel_id=cand_id, source=RetrievalSource.SOURCE_B_IDENTITY_ADJACENT)
         scores = ObjectiveScores(
             topical_fit=0.8, difficulty_match=1.0, career_relevance=0.9,
             novelty=0.85, quality=0.85, hype_penalty=0.1, final_score=score
         )
         trace = RankingTrace(
-            candidate_id="reel_hld_caching", eligible=True, objective_scores=scores,
+            candidate_id=cand_id, eligible=True, objective_scores=scores,
             weights=RankingWeights(), weighted_contributions={}, final_score=score,
             gate_result=GateResult(
-                candidate_id="reel_hld_caching", passed=True,
+                candidate_id=cand_id, passed=True,
                 safety=SafetyResult(passed=True),
                 quality=QualityScore(concept_anchor_score=0.9, depth_score=0.7),
                 hype=HypeScore(pattern_penalty=0.1, promotional_language_score=0.1)
@@ -259,29 +261,24 @@ def test_confidence_boundary_cases(assembler: RecommendationAssembler, candidate
         )
         return RankedCandidate(candidate=cand, scores=scores, final_score=score, trace=trace)
 
-    # 1. High confidence: >= 3 evidence, weight >= 0.75, score >= 0.60
     high_state = InterestState(
         student_id="s1", professional_identity={"software_engineer": 0.85},
         domains={"coding": 0.8}, goals={}, depth={}, content_preference={},
         evidence=["r1", "r2", "r3"], updated_at=datetime.now(timezone.utc)
     )
-    assert explainer.derive_confidence(high_state, make_ranked_cand(0.75)) == ConfidenceBucket.HIGH
 
-    # 2. Medium confidence: 2 evidence or weight >= 0.45
-    med_state = InterestState(
-        student_id="s2", professional_identity={"software_engineer": 0.55},
-        domains={"coding": 0.6}, goals={}, depth={}, content_preference={},
-        evidence=["r1", "r2"], updated_at=datetime.now(timezone.utc)
-    )
-    assert explainer.derive_confidence(med_state, make_ranked_cand(0.50)) == ConfidenceBucket.MEDIUM
+    top_cand = make_ranked_cand("c1", 0.75)
+    distant_runner_up = make_ranked_cand("c2", 0.60)   # margin = 0.15 >= 0.06 -> HIGH
+    tight_runner_up = make_ranked_cand("c3", 0.73)     # margin = 0.02 < 0.06 -> MEDIUM
 
-    # 3. Low confidence: 1 weak evidence
-    low_state = InterestState(
-        student_id="s3", professional_identity={"software_engineer": 0.35},
-        domains={"coding": 0.4}, goals={}, depth={}, content_preference={},
-        evidence=["r1"], updated_at=datetime.now(timezone.utc)
-    )
-    assert explainer.derive_confidence(low_state, make_ranked_cand(0.35)) == ConfidenceBucket.LOW
+    # 1. Distant runner-up yields High confidence
+    assert explainer.derive_confidence(high_state, top_cand, runner_up_candidate=distant_runner_up) == ConfidenceBucket.HIGH
+
+    # 2. Tight margin degrades to Medium confidence
+    assert explainer.derive_confidence(high_state, top_cand, runner_up_candidate=tight_runner_up) == ConfidenceBucket.MEDIUM
+
+    # 3. Single-candidate case (runner_up=None) yields deterministic High confidence under high evidence
+    assert explainer.derive_confidence(high_state, top_cand, runner_up_candidate=None) == ConfidenceBucket.HIGH
 
 
 def test_deterministic_repeated_selection(
