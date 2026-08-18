@@ -1,4 +1,4 @@
-"""CLI utility for ingesting, validating, and cataloging licensed Reel media assets."""
+"""CLI utility for ingesting raw media assets with semantic signal extraction and gate validation."""
 
 import argparse
 import io
@@ -14,13 +14,12 @@ DATA_DIR = Path(__file__).resolve().parent.parent / "data"
 if str(SRC_DIR) not in sys.path:
     sys.path.insert(0, str(SRC_DIR))
 
-from scrollsense.domain.enums import DepthLevel
-from scrollsense.ingestion import HumanQCStatus, ReelIngestor
+from scrollsense.ingestion import LocalFileSourceAdapter, ReelIngestor
 
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Ingest and validate a licensed Reel asset into the ScrollSense content repository.",
+        description="Ingest a licensed Reel asset with semantic extraction and automated gate checks.",
     )
     parser.add_argument(
         "--asset-path",
@@ -36,35 +35,23 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument("--title", type=str, default=None, help="Reel title")
     parser.add_argument("--transcript", type=str, default=None, help="Reel transcript text")
-    parser.add_argument("--category", type=str, default="coding", help="Primary topic category")
-    parser.add_argument(
-        "--concepts",
-        type=str,
-        default="",
-        help="Comma-separated list of technical concepts/tags",
-    )
-    parser.add_argument(
-        "--license",
-        type=str,
-        default="CC-BY-4.0",
-        help="Content license (default: CC-BY-4.0)",
-    )
-    parser.add_argument("--creator", type=str, default="Unknown Creator", help="Creator or channel attribution")
+    parser.add_argument("--category", type=str, default=None, help="Topic category (required)")
+    parser.add_argument("--license", type=str, default=None, help="Content license (required)")
+    parser.add_argument("--creator", type=str, default=None, help="Creator attribution (required)")
     parser.add_argument(
         "--difficulty",
         type=str,
-        default="intermediate",
+        default=None,
         choices=["beginner", "intermediate", "advanced"],
-        help="Estimated technical depth level (default: intermediate)",
+        help="Estimated technical depth level (required)",
     )
+    parser.add_argument("--source-url", type=str, default=None, help="Canonical source URL")
     parser.add_argument(
-        "--human-qc",
+        "--extraction-method",
         type=str,
-        default="pending",
-        choices=["pending", "accepted", "rejected"],
-        help="Human QC review status (default: pending)",
+        default="human_verified",
+        help="Transcript extraction method (default: human_verified)",
     )
-    parser.add_argument("--source-url", type=str, default=None, help="Original source URL")
     parser.add_argument(
         "--content-dir",
         type=str,
@@ -74,7 +61,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--allow-duplicate",
         action="store_true",
-        help="Allow overwriting an already ingested asset checksum",
+        help="Allow re-ingesting an identical asset checksum",
     )
     return parser.parse_args()
 
@@ -82,7 +69,6 @@ def parse_args() -> argparse.Namespace:
 def main() -> None:
     args = parse_args()
 
-    # Load metadata JSON if provided
     meta: dict = {}
     if args.metadata_json:
         meta_path = Path(args.metadata_json)
@@ -92,45 +78,58 @@ def main() -> None:
 
     title = args.title or meta.get("title")
     transcript = args.transcript or meta.get("transcript")
-    category = args.category or meta.get("category", "coding")
-    concepts_raw = args.concepts or meta.get("concepts", [])
-    if isinstance(concepts_raw, str):
-        concepts = [c.strip() for c in concepts_raw.split(",") if c.strip()]
-    else:
-        concepts = list(concepts_raw)
-    license_str = args.license or meta.get("license", "CC-BY-4.0")
-    creator = args.creator or meta.get("creator", "Unknown Creator")
-    difficulty_str = args.difficulty or meta.get("difficulty", "intermediate")
-    difficulty = DepthLevel(difficulty_str.capitalize())
-    qc_status_str = args.human_qc or meta.get("human_qc", "pending")
-    human_qc = HumanQCStatus(qc_status_str.lower())
+    category = args.category or meta.get("category")
+    license_str = args.license or meta.get("license")
+    creator = args.creator or meta.get("creator")
+    difficulty = args.difficulty or meta.get("difficulty")
     source_url = args.source_url or meta.get("source_url")
+    extraction_method = args.extraction_method or meta.get("extraction_method", "human_verified")
 
-    ingestor = ReelIngestor(content_dir=args.content_dir)
+    # Enforce mandatory fields explicitly
+    missing = []
+    if not title:
+        missing.append("--title")
+    if not transcript:
+        missing.append("--transcript")
+    if not category:
+        missing.append("--category")
+    if not license_str:
+        missing.append("--license")
+    if not creator:
+        missing.append("--creator")
+    if not difficulty:
+        missing.append("--difficulty")
 
-    print("================================================================================")
-    print("                SCROLLSENSE REEL ASSET INGESTION & VALIDATION                   ")
-    print("================================================================================")
-    print(f"Asset File: {args.asset_path}")
-    print(f"Title: {title}")
-    print(f"Creator: {creator} | License: {license_str}")
-    print(f"Human QC Status: {human_qc.value.upper()}")
+    if missing:
+        print(f"Error: The following mandatory fields must be explicitly supplied: {', '.join(missing)}", file=sys.stderr)
+        sys.exit(1)
 
-    result = ingestor.ingest_asset(
+    adapter = LocalFileSourceAdapter()
+    payload = adapter.load_asset(
         file_path=args.asset_path,
         title=title,
         transcript=transcript,
         category=category,
-        concepts=concepts,
         license=license_str,
         creator=creator,
         difficulty=difficulty,
         source_url=source_url,
-        human_qc_status=human_qc,
-        allow_duplicate=args.allow_duplicate,
+        extraction_method=extraction_method,
     )
 
-    print("\n--- INGESTION RESULTS ---")
+    ingestor = ReelIngestor(content_dir=args.content_dir)
+
+    print("================================================================================")
+    print("                SCROLLSENSE REEL ASSET INGESTION PIPELINE                       ")
+    print("================================================================================")
+    print(f"Source File: {payload.file_path}")
+    print(f"Title: {payload.title}")
+    print(f"Creator: {payload.creator} | License: {payload.license}")
+    print(f"Extraction Method: {payload.extraction_method}")
+
+    result = ingestor.ingest_payload(payload=payload, allow_duplicate=args.allow_duplicate)
+
+    print("\n--- AUTOMATED VALIDATION & GATE RESULTS ---")
     print(f"Reel ID: {result.item.reel_id}")
     print(f"Gate Status: {'PASSED' if result.gate_result.passed else 'FAILED'}")
     if not result.gate_result.passed:
@@ -139,7 +138,7 @@ def main() -> None:
     print(f"Hype Penalty Score: {result.item.hype:.4f}")
     print(f"Safety Gate: {'PASSED' if result.item.safety else 'VIOLATION'}")
     print(f"Validation Status: {result.item.validation_status.value.upper()}")
-    print(f"Accepted into Candidate Corpus: {result.accepted}")
+    print(f"Human QC Status: {result.item.human_qc_status.value.upper()} (Approval required via scripts/review_reel.py)")
     print(f"Stored Path: {result.stored_path}")
     print("================================================================================\n")
 

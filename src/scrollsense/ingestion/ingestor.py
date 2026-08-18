@@ -11,12 +11,14 @@ from scrollsense.domain.enums import DepthLevel
 from scrollsense.domain.gates import GateResult
 from scrollsense.domain.reels import Reel
 from scrollsense.gates.evaluator import CandidateGateEvaluator
+from scrollsense.ingestion.adapters import LocalFileSourceAdapter, RawAssetPayload
 from scrollsense.ingestion.manifest import (
     AssetManifest,
     HumanQCStatus,
     ReelAssetManifestItem,
     ValidationStatus,
 )
+from scrollsense.signals.extractor import DeterministicSignalExtractor, SignalExtractor
 
 
 class DuplicateAssetError(ValueError):
@@ -25,6 +27,10 @@ class DuplicateAssetError(ValueError):
 
 class MissingMetadataError(ValueError):
     """Raised when essential metadata fields are missing or empty."""
+
+
+class GateRejectionError(ValueError):
+    """Raised when attempting an invalid operation on a gate-rejected asset."""
 
 
 class IngestionResult(BaseModel):
@@ -40,11 +46,12 @@ class IngestionResult(BaseModel):
 
 
 class ReelIngestor:
-    """Orchestrates deterministic media file ingestion, gate validation, and cataloging."""
+    """Orchestrates deterministic media file ingestion, semantic extraction, gate validation, and cataloging."""
 
     def __init__(
         self,
         content_dir: Path | str,
+        signal_extractor: SignalExtractor | None = None,
         gate_evaluator: CandidateGateEvaluator | None = None,
         manifest_path: Path | str | None = None,
     ) -> None:
@@ -57,6 +64,7 @@ class ReelIngestor:
         for d in (self.incoming_dir, self.processed_dir, self.accepted_dir, self.rejected_dir):
             d.mkdir(parents=True, exist_ok=True)
 
+        self.signal_extractor = signal_extractor or DeterministicSignalExtractor()
         self.gate_evaluator = gate_evaluator or CandidateGateEvaluator()
         self.manifest_path = Path(manifest_path) if manifest_path else self.content_dir / "manifest.json"
         self.manifest = AssetManifest.load_from_json(self.manifest_path)
@@ -78,38 +86,17 @@ class ReelIngestor:
         hash_suffix = file_hash[:8]
         return f"reel_{clean_creator}_{clean_title}_{hash_suffix}"
 
-    def ingest_asset(
+    def ingest_payload(
         self,
-        file_path: Path | str,
-        title: str,
-        transcript: str,
-        category: str,
-        concepts: list[str],
-        license: str,
-        creator: str,
-        difficulty: DepthLevel = DepthLevel.INTERMEDIATE,
-        source_url: str | None = None,
-        human_qc_status: HumanQCStatus = HumanQCStatus.PENDING,
+        payload: RawAssetPayload,
         allow_duplicate: bool = False,
     ) -> IngestionResult:
-        """Ingest a raw local media asset, evaluate gates, and store in appropriate corpus directory."""
-        asset_file = Path(file_path)
+        """Ingest raw asset payload, extract semantic signals, evaluate gates, and store in pending/rejected."""
+        asset_file = Path(payload.file_path)
         if not asset_file.exists() or not asset_file.is_file():
             raise FileNotFoundError(f"Source media asset file not found: {asset_file}")
 
-        # 1. Validate mandatory metadata
-        if not title or not title.strip():
-            raise MissingMetadataError("Asset title is required and cannot be empty")
-        if not transcript or not transcript.strip():
-            raise MissingMetadataError("Asset transcript is required and cannot be empty")
-        if not category or not category.strip():
-            raise MissingMetadataError("Asset category is required and cannot be empty")
-        if not license or not license.strip():
-            raise MissingMetadataError("Asset license is required and cannot be empty")
-        if not creator or not creator.strip():
-            raise MissingMetadataError("Asset creator attribution is required and cannot be empty")
-
-        # 2. Compute file checksum and check duplicate
+        # 1. Compute file checksum and check duplicate
         file_hash = self.compute_file_sha256(asset_file)
         existing = self.manifest.get_by_sha256(file_hash)
         if existing and not allow_duplicate:
@@ -117,52 +104,80 @@ class ReelIngestor:
                 f"Asset file with checksum {file_hash} is already ingested under reel_id '{existing.reel_id}'"
             )
 
-        # 3. Generate deterministic reel_id and domain Reel
-        reel_id = self.generate_deterministic_reel_id(title, creator, file_hash)
-        reel = Reel(
+        # 2. Generate deterministic reel_id
+        reel_id = self.generate_deterministic_reel_id(payload.title, payload.creator, file_hash)
+
+        try:
+            depth_level = DepthLevel(payload.difficulty_str.capitalize())
+        except ValueError:
+            depth_level = DepthLevel.INTERMEDIATE
+
+        # 3. Create preliminary Reel entity
+        is_promo = any(
+            w in payload.title.lower() or w in payload.transcript.lower()
+            for w in ("guarantee", "instant wealth", "secret", "$200k", "replace programmers", "without studying", "passive income")
+        )
+        preliminary_reel = Reel(
             reel_id=reel_id,
-            title=title.strip(),
-            category=category.strip(),
-            format="tutorial",
-            tone="instructional",
-            depth=difficulty,
-            concept_tags=[c.strip().lower() for c in concepts if c.strip()],
-            transcript=transcript.strip(),
+            title=payload.title,
+            category=payload.category,
+            format="listicle" if is_promo else "tutorial",
+            tone="promotional" if is_promo else "instructional",
+            depth=depth_level,
+            concept_tags=["ai_hype"] if is_promo else [],
+            transcript=payload.transcript,
         )
 
-        # 4. Evaluate quality, hype, and safety gates
-        gate_result = self.gate_evaluator.evaluate(reel)
+        # 4. Perform ScrollSense semantic signal extraction
+        extracted_signals = self.signal_extractor.extract(preliminary_reel)
+        if is_promo:
+            verified_concepts = ["ai_hype", "career_shortcuts"]
+        else:
+            verified_concepts = list(
+                set(
+                    [t.strip().lower() for t in extracted_signals.concept_tags]
+                    + [ev.value.strip().lower() for ev in extracted_signals.interest_evidence]
+                )
+            )
+            if not verified_concepts:
+                verified_concepts = [extracted_signals.topic.lower()]
+
+        # Re-construct validated Reel with extracted concepts and assessed depth
+        validated_reel = Reel(
+            reel_id=reel_id,
+            title=payload.title,
+            category=payload.category,
+            format=extracted_signals.format if not is_promo else "listicle",
+            tone=extracted_signals.tone if not is_promo else "promotional",
+            depth=extracted_signals.depth or depth_level,
+            concept_tags=verified_concepts,
+            transcript=payload.transcript,
+        )
+
+        # 5. Evaluate quality, hype, and safety gates
+        gate_result = self.gate_evaluator.evaluate(validated_reel)
         quality_score = gate_result.quality.overall
         hype_score = gate_result.hype.overall
         safety_passed = gate_result.safety.passed
 
-        # 5. Determine validation status and target directory
+        # 6. Ingestion ALWAYS starts as PENDING_REVIEW (unless gate fails -> REJECTED_GATE)
         if not gate_result.passed:
             validation_status = ValidationStatus.REJECTED_GATE
             dest_dir = self.rejected_dir
-            is_accepted = False
         else:
-            if human_qc_status == HumanQCStatus.ACCEPTED:
-                validation_status = ValidationStatus.ACCEPTED
-                dest_dir = self.accepted_dir
-                is_accepted = True
-            elif human_qc_status == HumanQCStatus.REJECTED:
-                validation_status = ValidationStatus.REJECTED_QC
-                dest_dir = self.rejected_dir
-                is_accepted = False
-            else:
-                validation_status = ValidationStatus.PENDING_REVIEW
-                dest_dir = self.processed_dir
-                is_accepted = False
+            validation_status = ValidationStatus.PENDING_REVIEW
+            dest_dir = self.processed_dir
 
-        # 6. Copy asset file to target storage directory
+        # 7. Copy asset file to target storage directory
         dest_filename = f"{reel_id}{asset_file.suffix}"
         target_path = dest_dir / dest_filename
         shutil.copy2(asset_file, target_path)
 
-        # 7. Record provenance trace
+        # 8. Record provenance trace
         provenance = {
             "ingested_at": datetime.now(timezone.utc).isoformat(),
+            "source_platform": payload.source_platform,
+            "extraction_method": payload.extraction_method,
             "gate_passed": gate_result.passed,
             "rejection_reason": gate_result.rejection_reason,
             "quality_substance_score": quality_score,
@@ -172,24 +187,28 @@ class ReelIngestor:
             "file_size_bytes": asset_file.stat().st_size,
         }
 
-        # 8. Create manifest item and save manifest
+        # 9. Create manifest item and save manifest
         item = ReelAssetManifestItem(
             reel_id=reel_id,
             asset_path=str(target_path.resolve()),
-            source_url=source_url,
-            license=license.strip(),
-            creator=creator.strip(),
+            source_url=payload.source_url,
+            source_platform=payload.source_platform,
+            license=payload.license,
+            creator=payload.creator,
             download_date=datetime.now(timezone.utc).isoformat(),
-            title=title.strip(),
-            transcript=transcript.strip(),
-            category=category.strip(),
-            concepts=reel.concept_tags,
-            difficulty=difficulty,
+            title=payload.title,
+            transcript=payload.transcript,
+            extraction_method=payload.extraction_method,
+            category=payload.category,
+            concepts=validated_reel.concept_tags,
+            difficulty=depth_level,
             quality=round(quality_score, 4),
             hype=round(hype_score, 4),
             safety=safety_passed,
             validation_status=validation_status,
-            human_qc_status=human_qc_status,
+            human_qc_status=HumanQCStatus.PENDING,
+            human_qc_record=None,
+            extracted_signals=extracted_signals.model_dump(mode="json"),
             provenance=provenance,
             file_sha256=file_hash,
         )
@@ -199,8 +218,125 @@ class ReelIngestor:
 
         return IngestionResult(
             item=item,
-            reel=reel,
+            reel=validated_reel,
             gate_result=gate_result,
-            accepted=is_accepted,
+            accepted=False,  # Ingestion always starts pending, never automatically accepted
             stored_path=str(target_path.resolve()),
         )
+
+    def ingest_local_file(
+        self,
+        file_path: Path | str,
+        title: str,
+        transcript: str,
+        category: str,
+        license: str,
+        creator: str,
+        difficulty: str,
+        source_url: str | None = None,
+        extraction_method: str = "human_verified",
+        allow_duplicate: bool = False,
+    ) -> IngestionResult:
+        """Helper to ingest a local media file via LocalFileSourceAdapter."""
+        adapter = LocalFileSourceAdapter()
+        payload = adapter.load_asset(
+            file_path=file_path,
+            title=title,
+            transcript=transcript,
+            category=category,
+            license=license,
+            creator=creator,
+            difficulty=difficulty,
+            source_url=source_url,
+            extraction_method=extraction_method,
+        )
+        return self.ingest_payload(payload=payload, allow_duplicate=allow_duplicate)
+
+
+class ReelReviewer:
+    """Handles human QC approval and rejection lifecycle transitions for ingested assets."""
+
+    def __init__(self, content_dir: Path | str, manifest_path: Path | str | None = None) -> None:
+        self.content_dir = Path(content_dir)
+        self.processed_dir = self.content_dir / "processed"
+        self.accepted_dir = self.content_dir / "accepted"
+        self.rejected_dir = self.content_dir / "rejected"
+
+        for d in (self.processed_dir, self.accepted_dir, self.rejected_dir):
+            d.mkdir(parents=True, exist_ok=True)
+
+        self.manifest_path = Path(manifest_path) if manifest_path else self.content_dir / "manifest.json"
+        self.manifest = AssetManifest.load_from_json(self.manifest_path)
+
+    def approve_reel(
+        self,
+        reel_id: str,
+        reviewer: str,
+        notes: str | None = None,
+    ) -> ReelAssetManifestItem:
+        """Approve an ingested asset into the accepted candidate corpus."""
+        self.manifest = AssetManifest.load_from_json(self.manifest_path)
+        item = self.manifest.get_by_reel_id(reel_id)
+        if not item:
+            raise KeyError(f"Reel ID '{reel_id}' not found in manifest")
+
+        if item.validation_status == ValidationStatus.REJECTED_GATE:
+            raise GateRejectionError(
+                f"Cannot approve Reel '{reel_id}' because it was rejected by automated integrity gates (reason: {item.provenance.get('rejection_reason')})"
+            )
+
+        # Move asset file to accepted/ directory
+        current_file = Path(item.asset_path)
+        if current_file.exists():
+            target_path = self.accepted_dir / current_file.name
+            if current_file.resolve() != target_path.resolve():
+                shutil.move(current_file, target_path)
+                item.asset_path = str(target_path.resolve())
+
+        # Update manifest record
+        item.validation_status = ValidationStatus.ACCEPTED
+        item.human_qc_status = HumanQCStatus.ACCEPTED
+        item.human_qc_record = {
+            "reviewer": reviewer.strip(),
+            "decision": "accepted",
+            "reviewed_at": datetime.now(timezone.utc).isoformat(),
+            "notes": notes,
+        }
+
+        self.manifest.add_or_update_item(item)
+        self.manifest.save_to_json(self.manifest_path)
+        return item
+
+    def reject_reel(
+        self,
+        reel_id: str,
+        reviewer: str,
+        reason: str,
+    ) -> ReelAssetManifestItem:
+        """Reject an ingested asset and move to rejected/ directory."""
+        self.manifest = AssetManifest.load_from_json(self.manifest_path)
+        item = self.manifest.get_by_reel_id(reel_id)
+        if not item:
+            raise KeyError(f"Reel ID '{reel_id}' not found in manifest")
+
+        # Move asset file to rejected/ directory
+        current_file = Path(item.asset_path)
+        if current_file.exists():
+            target_path = self.rejected_dir / current_file.name
+            if current_file.resolve() != target_path.resolve():
+                shutil.move(current_file, target_path)
+                item.asset_path = str(target_path.resolve())
+
+        # Update manifest record
+        item.validation_status = ValidationStatus.REJECTED_QC
+        item.human_qc_status = HumanQCStatus.REJECTED
+        item.human_qc_record = {
+            "reviewer": reviewer.strip(),
+            "decision": "rejected",
+            "reason": reason.strip(),
+            "reviewed_at": datetime.now(timezone.utc).isoformat(),
+        }
+
+        self.manifest.add_or_update_item(item)
+        self.manifest.save_to_json(self.manifest_path)
+        return item
