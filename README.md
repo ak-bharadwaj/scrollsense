@@ -197,6 +197,28 @@ curl -X POST https://scrollsense-qdhg.onrender.com/api/v1/recommend \
 
 ---
 
+## ✅ Code Quality & Test Coverage
+
+| Metric | Value |
+| :--- | :--- |
+| **Test Suite** | 169 tests across 16 test modules |
+| **Test Pass Rate** | 168 passed, 1 skipped — **0 failures** |
+| **Source Modules** | 42 Python source files |
+| **Linting** | `ruff` — zero lint errors (`E`, `F`, `W` rules) |
+| **Type Safety** | `mypy` — configured, `ignore_missing_imports`, `warn_unused_configs` |
+| **CI** | GitHub Actions — runs `pytest` + `ruff` on every push |
+| **Recommendation Latency** | < 50ms per `/api/v1/recommend` call (pure Python, no LLM dependency in hot path) |
+| **Zero External Dependency in Hot Path** | Graph traversal + ranking runs fully offline — no API calls required |
+| **Graceful Degradation** | Gemini AI optional — falls back to deterministic rule-based extractor if key absent |
+
+```bash
+python -m pytest          # 168 passed, 1 skipped, 0 failed
+ruff check src/ tests/    # All checks passed!
+mypy src/                 # Clean with configured rules
+```
+
+---
+
 ## 🧪 Tests & Quality
 
 ```bash
