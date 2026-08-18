@@ -42,7 +42,7 @@ CORE_ENGINEERING_CONCEPTS = {
 
 
 class MultiObjectiveRanker:
-    """Ranks surviving candidates across 6 calibrated objectives."""
+    """Ranks surviving candidates across 6 normalized heuristic objectives."""
 
     def __init__(
         self,

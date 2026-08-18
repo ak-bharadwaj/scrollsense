@@ -63,23 +63,60 @@ def swe_trap_state() -> InterestState:
 
 
 def test_weights_validation_and_boundaries():
-    """Test 10: Verify RankingWeights validation rejects negative or all-zero weights."""
+    """Test 10: Verify RankingWeights validation enforces sum == 1.0 and unit interval bounds."""
+    # Valid default weights pass and sum to 1.0
+    default_w = RankingWeights()
+    assert (
+        default_w.topical_fit
+        + default_w.difficulty_match
+        + default_w.career_relevance
+        + default_w.novelty
+        + default_w.quality
+        + default_w.hype_penalty
+    ) == pytest.approx(1.0)
+
+    # Valid custom weights summing to 1.0 pass
+    custom_w = RankingWeights(
+        topical_fit=0.30,
+        difficulty_match=0.10,
+        career_relevance=0.30,
+        novelty=0.10,
+        quality=0.10,
+        hype_penalty=0.10,
+    )
+    assert custom_w.topical_fit == 0.30
+
+    # Negative individual weight rejected
     with pytest.raises(ValueError):
         RankingWeights(topical_fit=-0.1)
 
+    # Out-of-bounds individual weight > 1.0 rejected
     with pytest.raises(ValueError):
         RankingWeights(career_relevance=1.5)
 
-    with pytest.raises(ValueError) as exc:
+    # Weights summing to < 1.0 rejected
+    with pytest.raises(ValueError) as exc_low:
         RankingWeights(
-            topical_fit=0.0,
-            difficulty_match=0.0,
-            career_relevance=0.0,
-            novelty=0.0,
-            quality=0.0,
-            hype_penalty=0.5,
+            topical_fit=0.10,
+            difficulty_match=0.10,
+            career_relevance=0.10,
+            novelty=0.10,
+            quality=0.10,
+            hype_penalty=0.10,
         )
-    assert "Sum of positive objective weights must be greater than 0.0" in str(exc.value)
+    assert "Total sum of ranking weights must equal 1.0" in str(exc_low.value)
+
+    # Weights summing to > 1.0 rejected
+    with pytest.raises(ValueError) as exc_high:
+        RankingWeights(
+            topical_fit=0.40,
+            difficulty_match=0.40,
+            career_relevance=0.40,
+            novelty=0.10,
+            quality=0.10,
+            hype_penalty=0.10,
+        )
+    assert "Total sum of ranking weights must equal 1.0" in str(exc_high.value)
 
 
 def test_hld_outranks_literal_java_in_swe_trap(
