@@ -302,3 +302,51 @@ def test_deterministic_repeated_selection(
 
     assert [r.model_dump() for r in recs_1] == [r.model_dump() for r in recs_2]
     assert [o.model_dump() for o in outputs_1] == [o.model_dump() for o in outputs_2]
+
+
+def test_runner_up_margin_selection_for_k3(candidate_reels_dict: dict[str, Reel], input_reels: list[Reel]):
+    """Test 10: Verify K=3 recommendations correctly compare each candidate against its strictly next lower-ranked runner-up."""
+    policy = SelectionPolicy(max_recommendations=3, category_diversity_penalty=0.0)
+    assembler = RecommendationAssembler(policy=policy, candidate_repository=candidate_reels_dict)
+
+    high_state = InterestState(
+        student_id="s_k3",
+        professional_identity={"software_engineer": 0.88},
+        domains={"coding": 0.8},
+        goals={"career_prep": 0.8},
+        depth={},
+        content_preference={},
+        evidence=["reel_java_meme", "reel_swe_lifestyle", "reel_interview_joke"],
+        updated_at=datetime.now(timezone.utc),
+    )
+
+    def make_ranked(cand_id: str, score: float) -> RankedCandidate:
+        c = Candidate(reel_id=cand_id, source=RetrievalSource.SOURCE_B_IDENTITY_ADJACENT)
+        obj_scores = ObjectiveScores(
+            topical_fit=0.8, difficulty_match=1.0, career_relevance=0.9,
+            novelty=0.8, quality=0.8, hype_penalty=0.1, final_score=score,
+        )
+        trace = RankingTrace(
+            candidate_id=cand_id, eligible=True, objective_scores=obj_scores,
+            weights=RankingWeights(), weighted_contributions={}, final_score=score,
+            gate_result=GateResult(
+                candidate_id=cand_id, passed=True, safety=SafetyResult(passed=True),
+                quality=QualityScore(concept_anchor_score=0.9, depth_score=0.7),
+                hype=HypeScore(pattern_penalty=0.1, promotional_language_score=0.1),
+            ),
+        )
+        return RankedCandidate(candidate=c, scores=obj_scores, final_score=score, trace=trace)
+
+    # 3 ranked candidates with scores: 0.90, 0.84, 0.80
+    rc1 = make_ranked("reel_hld_caching", 0.90)     # runner-up is rc2 (0.84), margin = 0.06 >= 0.06 -> HIGH
+    rc2 = make_ranked("reel_dsa_trees", 0.84)       # runner-up is rc3 (0.80), margin = 0.04 < 0.06 -> MEDIUM
+    rc3 = make_ranked("reel_cloud_k8s", 0.80)       # no runner-up -> default margin 0.15 >= 0.06 -> HIGH
+
+    ranking_res = RankingResult(ranked_candidates=[rc1, rc2, rc3])
+
+    recs, outputs = assembler.select_and_assemble(ranking_res, high_state, input_reels)
+
+    assert len(outputs) == 3
+    assert outputs[0].confidence == ConfidenceBucket.HIGH
+    assert outputs[1].confidence == ConfidenceBucket.MEDIUM
+    assert outputs[2].confidence == ConfidenceBucket.HIGH

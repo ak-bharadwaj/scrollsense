@@ -111,12 +111,19 @@ class RecommendationAssembler:
             reel = self._resolve_reel(rc.candidate.reel_id, reels_map)
             cat = map_reel_to_tech_category(reel)
 
-            # Determine runner-up from original ranked list for margin calculation
-            runner_up = None
-            for other_rc in ranking_result.ranked_candidates:
-                if other_rc.candidate.reel_id != rc.candidate.reel_id:
-                    runner_up = other_rc
-                    break
+            # Determine runner-up from original ranked list (strictly next lower-ranked candidate)
+            try:
+                orig_index = next(
+                    i for i, r in enumerate(ranking_result.ranked_candidates)
+                    if r.candidate.reel_id == rc.candidate.reel_id
+                )
+                runner_up = (
+                    ranking_result.ranked_candidates[orig_index + 1]
+                    if orig_index + 1 < len(ranking_result.ranked_candidates)
+                    else None
+                )
+            except StopIteration:
+                runner_up = None
 
             confidence = self.explainer.derive_confidence(
                 interest_state,
