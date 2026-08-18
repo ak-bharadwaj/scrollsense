@@ -50,15 +50,13 @@ class LLMStructuredSignalExtractor:
     def _extract_graph_allowlists(
         graph: IdentitySkillGraph | GraphStore,
     ) -> tuple[set[str], set[str]]:
-        """Extract allowed professional_identity and career_stage IDs from graph nodes."""
+        """Extract allowed professional_identity and career_stage IDs from graph nodes using public APIs."""
         if isinstance(graph, GraphStore):
             identities = {
-                node_id for node_id, node in graph._nodes_by_id.items()
-                if node.category == NodeType.PROFESSIONAL_IDENTITY
+                node.id for node in graph.get_nodes_by_category(NodeType.PROFESSIONAL_IDENTITY)
             }
             career_stages = {
-                node_id for node_id, node in graph._nodes_by_id.items()
-                if node.category == NodeType.CAREER_STAGE
+                node.id for node in graph.get_nodes_by_category(NodeType.CAREER_STAGE)
             }
         elif isinstance(graph, IdentitySkillGraph):
             identities = {

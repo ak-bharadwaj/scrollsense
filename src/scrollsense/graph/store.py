@@ -54,6 +54,14 @@ class GraphStore:
         """Check if node ID exists in the graph."""
         return node_id in self._nodes_by_id
 
+    def get_nodes_by_category(self, category: NodeType) -> list[GraphNode]:
+        """Retrieve all nodes belonging to a specific NodeType category."""
+        return [node for node in self._nodes_by_id.values() if node.category == category]
+
+    def get_nodes_by_type(self, node_type: NodeType) -> list[GraphNode]:
+        """Alias for get_nodes_by_category for public NodeType querying."""
+        return self.get_nodes_by_category(node_type)
+
     def traverse_1_hop_identity_adjacent(self, identity_node_id: str) -> list[TraversalResult]:
         """Traverse Source B: 1-hop from a professional_identity node to adjacent skills.
 

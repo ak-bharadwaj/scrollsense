@@ -14,7 +14,7 @@ class LLMConfig(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     provider_name: str = Field(default="gemini", description="Provider identifier (e.g. gemini, openai, mock)")
-    model_name: str = Field(default="gemini-2.0-flash", description="Target model version/name")
+    model_name: str = Field(default="gemini-3.5-flash", description="Target model version/name")
     api_key: str | None = Field(default=None, description="Provider API key (read from environment)")
     timeout_seconds: float = Field(default=15.0, ge=1.0, le=120.0, description="Request timeout in seconds")
 
@@ -25,7 +25,7 @@ class LLMConfig(BaseModel):
         Fails explicitly on malformed configuration.
         """
         provider = os.getenv("SCROLLSENSE_LLM_PROVIDER", "gemini")
-        model = os.getenv("SCROLLSENSE_LLM_MODEL", "gemini-2.0-flash")
+        model = os.getenv("SCROLLSENSE_LLM_MODEL", "gemini-3.5-flash")
         api_key = os.getenv("GEMINI_API_KEY") or os.getenv("OPENAI_API_KEY") or os.getenv("LLM_API_KEY")
 
         timeout_env = os.getenv("SCROLLSENSE_LLM_TIMEOUT")
