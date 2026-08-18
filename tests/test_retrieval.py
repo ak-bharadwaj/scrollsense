@@ -145,11 +145,11 @@ def test_gaming_identity_does_not_retrieve_swe_candidates(retriever: MultiSource
     assert "reel_security_auth" not in candidate_ids_b
 
 
-def test_hype_candidate_retrieved_structurally_before_gate(retriever: MultiSourceRetriever):
-    """Test 6: Hype candidate (reel_ai_hype_trap) is retrieved structurally if relevant and NOT filtered in retrieval."""
+def test_hype_candidate_retrieved_from_topical_ai_source(retriever: MultiSourceRetriever):
+    """Test 6: Hype candidate (reel_ai_hype_trap) is retrievable via topical AI interest (Source A) for downstream gate evaluation."""
     state = InterestState(
         student_id="student_ai_curious",
-        professional_identity={"software_engineer": 0.8},
+        professional_identity={},
         domains={"ai": 0.7},
         goals={},
         depth={},
@@ -158,10 +158,31 @@ def test_hype_candidate_retrieved_structurally_before_gate(retriever: MultiSourc
         updated_at=datetime.now(timezone.utc),
     )
 
-    all_candidates = retriever.retrieve_candidates(state)
-    candidate_ids = [c.reel_id for c in all_candidates]
+    candidates_a = retriever.retrieve_source_a_topical(state)
+    candidate_ids = [c.reel_id for c in candidates_a]
 
-    assert "reel_ai_hype_trap" in candidate_ids, "Hype candidate must be preserved at retrieval stage for later gate evaluation"
+    assert "reel_ai_hype_trap" in candidate_ids, "Hype candidate must be preserved at topical retrieval stage for later gate evaluation"
+
+
+def test_source_b_ai_engineering_excludes_hype_reel(retriever: MultiSourceRetriever):
+    """Regression test: Source B ai_engineering skill retrieval returns grounded AI content, NOT the hype reel."""
+    state = InterestState(
+        student_id="student_swe",
+        professional_identity={"software_engineer": 0.85},
+        domains={},
+        goals={},
+        depth={},
+        content_preference={},
+        evidence=[],
+        updated_at=datetime.now(timezone.utc),
+    )
+
+    candidates_b = retriever.retrieve_source_b_identity_adjacent(state)
+    ai_candidates = [c for c in candidates_b if c.matched_node == "ai_engineering"]
+    ai_reel_ids = [c.reel_id for c in ai_candidates]
+
+    assert "reel_ai_substance" in ai_reel_ids, "Grounded AI transformer candidate must be retrieved under ai_engineering"
+    assert "reel_ai_hype_trap" not in ai_reel_ids, "Hype reel must NOT be mapped to ai_engineering skill"
 
 
 def test_multi_source_deduplication_and_provenance(retriever: MultiSourceRetriever):

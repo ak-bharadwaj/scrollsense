@@ -13,7 +13,7 @@ NODE_CONCEPT_MAPPINGS: dict[str, set[str]] = {
     "dsa": {"dsa", "binary_trees", "dynamic_programming", "interview_prep"},
     "cloud_infrastructure": {"cloud_infrastructure", "kubernetes", "cloud_networking", "docker", "serverless"},
     "cybersecurity": {"cybersecurity", "oauth2", "jwt", "api_security"},
-    "ai_engineering": {"ai_architecture", "transformers", "neural_networks", "attention_mechanism", "ai_hype"},
+    "ai_engineering": {"ai_architecture", "transformers", "neural_networks", "attention_mechanism"},
     "esports_strategy": {"esports", "fps_gaming", "gaming_setup", "mechanical_keyboards"},
     # 2-hop boundary skill nodes
     "distributed_caching": {"redis", "cache_invalidation", "distributed_systems"},
