@@ -2,7 +2,7 @@
 
 from scrollsense.evaluation.baselines import (
     B0_LiteralTopicBaseline,
-    B1_CategoryDominanceBaseline,
+    B1_SemanticSimilarityBaseline,
     B2_ScrollSenseBaseline,
     BaselineRecommendation,
 )
@@ -27,7 +27,7 @@ from scrollsense.evaluation.scenarios import (
 
 __all__ = [
     "B0_LiteralTopicBaseline",
-    "B1_CategoryDominanceBaseline",
+    "B1_SemanticSimilarityBaseline",
     "B2_ScrollSenseBaseline",
     "BaselineRecommendation",
     "BenchmarkReportGenerator",

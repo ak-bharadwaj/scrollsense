@@ -16,7 +16,7 @@ class BenchmarkReportGenerator:
             "",
             "## 1. Aggregate Baseline Comparison Table",
             "",
-            "| Metric | B0: Literal Topic | B1: Category Dominance | B2: ScrollSense (Ours) |",
+            "| Metric | B0: Literal Jaccard | B1: Semantic Similarity | B2: ScrollSense (Ours) |",
             "| :--- | :---: | :---: | :---: |",
         ]
 

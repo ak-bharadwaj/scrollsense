@@ -11,7 +11,7 @@ from scrollsense.domain.reels import Reel
 from scrollsense.engine import EngineResult, ScrollSenseEngine
 from scrollsense.evaluation.baselines import (
     B0_LiteralTopicBaseline,
-    B1_CategoryDominanceBaseline,
+    B1_SemanticSimilarityBaseline,
     B2_ScrollSenseBaseline,
     BaselineRecommendation,
 )
@@ -78,7 +78,7 @@ class EvaluationHarness:
 
         # Initialize Baselines
         self.b0_baseline = B0_LiteralTopicBaseline(self.candidate_reels)
-        self.b1_baseline = B1_CategoryDominanceBaseline(self.candidate_reels)
+        self.b1_baseline = B1_SemanticSimilarityBaseline(self.candidate_reels)
 
         # Initialize ScrollSense Engine
         self.engine = ScrollSenseEngine.create_default(
