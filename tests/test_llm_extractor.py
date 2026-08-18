@@ -404,7 +404,7 @@ def test_trap_pipeline_integration_with_llm_signals(input_reels: dict[str, Reel]
     assert len(state.evidence) == 4
 
 
-def test_real_gemini_integration_skips_cleanly_without_credentials():
+def test_real_gemini_integration_skips_cleanly_without_credentials(canonical_graph: IdentitySkillGraph):
     """Optional real integration test for Gemini API; skips cleanly if GEMINI_API_KEY is not configured."""
     api_key = os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY")
     if not api_key:
@@ -423,10 +423,7 @@ def test_real_gemini_integration_skips_cleanly_without_credentials():
         concept_tags=["quicksort", "algorithms"],
     )
 
-    with open(GRAPH_PATH, "r", encoding="utf-8") as f:
-        raw_graph = json.load(f)
-    graph = IdentitySkillGraph.model_validate(raw_graph)
-    extractor = LLMStructuredSignalExtractor(provider=provider, graph=graph)
+    extractor = LLMStructuredSignalExtractor(provider=provider, graph=canonical_graph)
     signal = extractor.extract(reel)
 
     assert signal.reel_id == "test_real_gemini"

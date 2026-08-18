@@ -4,8 +4,11 @@ import json
 import os
 from pathlib import Path
 from typing import Sequence
+from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+
+load_dotenv()
 
 from scrollsense.api.routes import create_router
 from scrollsense.domain.reels import Reel

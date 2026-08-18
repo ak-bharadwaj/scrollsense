@@ -16,7 +16,7 @@ class LLMConfig(BaseModel):
     provider_name: str = Field(default="gemini", description="Provider identifier (e.g. gemini, openai, mock)")
     model_name: str = Field(default="gemini-3.5-flash", description="Target model version/name (Google AI Studio)")
     api_key: str | None = Field(default=None, description="Provider API key (read from environment)")
-    timeout_seconds: float = Field(default=15.0, ge=1.0, le=120.0, description="Request timeout in seconds")
+    timeout_seconds: float = Field(default=30.0, ge=1.0, le=120.0, description="Request timeout in seconds")
 
     @classmethod
     def from_env(cls) -> "LLMConfig":
@@ -37,7 +37,7 @@ class LLMConfig(BaseModel):
                     f"Invalid SCROLLSENSE_LLM_TIMEOUT: '{timeout_env}' is not a valid float"
                 ) from e
         else:
-            timeout = 15.0
+            timeout = 30.0
 
         return cls(
             provider_name=provider,
@@ -77,12 +77,36 @@ class GeminiLLMProvider:
     def model_name(self) -> str:
         return self.config.model_name
 
+    @staticmethod
+    def _clean_schema_for_gemini(schema: dict[str, Any]) -> dict[str, Any]:
+        """Recursively dereference $ref and strip unsupported OpenAPI fields ($defs, additionalProperties, title) for Gemini API."""
+        defs = schema.get("$defs", {})
+
+        def resolve(node: Any) -> Any:
+            if isinstance(node, dict):
+                if "$ref" in node:
+                    ref_name = node["$ref"].split("/")[-1]
+                    target = defs.get(ref_name, {})
+                    return resolve(target)
+                cleaned: dict[str, Any] = {}
+                for k, v in node.items():
+                    if k in ("$defs", "additionalProperties", "title"):
+                        continue
+                    cleaned[k] = resolve(v)
+                return cleaned
+            elif isinstance(node, list):
+                return [resolve(item) for item in node]
+            return node
+
+        return resolve(schema)
+
     def generate_structured_json(self, prompt: str, schema: type[BaseModel]) -> dict[str, Any]:
         """Call Gemini generateContent endpoint enforcing Pydantic response_schema."""
         if not self.config.api_key:
             raise LLMProviderError("Missing API key for Gemini provider (set GEMINI_API_KEY environment variable)")
 
         endpoint = f"{self.BASE_URL}/{self.config.model_name}:generateContent?key={self.config.api_key}"
+        cleaned_schema = self._clean_schema_for_gemini(schema.model_json_schema())
 
         request_body = {
             "contents": [
@@ -92,7 +116,7 @@ class GeminiLLMProvider:
             ],
             "generationConfig": {
                 "response_mime_type": "application/json",
-                "response_schema": schema.model_json_schema(),
+                "response_schema": cleaned_schema,
             },
         }
 
