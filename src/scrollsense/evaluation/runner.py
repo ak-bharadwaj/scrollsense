@@ -80,9 +80,10 @@ class EvaluationHarness:
 
         # Initialize Baselines
         self.b0_baseline = B0_LiteralTopicBaseline(self.candidate_reels)
+        provider = embedding_provider or FakeEmbeddingProvider()
         self.b1_baseline = B1_EmbeddingSemanticSimilarityBaseline(
             self.candidate_reels,
-            embedding_provider=embedding_provider,
+            embedding_provider=provider,
         )
 
         # Initialize ScrollSense Engine

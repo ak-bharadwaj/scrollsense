@@ -1,8 +1,6 @@
-"""Baseline recommendation algorithms (B0: Literal Jaccard, B1: Embedding Semantic Similarity, B2: ScrollSense)."""
+"""Baseline recommendation algorithms (B0: Literal Jaccard, B1: Pretrained Sentence Embedding, B2: ScrollSense)."""
 
-import hashlib
 import math
-import re
 from typing import Protocol, Sequence
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -12,9 +10,12 @@ from scrollsense.domain.reels import Reel
 from scrollsense.engine import EngineResult, ScrollSenseEngine
 from scrollsense.selection.category_mapper import map_reel_to_tech_category
 
+# Pinned pretrained sentence-transformer model identifier for semantic embedding baseline
+DEFAULT_SENTENCE_TRANSFORMER_MODEL: str = "sentence-transformers/all-MiniLM-L6-v2"
+
 
 class EmbeddingProvider(Protocol):
-    """Protocol interface for embedding models."""
+    """Protocol interface for dense text embedding providers."""
 
     def embed(self, text: str) -> list[float]:
         """Generate dense vector embedding for a single text."""
@@ -25,61 +26,70 @@ class EmbeddingProvider(Protocol):
         ...
 
 
-class DeterministicDenseEmbeddingProvider:
-    """Deterministic dense embedding provider using multi-hash token feature projection and L2 normalization.
+class SentenceTransformerEmbeddingProvider:
+    """Pretrained sentence-transformers embedding provider for semantic similarity baseline.
 
-    Generates dense, continuous D-dimensional vectors without external model downloads or network access.
+    Uses a pinned open-source Transformer model ('sentence-transformers/all-MiniLM-L6-v2')
+    to map raw text into 384-dimensional dense semantic vectors on CPU.
     """
 
-    def __init__(self, dimension: int = 128) -> None:
-        self.dimension = dimension
+    def __init__(
+        self,
+        model_name: str = DEFAULT_SENTENCE_TRANSFORMER_MODEL,
+        device: str = "cpu",
+    ) -> None:
+        self.model_name = model_name
+        self.device = device
+        self._model = None
 
-    def _embed_single(self, text: str) -> list[float]:
-        tokens = re.findall(r"\b[a-zA-Z0-9_]+\b", text.lower())
-        if not tokens:
-            return [0.0] * self.dimension
+    def _load_model(self):
+        if self._model is None:
+            try:
+                from sentence_transformers import SentenceTransformer  # type: ignore
 
-        vec = [0.0] * self.dimension
-        for idx, tok in enumerate(tokens):
-            # Deterministic multi-hash feature projection
-            h1 = int(hashlib.sha256(tok.encode("utf-8")).hexdigest(), 16)
-            h2 = int(hashlib.md5(tok.encode("utf-8")).hexdigest(), 16)
-
-            dim_idx1 = h1 % self.dimension
-            dim_idx2 = h2 % self.dimension
-            sign1 = 1.0 if (h1 >> 8) % 2 == 0 else -1.0
-            sign2 = 1.0 if (h2 >> 8) % 2 == 0 else -1.0
-
-            # Weight token significance with positional attenuation
-            pos_weight = 1.0 / (1.0 + 0.05 * math.log(idx + 1))
-            vec[dim_idx1] += sign1 * pos_weight
-            vec[dim_idx2] += sign2 * pos_weight * 0.5
-
-        # L2 Normalization
-        norm = math.sqrt(sum(x * x for x in vec))
-        if norm > 0.0:
-            return [round(x / norm, 6) for x in vec]
-        return vec
+                self._model = SentenceTransformer(self.model_name, device=self.device)
+            except Exception as exc:
+                raise RuntimeError(
+                    f"Failed to load sentence-transformers model '{self.model_name}': {exc}"
+                ) from exc
+        return self._model
 
     def embed(self, text: str) -> list[float]:
-        return self._embed_single(text)
+        model = self._load_model()
+        vector = model.encode(text, convert_to_numpy=True, normalize_embeddings=True)
+        if hasattr(vector, "tolist"):
+            vector = vector.tolist()
+        if isinstance(vector, list) and vector and isinstance(vector[0], list):
+            vector = vector[0]
+        return [float(x) for x in vector]
 
     def embed_batch(self, texts: Sequence[str]) -> list[list[float]]:
-        return [self._embed_single(t) for t in texts]
+        if not texts:
+            return []
+        model = self._load_model()
+        vectors = model.encode(list(texts), convert_to_numpy=True, normalize_embeddings=True)
+        if hasattr(vectors, "tolist"):
+            vectors = vectors.tolist()
+        return [[float(x) for x in row] for row in vectors]
 
 
 class FakeEmbeddingProvider:
-    """Mock embedding provider with pre-configured or deterministic static embeddings for testing."""
+    """Deterministic fake embedding provider for unit tests without network or model downloads."""
 
-    def __init__(self, fixed_dim: int = 4, preset_embeddings: dict[str, list[float]] | None = None) -> None:
+    def __init__(
+        self,
+        fixed_dim: int = 4,
+        preset_embeddings: dict[str, list[float]] | None = None,
+    ) -> None:
         self.fixed_dim = fixed_dim
         self.preset_embeddings = preset_embeddings or {}
 
     def embed(self, text: str) -> list[float]:
         if text in self.preset_embeddings:
             return self.preset_embeddings[text]
-        # Return deterministic vector based on text length
-        val = (len(text) % 10) / 10.0
+        # Deterministic vector based on character sum
+        char_sum = sum(ord(c) for c in text)
+        val = round(((char_sum % 100) / 100.0) * 2.0 - 1.0, 4)
         return [val] * self.fixed_dim
 
     def embed_batch(self, texts: Sequence[str]) -> list[list[float]]:
@@ -98,9 +108,9 @@ class BaselineRecommendation(BaseModel):
     category: TechCategory = Field(..., description="Mapped technical category")
     score: float = Field(
         ...,
-        ge=0.0,
+        ge=-1.0,
         le=1.0,
-        description="Underlying score produced by the baseline (Jaccard similarity, Cosine similarity, or Multi-Objective ranking score)",
+        description="Underlying score produced by the baseline (Jaccard in [0,1], raw Cosine in [-1,1], or Ranking score in [0,1])",
     )
     rationale: str = Field(..., description="Explanation of why this candidate was selected by the baseline")
 
@@ -156,20 +166,20 @@ class B0_LiteralTopicBaseline:
 
 
 class B1_EmbeddingSemanticSimilarityBaseline:
-    """Baseline 1: Dense embedding-based semantic similarity baseline over text representations.
+    """Baseline 1: Pretrained Sentence Embedding semantic similarity baseline.
 
-    Uses dense continuous vector embeddings of reel text (title + transcript + concept tags + category)
-    and computes cosine similarity between candidate embeddings and the centroid of watched history.
+    Uses dense continuous sentence embeddings of reel text (title + transcript + concept tags + category)
+    and computes raw cosine similarity between candidate embeddings and the centroid of watched history.
     Does not use ScrollSense graphs, persona inference, gates, or heuristic ranking objectives.
     """
 
     def __init__(
         self,
         candidate_pool: Sequence[Reel],
-        embedding_provider: EmbeddingProvider | None = None,
+        embedding_provider: EmbeddingProvider,
     ) -> None:
         self.candidate_pool = list(candidate_pool)
-        self.provider: EmbeddingProvider = embedding_provider or DeterministicDenseEmbeddingProvider()
+        self.provider = embedding_provider
         self._candidate_embeddings: list[tuple[Reel, list[float]]] = []
         self._precompute_candidate_embeddings()
 
@@ -191,9 +201,11 @@ class B1_EmbeddingSemanticSimilarityBaseline:
 
     @staticmethod
     def calculate_cosine_similarity(vec_a: Sequence[float], vec_b: Sequence[float]) -> float:
-        """Compute cosine similarity between two dense vectors: (u · v) / (||u|| ||v||)."""
-        if not vec_a or not vec_b or len(vec_a) != len(vec_b):
+        """Compute raw cosine similarity between two dense vectors: (u · v) / (||u|| ||v||) in [-1.0, 1.0]."""
+        if not vec_a or not vec_b:
             return 0.0
+        if len(vec_a) != len(vec_b):
+            raise ValueError(f"Vector dimension mismatch: {len(vec_a)} != {len(vec_b)}")
 
         dot_product = sum(a * b for a, b in zip(vec_a, vec_b, strict=True))
         norm_a = math.sqrt(sum(a * a for a in vec_a))
@@ -202,13 +214,13 @@ class B1_EmbeddingSemanticSimilarityBaseline:
         if norm_a == 0.0 or norm_b == 0.0:
             return 0.0
 
-        # Cosine similarity mapped to [0, 1] range for normalized scoring
         raw_cos = dot_product / (norm_a * norm_b)
-        normalized_cos = (raw_cos + 1.0) / 2.0
-        return round(normalized_cos, 4)
+        # Numerical clamp to valid [-1.0, 1.0] interval
+        clamped_cos = max(-1.0, min(1.0, raw_cos))
+        return round(clamped_cos, 4)
 
     def recommend(self, input_reels: Sequence[Reel]) -> BaselineRecommendation:
-        """Compute history embedding centroid and select candidate with maximum cosine similarity."""
+        """Compute history embedding centroid and select candidate with maximum raw cosine similarity."""
         if not input_reels:
             raise ValueError("Input reels cannot be empty")
 
@@ -224,7 +236,7 @@ class B1_EmbeddingSemanticSimilarityBaseline:
                 centroid[d] += emb[d]
         centroid = [x / len(history_embeddings) for x in centroid]
 
-        # 3. Score all candidates by cosine similarity against history centroid
+        # 3. Score all candidates by raw cosine similarity against history centroid
         scored_candidates: list[tuple[float, str, Reel]] = []
         for cand, cand_emb in self._candidate_embeddings:
             cos_sim = self.calculate_cosine_similarity(centroid, cand_emb)
@@ -242,7 +254,7 @@ class B1_EmbeddingSemanticSimilarityBaseline:
             recommended_title=best_candidate.title,
             category=map_reel_to_tech_category(best_candidate),
             score=top_score,
-            rationale=f"Selected based on maximum embedding cosine similarity ({top_score:.4f}) with history centroid vector.",
+            rationale=f"Selected based on maximum raw embedding cosine similarity ({top_score:.4f}) with history centroid vector.",
         )
 
 

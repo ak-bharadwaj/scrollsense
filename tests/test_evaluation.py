@@ -2,19 +2,21 @@
 
 from copy import deepcopy
 from pathlib import Path
+from unittest.mock import MagicMock
 import pytest
 
 from scrollsense.domain.enums import TechCategory
 from scrollsense.domain.reels import Reel
 from scrollsense.evaluation import (
+    DEFAULT_SENTENCE_TRANSFORMER_MODEL,
     B0_LiteralTopicBaseline,
     B1_EmbeddingSemanticSimilarityBaseline,
     B2_ScrollSenseBaseline,
     BenchmarkReportGenerator,
     BenchmarkSummary,
-    DeterministicDenseEmbeddingProvider,
     EvaluationHarness,
     FakeEmbeddingProvider,
+    SentenceTransformerEmbeddingProvider,
     get_all_scenarios,
     get_evaluation_candidate_reels,
     get_evaluation_candidate_repository,
@@ -40,8 +42,8 @@ def candidate_reels() -> list[Reel]:
 
 @pytest.fixture
 def harness(graph_store: GraphStore) -> EvaluationHarness:
-    """Fixture providing EvaluationHarness."""
-    return EvaluationHarness(graph_store=graph_store)
+    """Fixture providing EvaluationHarness with FakeEmbeddingProvider."""
+    return EvaluationHarness(graph_store=graph_store, embedding_provider=FakeEmbeddingProvider())
 
 
 def test_four_scenarios_contain_eight_reels_each():
@@ -89,7 +91,6 @@ def test_b0_actual_jaccard_similarity_calculation(candidate_reels: list[Reel]):
     swe_scenario = scenarios[0]
 
     b0 = B0_LiteralTopicBaseline(candidate_reels)
-    # When user only watches Java meme, B0 must pick candidate with highest Jaccard on {"java", "exception_handling", "production_debugging"}
     rec = b0.recommend([swe_scenario.input_reels[0]])
     assert rec.baseline_id == "B0"
     assert rec.recommended_reel_id == "reel_java_syntax_basics"
@@ -97,19 +98,32 @@ def test_b0_actual_jaccard_similarity_calculation(candidate_reels: list[Reel]):
     assert 0.0 < rec.score <= 1.0
 
 
-def test_b1_embedding_semantic_similarity_with_fake_provider(candidate_reels: list[Reel]):
-    """Verify B1 baseline uses dense embeddings and cosine similarity correctly with a FakeEmbeddingProvider."""
-    # 1. Exact cosine similarity unit test
-    vec_a = [1.0, 0.0, 0.0, 0.0]
-    vec_b = [1.0, 0.0, 0.0, 0.0]
-    # identical vectors -> cosine = 1.0 -> normalized = (1.0 + 1.0)/2 = 1.0
+def test_b1_raw_cosine_similarity_math():
+    """Verify B1 baseline computes mathematically exact raw cosine similarity in [-1.0, 1.0]."""
+    # Identical vectors -> 1.0
+    vec_a = [1.0, 0.0, 0.0]
+    vec_b = [1.0, 0.0, 0.0]
     assert B1_EmbeddingSemanticSimilarityBaseline.calculate_cosine_similarity(vec_a, vec_b) == 1.0
 
-    vec_c = [-1.0, 0.0, 0.0, 0.0]
-    # opposite vectors -> raw cosine = -1.0 -> normalized = 0.0
+    # Orthogonal vectors -> 0.0
+    vec_c = [0.0, 1.0, 0.0]
     assert B1_EmbeddingSemanticSimilarityBaseline.calculate_cosine_similarity(vec_a, vec_c) == 0.0
 
-    # 2. Inject fake provider with deterministic embedding map
+    # Opposite vectors -> -1.0 (raw cosine preserved)
+    vec_d = [-1.0, 0.0, 0.0]
+    assert B1_EmbeddingSemanticSimilarityBaseline.calculate_cosine_similarity(vec_a, vec_d) == -1.0
+
+    # Empty vectors -> 0.0
+    assert B1_EmbeddingSemanticSimilarityBaseline.calculate_cosine_similarity([], vec_b) == 0.0
+
+    # Dimension mismatch raises ValueError
+    with pytest.raises(ValueError) as exc:
+        B1_EmbeddingSemanticSimilarityBaseline.calculate_cosine_similarity([1.0, 2.0], [1.0, 2.0, 3.0])
+    assert "Vector dimension mismatch" in str(exc.value)
+
+
+def test_b1_provider_injection_and_fake_provider(candidate_reels: list[Reel]):
+    """Verify B1 baseline provider injection works and produces deterministic results with FakeEmbeddingProvider."""
     target_cand = candidate_reels[0]
     target_text = B1_EmbeddingSemanticSimilarityBaseline.build_text_representation(target_cand)
 
@@ -121,28 +135,32 @@ def test_b1_embedding_semantic_similarity_with_fake_provider(candidate_reels: li
         },
     )
 
-    b1_fake = B1_EmbeddingSemanticSimilarityBaseline(candidate_reels, embedding_provider=fake_provider)
-    rec = b1_fake.recommend([target_cand])
+    b1 = B1_EmbeddingSemanticSimilarityBaseline(candidate_reels, embedding_provider=fake_provider)
+    rec = b1.recommend([target_cand])
+
     assert rec.baseline_id == "B1"
     assert rec.recommended_reel_id == target_cand.reel_id
     assert rec.score == 1.0
+    assert -1.0 <= rec.score <= 1.0
 
 
-def test_b1_dense_embedding_provider_execution(candidate_reels: list[Reel]):
-    """Verify B1 baseline operates deterministically with DeterministicDenseEmbeddingProvider without network access."""
-    provider = DeterministicDenseEmbeddingProvider(dimension=64)
-    emb = provider.embed("System Design Redis Caching")
-    assert len(emb) == 64
-    assert any(x != 0.0 for x in emb)
+def test_real_sentence_transformer_provider_configuration_and_mocked_execution():
+    """Verify real SentenceTransformerEmbeddingProvider configuration and model pinning."""
+    assert DEFAULT_SENTENCE_TRANSFORMER_MODEL == "sentence-transformers/all-MiniLM-L6-v2"
 
-    scenarios = get_all_scenarios()
-    ai_scenario = scenarios[2]
+    provider = SentenceTransformerEmbeddingProvider()
+    assert provider.model_name == "sentence-transformers/all-MiniLM-L6-v2"
+    assert provider.device == "cpu"
+    assert provider._model is None  # Lazy loading verified
 
-    b1 = B1_EmbeddingSemanticSimilarityBaseline(candidate_reels, embedding_provider=provider)
-    rec = b1.recommend(ai_scenario.input_reels)
-    assert rec.baseline_id == "B1"
-    assert 0.0 <= rec.score <= 1.0
-    assert isinstance(rec.category, TechCategory)
+    # Mock the internal model to test embed and embed_batch without network/downloads
+    mock_model = MagicMock()
+    mock_model.encode.return_value = [[0.1, 0.2, 0.3, 0.4]]
+    provider._model = mock_model
+
+    vec = provider.embed("System Design Distributed Caching")
+    assert len(vec) == 4
+    assert vec == [0.1, 0.2, 0.3, 0.4]
 
 
 def test_same_candidate_pool_across_all_baselines(harness: EvaluationHarness):
@@ -159,7 +177,6 @@ def test_same_scenario_input_across_all_baselines(harness: EvaluationHarness):
     """Verify all baselines receive identical input reel sequences for every scenario."""
     for sc in harness.scenarios:
         assert len(sc.input_reels) == 8
-        # Pass identical sequence to B0, B1, B2
         r0 = harness.b0_baseline.recommend(sc.input_reels)
         r1 = harness.b1_baseline.recommend(sc.input_reels)
         r2, _ = harness.b2_baseline.recommend(student_id=f"test_{sc.scenario_id}", input_reels=sc.input_reels)
