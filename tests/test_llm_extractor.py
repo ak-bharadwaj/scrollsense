@@ -3,6 +3,7 @@
 from datetime import datetime, timezone
 import io
 import json
+import os
 from pathlib import Path
 from typing import Any
 from unittest.mock import MagicMock, patch
@@ -401,3 +402,32 @@ def test_trap_pipeline_integration_with_llm_signals(input_reels: dict[str, Reel]
     assert "java" in state.domains
     assert "java" not in state.professional_identity
     assert len(state.evidence) == 4
+
+
+def test_real_gemini_integration_skips_cleanly_without_credentials():
+    """Optional real integration test for Gemini API; skips cleanly if GEMINI_API_KEY is not configured."""
+    api_key = os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY")
+    if not api_key:
+        pytest.skip("Skipping real Gemini API integration test: GEMINI_API_KEY not configured")
+
+    config = LLMConfig(provider_name="gemini", model_name="gemini-1.5-flash", api_key=api_key)
+    provider = GeminiLLMProvider(config=config)
+
+    reel = Reel(
+        reel_id="test_real_gemini",
+        title="Understanding QuickSort Algorithm in Python",
+        category="coding",
+        depth=DepthLevel.BEGINNER,
+        transcript="QuickSort selects a pivot element and partitions arrays recursively.",
+        concept_tags=["quicksort", "algorithms"],
+    )
+
+    with open(GRAPH_PATH, "r", encoding="utf-8") as f:
+        raw_graph = json.load(f)
+    graph = IdentitySkillGraph.model_validate(raw_graph)
+    extractor = LLMStructuredSignalExtractor(provider=provider, graph=graph)
+    signal = extractor.extract(reel)
+
+    assert signal.reel_id == "test_real_gemini"
+    assert signal.topic is not None
+

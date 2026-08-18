@@ -89,26 +89,44 @@ def create_router(
     @router.get("/api/v1/feed", response_model=list[FeedItemResponse], tags=["Feed"])
     async def get_feed(
         limit: int = Query(default=20, ge=1, le=50, description="Max feed items to return"),
+        include_fixtures: bool = Query(
+            default=False,
+            description="Include synthetic development fixtures when accepted production media is not yet ingested",
+        ),
     ) -> list[FeedItemResponse]:
         """Return available accepted Reel items for the vertical feed.
 
         Items are sourced exclusively from verified, human-QC-accepted manifest items with valid assets on disk.
+        If include_fixtures=True, development fixture reels are returned and explicitly labeled as [SYNTHETIC_FIXTURE].
         """
-        if not manifest:
-            return []
-
         accepted_feed_items: list[FeedItemResponse] = []
-        for item in manifest.items.values():
-            if (
-                item.validation_status == ValidationStatus.ACCEPTED
-                and item.human_qc_status == HumanQCStatus.ACCEPTED
-                and Path(item.asset_path).exists()
-            ):
-                reel = corpus_reels.get(item.reel_id) or item.to_domain_reel()
-                accepted_feed_items.append(_resolve_feed_item(reel))
+        if manifest:
+            for item in manifest.items.values():
+                if (
+                    item.validation_status == ValidationStatus.ACCEPTED
+                    and item.human_qc_status == HumanQCStatus.ACCEPTED
+                    and Path(item.asset_path).exists()
+                ):
+                    reel = corpus_reels.get(item.reel_id) or item.to_domain_reel()
+                    accepted_feed_items.append(_resolve_feed_item(reel))
 
-            if len(accepted_feed_items) >= limit:
-                break
+                if len(accepted_feed_items) >= limit:
+                    return accepted_feed_items
+
+        if not accepted_feed_items and include_fixtures:
+            for r in list(corpus_reels.values())[:limit]:
+                accepted_feed_items.append(
+                    FeedItemResponse(
+                        reel_id=r.reel_id,
+                        title=f"{r.title} [SYNTHETIC_FIXTURE]",
+                        creator="[SYNTHETIC_FIXTURE]",
+                        category=r.category if isinstance(r.category, str) else r.category.value,
+                        difficulty=r.depth.value,
+                        thumbnail_url=None,
+                        video_url=None,
+                        duration_seconds=30.0,
+                    )
+                )
 
         return accepted_feed_items
 

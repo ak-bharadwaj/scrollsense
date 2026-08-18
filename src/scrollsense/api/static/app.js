@@ -50,7 +50,7 @@ async function init() {
 
 async function loadFeed() {
   try {
-    const res = await fetch(`${API_BASE}/api/v1/feed?limit=25`);
+    const res = await fetch(`${API_BASE}/api/v1/feed?limit=25&include_fixtures=true`);
     if (res.ok) {
       feedReels = await res.json();
       if (feedReels.length > 0) {
@@ -77,9 +77,28 @@ function renderCurrentReel() {
 
   feedCounter.textContent = `Reel ${currentReelIndex + 1} of ${feedReels.length}`;
   reelTitle.textContent = reel.title;
-  reelCreator.textContent = reel.creator ? `@${reel.creator}` : "@ScrollSense Creator";
+  reelCreator.textContent = reel.creator ? `@${reel.creator}` : "@[SYNTHETIC_FIXTURE]";
   reelCategory.textContent = reel.category;
   reelDifficulty.textContent = reel.difficulty;
+
+  // Video container rendering: Real <video> if available, else synthetic fixture UI
+  const videoMock = document.getElementById("video-mock-bg");
+  if (reel.video_url) {
+    videoMock.innerHTML = `
+      <video src="${reel.video_url}" controls autoplay muted loop playsinline style="width:100%;height:100%;object-fit:cover;"></video>
+      <div class="video-dwell-timer">
+        <span class="timer-dot"></span> Dwell: <strong id="dwell-seconds">0.0s</strong>
+      </div>
+    `;
+  } else {
+    videoMock.innerHTML = `
+      <div class="video-play-pulse">▶</div>
+      <span class="text-xs text-muted" style="margin-top:8px;">[SYNTHETIC FIXTURE - No binary asset attached]</span>
+      <div class="video-dwell-timer">
+        <span class="timer-dot"></span> Dwell: <strong id="dwell-seconds">0.0s</strong>
+      </div>
+    `;
+  }
 
   // Render concept tags if available from detail
   fetchReelDetail(reel.reel_id);
