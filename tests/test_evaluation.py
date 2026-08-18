@@ -41,9 +41,15 @@ def candidate_reels() -> list[Reel]:
 
 
 @pytest.fixture
-def harness(graph_store: GraphStore) -> EvaluationHarness:
-    """Fixture providing EvaluationHarness with FakeEmbeddingProvider."""
-    return EvaluationHarness(graph_store=graph_store, embedding_provider=FakeEmbeddingProvider())
+def fake_provider() -> FakeEmbeddingProvider:
+    """Fixture providing FakeEmbeddingProvider."""
+    return FakeEmbeddingProvider(fixed_dim=4)
+
+
+@pytest.fixture
+def harness(graph_store: GraphStore, fake_provider: FakeEmbeddingProvider) -> EvaluationHarness:
+    """Fixture providing EvaluationHarness with explicitly injected FakeEmbeddingProvider."""
+    return EvaluationHarness(graph_store=graph_store, embedding_provider=fake_provider)
 
 
 def test_four_scenarios_contain_eight_reels_each():
@@ -109,7 +115,7 @@ def test_b1_raw_cosine_similarity_math():
     vec_c = [0.0, 1.0, 0.0]
     assert B1_EmbeddingSemanticSimilarityBaseline.calculate_cosine_similarity(vec_a, vec_c) == 0.0
 
-    # Opposite vectors -> -1.0 (raw cosine preserved)
+    # Opposite vectors -> -1.0 (raw cosine preserved without internal remapping)
     vec_d = [-1.0, 0.0, 0.0]
     assert B1_EmbeddingSemanticSimilarityBaseline.calculate_cosine_similarity(vec_a, vec_d) == -1.0
 
@@ -144,8 +150,20 @@ def test_b1_provider_injection_and_fake_provider(candidate_reels: list[Reel]):
     assert -1.0 <= rec.score <= 1.0
 
 
-def test_real_sentence_transformer_provider_configuration_and_mocked_execution():
-    """Verify real SentenceTransformerEmbeddingProvider configuration and model pinning."""
+def test_evaluation_harness_requires_explicit_embedding_provider(graph_store: GraphStore):
+    """Test 7: EvaluationHarness cannot accidentally run B1 without an explicit provider."""
+    # Calling without embedding_provider raises TypeError
+    with pytest.raises(TypeError):
+        EvaluationHarness(graph_store=graph_store)  # type: ignore[call-arg]
+
+    # Passing None explicitly raises ValueError
+    with pytest.raises(ValueError) as exc:
+        EvaluationHarness(graph_store=graph_store, embedding_provider=None)  # type: ignore[arg-type]
+    assert "An explicit EmbeddingProvider must be provided" in str(exc.value)
+
+
+def test_real_sentence_transformer_provider_isolated_mocked_execution():
+    """Verify real SentenceTransformerEmbeddingProvider configuration and model pinning without network dependency."""
     assert DEFAULT_SENTENCE_TRANSFORMER_MODEL == "sentence-transformers/all-MiniLM-L6-v2"
 
     provider = SentenceTransformerEmbeddingProvider()
@@ -155,12 +173,18 @@ def test_real_sentence_transformer_provider_configuration_and_mocked_execution()
 
     # Mock the internal model to test embed and embed_batch without network/downloads
     mock_model = MagicMock()
-    mock_model.encode.return_value = [[0.1, 0.2, 0.3, 0.4]]
+    mock_model.encode.side_effect = lambda texts, **kwargs: (
+        [[0.1, 0.2, 0.3, 0.4] for _ in texts] if isinstance(texts, list) else [0.1, 0.2, 0.3, 0.4]
+    )
     provider._model = mock_model
 
     vec = provider.embed("System Design Distributed Caching")
     assert len(vec) == 4
     assert vec == [0.1, 0.2, 0.3, 0.4]
+
+    batch = provider.embed_batch(["Text 1", "Text 2"])
+    assert len(batch) == 2
+    assert len(batch[0]) == 4
 
 
 def test_same_candidate_pool_across_all_baselines(harness: EvaluationHarness):
@@ -220,6 +244,9 @@ def test_deterministic_repeated_evaluation(harness: EvaluationHarness):
 
     # Compare aggregate metrics
     assert summary_1.aggregate_metrics == summary_2.aggregate_metrics
+    assert summary_1.embedding_model_name == "FakeEmbeddingProvider"
+    assert summary_1.scenario_count == 4
+    assert summary_1.candidate_count == 20
 
     # Compare per-scenario recommendation decisions
     for r1, r2 in zip(summary_1.scenario_records, summary_2.scenario_records, strict=True):
@@ -228,9 +255,12 @@ def test_deterministic_repeated_evaluation(harness: EvaluationHarness):
             assert r1.baseline_recommendations[b_id].model_dump() == r2.baseline_recommendations[b_id].model_dump()
             assert r1.metrics[b_id].model_dump() == r2.metrics[b_id].model_dump()
 
-    # Markdown report generates successfully
+    # Markdown & JSON reports generate successfully
     report_md = BenchmarkReportGenerator.generate_markdown_report(summary_1)
     assert "# ScrollSense Empirical Evaluation Benchmark Report" in report_md
     assert "B0: Literal Jaccard" in report_md
     assert "B1: Semantic Similarity" in report_md
     assert "B2: ScrollSense (Ours)" in report_md
+
+    report_json = BenchmarkReportGenerator.generate_json_report(summary_1)
+    assert '"embedding_model_name": "FakeEmbeddingProvider"' in report_json

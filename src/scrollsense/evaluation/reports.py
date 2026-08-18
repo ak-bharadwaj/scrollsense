@@ -1,5 +1,6 @@
 """Benchmark report generator producing formatted comparison tables and analysis."""
 
+import json
 from scrollsense.evaluation.runner import BenchmarkSummary
 
 
@@ -12,7 +13,10 @@ class BenchmarkReportGenerator:
         lines = [
             "# ScrollSense Empirical Evaluation Benchmark Report",
             "",
-            f"**Evaluated At:** {summary.evaluated_at.isoformat()}",
+            f"- **Evaluated At:** `{summary.evaluated_at.isoformat()}`",
+            f"- **Embedding Model (B1):** `{summary.embedding_model_name}`",
+            f"- **Scenarios Evaluated:** `{summary.scenario_count}`",
+            f"- **Candidates Evaluated:** `{summary.candidate_count}`",
             "",
             "## 1. Aggregate Baseline Comparison Table",
             "",
@@ -64,3 +68,8 @@ class BenchmarkReportGenerator:
             lines.append("")
 
         return "\n".join(lines)
+
+    @staticmethod
+    def generate_json_report(summary: BenchmarkSummary, indent: int = 2) -> str:
+        """Generate a machine-readable JSON evaluation report."""
+        return json.dumps(summary.model_dump(mode="json"), indent=indent)

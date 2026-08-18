@@ -60,6 +60,9 @@ class BenchmarkSummary(BaseModel):
         ...,
         description="Average metrics keyed by baseline ID (B0, B1, B2)",
     )
+    embedding_model_name: str = Field(..., description="Name or type of the embedding model used for B1")
+    scenario_count: int = Field(..., description="Total number of evaluated scenarios")
+    candidate_count: int = Field(..., description="Total number of candidates in pool")
     evaluated_at: datetime = Field(..., description="Timestamp of benchmark execution")
 
 
@@ -69,10 +72,13 @@ class EvaluationHarness:
     def __init__(
         self,
         graph_store: GraphStore,
+        embedding_provider: EmbeddingProvider,
         scenarios: list[Scenario] | None = None,
-        embedding_provider: EmbeddingProvider | None = None,
     ) -> None:
+        if embedding_provider is None:
+            raise ValueError("An explicit EmbeddingProvider must be provided to EvaluationHarness")
         self.graph_store = graph_store
+        self.embedding_provider = embedding_provider
         self.scenarios = scenarios or get_all_scenarios()
         self.candidate_reels = get_evaluation_candidate_reels()
         self.candidate_repo = get_evaluation_candidate_repository()
@@ -80,10 +86,9 @@ class EvaluationHarness:
 
         # Initialize Baselines
         self.b0_baseline = B0_LiteralTopicBaseline(self.candidate_reels)
-        provider = embedding_provider or FakeEmbeddingProvider()
         self.b1_baseline = B1_EmbeddingSemanticSimilarityBaseline(
             self.candidate_reels,
-            embedding_provider=provider,
+            embedding_provider=self.embedding_provider,
         )
 
         # Initialize ScrollSense Engine
@@ -185,8 +190,12 @@ class EvaluationHarness:
                 "top1_expert_alignment": round(sum(m.top1_expert_alignment for m in b_metrics) / num, 4),
             }
 
+        model_name = getattr(self.embedding_provider, "model_name", self.embedding_provider.__class__.__name__)
         return BenchmarkSummary(
             scenario_records=records,
             aggregate_metrics=aggregate,
+            embedding_model_name=model_name,
+            scenario_count=len(self.scenarios),
+            candidate_count=len(self.candidate_reels),
             evaluated_at=eval_time,
         )
