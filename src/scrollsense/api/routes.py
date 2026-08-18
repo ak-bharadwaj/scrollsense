@@ -40,7 +40,8 @@ def create_router(
         video_url = None
         if manifest_item and manifest_item.asset_path:
             asset_path = Path(manifest_item.asset_path)
-            if asset_path.exists():
+            file_exists = asset_path.exists() or (accepted_dir and (accepted_dir / asset_path.name).exists())
+            if file_exists:
                 video_url = f"/media/accepted/{asset_path.name}"
 
         return FeedItemResponse(
@@ -101,10 +102,13 @@ def create_router(
         accepted_feed_items: list[FeedItemResponse] = []
         if manifest:
             for item in manifest.items.values():
+                asset_p = Path(item.asset_path)
+                # Check absolute asset_path or relative to accepted_dir
+                file_exists = asset_p.exists() or (accepted_dir and (accepted_dir / asset_p.name).exists())
                 if (
                     item.validation_status == ValidationStatus.ACCEPTED
                     and item.human_qc_status == HumanQCStatus.ACCEPTED
-                    and Path(item.asset_path).exists()
+                    and file_exists
                 ):
                     reel = corpus_reels.get(item.reel_id) or item.to_domain_reel()
                     accepted_feed_items.append(_resolve_feed_item(reel))
@@ -112,20 +116,24 @@ def create_router(
                 if len(accepted_feed_items) >= limit:
                     return accepted_feed_items
 
-        if not accepted_feed_items and include_fixtures:
-            for r in list(corpus_reels.values())[:limit]:
-                accepted_feed_items.append(
-                    FeedItemResponse(
-                        reel_id=r.reel_id,
-                        title=f"{r.title} [SYNTHETIC_FIXTURE]",
-                        creator="[SYNTHETIC_FIXTURE]",
-                        category=r.category if isinstance(r.category, str) else r.category.value,
-                        difficulty=r.depth.value,
-                        thumbnail_url=None,
-                        video_url=None,
-                        duration_seconds=30.0,
+        if include_fixtures and (not accepted_feed_items or len(accepted_feed_items) < limit):
+            already_included = {item.reel_id for item in accepted_feed_items}
+            for r in corpus_reels.values():
+                if r.reel_id not in already_included:
+                    accepted_feed_items.append(
+                        FeedItemResponse(
+                            reel_id=r.reel_id,
+                            title=f"{r.title} [SYNTHETIC_FIXTURE]",
+                            creator="[SYNTHETIC_FIXTURE]",
+                            category=r.category if isinstance(r.category, str) else r.category.value,
+                            difficulty=r.depth.value,
+                            thumbnail_url=None,
+                            video_url=None,
+                            duration_seconds=30.0,
+                        )
                     )
-                )
+                if len(accepted_feed_items) >= limit:
+                    break
 
         return accepted_feed_items
 
@@ -274,6 +282,8 @@ def create_router(
             )
 
         target_file = Path(matching_item.asset_path).resolve()
+        if not target_file.exists():
+            target_file = (accepted_dir / filename).resolve()
 
         # Path containment validation using relative_to
         try:
