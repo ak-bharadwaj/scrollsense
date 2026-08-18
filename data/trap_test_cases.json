@@ -1,0 +1,87 @@
+[
+  {
+    "case_id": "trap_case_swe_heterogeneous",
+    "case_type": "trap_heterogeneous_swe",
+    "description": "Student watches heterogeneous content (Java meme, SWE lifestyle, coding interview joke, laptop comparison). Pipeline must escape literal Java topic loop and infer latent Software Engineer identity with career preparation goals, recommending adjacent System Design (HLD) or DSA rather than merely repeating Java syntax tutorials.",
+    "watched_reel_ids": [
+      "reel_java_meme",
+      "reel_swe_lifestyle",
+      "reel_interview_joke",
+      "reel_laptop_comparison"
+    ],
+    "expected_inferred_identity": "software_engineer",
+    "expected_recommendation_categories": [
+      "HLD",
+      "DSA",
+      "Cloud",
+      "Cybersecurity"
+    ],
+    "unexpected_recommendation_categories": [
+      "Java"
+    ],
+    "should_reject_reels": [
+      "reel_ai_hype_trap"
+    ]
+  },
+  {
+    "case_id": "non_trap_case_gaming_only",
+    "case_type": "non_trap_gaming",
+    "description": "Student watches gaming and peripheral hardware content. Pipeline must NOT falsely infer a software engineering identity merely because tech/hardware/computers are involved; it must stay within gaming/hardware domain boundaries.",
+    "watched_reel_ids": [
+      "reel_gaming_clip",
+      "reel_gaming_gear",
+      "reel_esports_highlight"
+    ],
+    "expected_inferred_identity": "gamer",
+    "expected_recommendation_categories": [
+      "Hardware",
+      "Other"
+    ],
+    "unexpected_recommendation_categories": [
+      "DSA",
+      "HLD",
+      "Java"
+    ],
+    "should_reject_reels": [
+      "reel_ai_hype_trap"
+    ]
+  },
+  {
+    "case_id": "trap_case_ai_hype_filtering",
+    "case_type": "hype_filtering",
+    "description": "Student engages with emerging AI tool commentary. The 3-tier gate must actively penalize or reject low-substance clickbait hype listicles (reel_ai_hype_trap) while promoting grounded, concept-anchored technical tutorials (reel_ai_substance).",
+    "watched_reel_ids": [
+      "reel_ai_prompt_hacks"
+    ],
+    "expected_inferred_identity": "software_engineer",
+    "expected_recommendation_categories": [
+      "AI"
+    ],
+    "unexpected_recommendation_categories": [],
+    "should_reject_reels": [
+      "reel_ai_hype_trap"
+    ]
+  },
+  {
+    "case_id": "trap_case_cloud_career_heterogeneous",
+    "case_type": "career_pivot",
+    "description": "Student watches cloud news, resume advice, and Linux CLI tutorials. Pipeline must infer backend/DevOps engineering identity with candidate/career-seeking stage, recommending Cloud infrastructure or Career preparation rather than basic generic tech.",
+    "watched_reel_ids": [
+      "reel_tech_news_cloud",
+      "reel_career_resume_tips",
+      "reel_linux_cli_tricks"
+    ],
+    "expected_inferred_identity": "software_engineer",
+    "expected_recommendation_categories": [
+      "Cloud",
+      "Career"
+    ],
+    "unexpected_recommendation_categories": [
+      "Java",
+      "Hardware"
+    ],
+    "should_reject_reels": [
+      "reel_ai_hype_trap"
+    ]
+  }
+]

@@ -1,0 +1,60 @@
+{
+  "version": "1.0.0",
+  "description": "Allowed technical recommendation categories matching problem statement TechCategory enum.",
+  "categories": [
+    {
+      "id": "AI",
+      "display_name": "Artificial Intelligence & Machine Learning",
+      "description": "Core machine learning architectures, neural network models, LLM systems, and data pipelines.",
+      "anchor_concepts": ["transformers", "neural_networks", "attention_mechanism", "model_fine_tuning", "embeddings"]
+    },
+    {
+      "id": "DSA",
+      "display_name": "Data Structures & Algorithms",
+      "description": "Core computer science algorithms, complexity analysis, dynamic programming, graphs, and interview problem patterns.",
+      "anchor_concepts": ["binary_trees", "dynamic_programming", "graph_traversal", "time_complexity", "sorting_algorithms"]
+    },
+    {
+      "id": "Java",
+      "display_name": "Java & JVM Ecosystem",
+      "description": "Core Java language features, JVM internals, multithreading, concurrency, and enterprise frameworks.",
+      "anchor_concepts": ["jvm_internals", "garbage_collection", "virtual_threads", "concurrency", "spring_boot"]
+    },
+    {
+      "id": "HLD",
+      "display_name": "High-Level System Design & Architecture",
+      "description": "Distributed systems, architectural scalability, caching topologies, databases, and microservice communication.",
+      "anchor_concepts": ["distributed_caching", "load_balancing", "sharding", "cap_theorem", "message_queues"]
+    },
+    {
+      "id": "Cybersecurity",
+      "display_name": "Cybersecurity & Application Security",
+      "description": "Authentication protocols, cryptography, vulnerability mitigation, and secure API architecture.",
+      "anchor_concepts": ["oauth2", "jwt", "sql_injection", "tls_encryption", "zero_trust"]
+    },
+    {
+      "id": "Cloud",
+      "display_name": "Cloud Computing & DevOps",
+      "description": "Cloud infrastructure, container orchestration, CI/CD pipelines, and site reliability engineering.",
+      "anchor_concepts": ["kubernetes", "docker", "terraform", "serverless", "cloud_networking"]
+    },
+    {
+      "id": "Hardware",
+      "display_name": "Hardware, Architecture & Peripherals",
+      "description": "Computer architecture, processor designs, development workstations, and hardware peripherals.",
+      "anchor_concepts": ["cpu_architecture", "apple_silicon", "gpu_acceleration", "memory_bandwidth", "custom_keyboards"]
+    },
+    {
+      "id": "Career",
+      "display_name": "Technical Career & Interview Prep",
+      "description": "Engineering interview strategies, career progression, technical leadership, and engineering workflows.",
+      "anchor_concepts": ["interview_preparation", "resume_review", "system_design_interview", "engineering_levels", "code_review"]
+    },
+    {
+      "id": "Other",
+      "display_name": "Other Technical Topics",
+      "description": "General engineering tools, productivity hacks, and miscellaneous technical domains.",
+      "anchor_concepts": ["git_workflows", "shell_scripting", "linux_cli", "productivity_tools"]
+    }
+  ]
+}

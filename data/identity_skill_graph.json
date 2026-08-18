@@ -1,0 +1,324 @@
+{
+  "version": "1.0.0",
+  "metadata": {
+    "description": "Hand-authored v1 Identity/Skill Graph explicitly mapping topics to latent identities and adjacent technical skills.",
+    "authorship": "Hand-authored heuristic v1 baseline (not learned from interaction logs)"
+  },
+  "nodes": [
+    {
+      "id": "java_meme",
+      "category": "topic",
+      "label": "Java Programming Memes"
+    },
+    {
+      "id": "swe_lifestyle",
+      "category": "topic",
+      "label": "Software Engineer Lifestyle & Workplace"
+    },
+    {
+      "id": "interview_joke",
+      "category": "topic",
+      "label": "Technical Interview Humor"
+    },
+    {
+      "id": "laptop_comparison",
+      "category": "topic",
+      "label": "Developer Laptop & Workstation Hardware"
+    },
+    {
+      "id": "gaming_clip",
+      "category": "topic",
+      "label": "FPS Gameplay Clips"
+    },
+    {
+      "id": "gaming_gear",
+      "category": "topic",
+      "label": "Custom Mechanical Keyboards & Gaming Gear"
+    },
+    {
+      "id": "esports_highlight",
+      "category": "topic",
+      "label": "Competitive Esports Highlights"
+    },
+    {
+      "id": "ai_prompt_hacks",
+      "category": "topic",
+      "label": "AI Assistant Prompt Workflows"
+    },
+    {
+      "id": "tech_news_cloud",
+      "category": "topic",
+      "label": "Cloud Infrastructure News"
+    },
+    {
+      "id": "career_resume_tips",
+      "category": "topic",
+      "label": "Engineering Resume Advice"
+    },
+    {
+      "id": "linux_cli_tricks",
+      "category": "topic",
+      "label": "Linux Command Line Utilities"
+    },
+    {
+      "id": "software_engineer",
+      "category": "professional_identity",
+      "label": "Software Engineer"
+    },
+    {
+      "id": "developer",
+      "category": "professional_identity",
+      "label": "Developer"
+    },
+    {
+      "id": "backend_developer",
+      "category": "professional_identity",
+      "label": "Backend Developer"
+    },
+    {
+      "id": "gamer",
+      "category": "professional_identity",
+      "label": "Gamer / Gaming Enthusiast"
+    },
+    {
+      "id": "hardware_enthusiast",
+      "category": "professional_identity",
+      "label": "Hardware Enthusiast"
+    },
+    {
+      "id": "candidate",
+      "category": "career_stage",
+      "label": "Job Seeking Candidate / Early Career"
+    },
+    {
+      "id": "system_design",
+      "category": "skill",
+      "label": "System Design & Architecture"
+    },
+    {
+      "id": "dsa",
+      "category": "skill",
+      "label": "Data Structures & Algorithms"
+    },
+    {
+      "id": "cloud_infrastructure",
+      "category": "skill",
+      "label": "Cloud Infrastructure & Containers"
+    },
+    {
+      "id": "cybersecurity",
+      "category": "skill",
+      "label": "API Security & Authentication"
+    },
+    {
+      "id": "ai_engineering",
+      "category": "skill",
+      "label": "Applied AI & Transformer Architecture"
+    },
+    {
+      "id": "pc_building",
+      "category": "skill",
+      "label": "Custom PC & Peripheral Building"
+    },
+    {
+      "id": "esports_strategy",
+      "category": "skill",
+      "label": "Competitive Gaming Strategy"
+    },
+    {
+      "id": "distributed_caching",
+      "category": "skill",
+      "label": "Distributed Caching (Redis/Memcached)"
+    },
+    {
+      "id": "tree_algorithms",
+      "category": "skill",
+      "label": "Tree & Dynamic Programming Algorithms"
+    },
+    {
+      "id": "kubernetes_orchestration",
+      "category": "skill",
+      "label": "Kubernetes Container Orchestration"
+    },
+    {
+      "id": "oauth_security",
+      "category": "skill",
+      "label": "OAuth2 & JWT Implementation"
+    },
+    {
+      "id": "transformer_architecture",
+      "category": "skill",
+      "label": "Transformer Neural Network Design"
+    }
+  ],
+  "edges": [
+    {
+      "from_node": "java_meme",
+      "to_node": "software_engineer",
+      "relation_type": "topic_implies_identity",
+      "weight": 0.65
+    },
+    {
+      "from_node": "swe_lifestyle",
+      "to_node": "software_engineer",
+      "relation_type": "topic_implies_identity",
+      "weight": 0.85
+    },
+    {
+      "from_node": "interview_joke",
+      "to_node": "candidate",
+      "relation_type": "career_stage_signal",
+      "weight": 0.8
+    },
+    {
+      "from_node": "interview_joke",
+      "to_node": "software_engineer",
+      "relation_type": "topic_implies_identity",
+      "weight": 0.7
+    },
+    {
+      "from_node": "laptop_comparison",
+      "to_node": "developer",
+      "relation_type": "professional_identity_signal",
+      "weight": 0.7
+    },
+    {
+      "from_node": "developer",
+      "to_node": "software_engineer",
+      "relation_type": "topic_implies_identity",
+      "weight": 0.9
+    },
+    {
+      "from_node": "candidate",
+      "to_node": "software_engineer",
+      "relation_type": "skill_implies_role",
+      "weight": 0.75
+    },
+    {
+      "from_node": "gaming_clip",
+      "to_node": "gamer",
+      "relation_type": "topic_implies_identity",
+      "weight": 0.9
+    },
+    {
+      "from_node": "gaming_gear",
+      "to_node": "gamer",
+      "relation_type": "topic_implies_identity",
+      "weight": 0.8
+    },
+    {
+      "from_node": "gaming_gear",
+      "to_node": "hardware_enthusiast",
+      "relation_type": "topic_implies_identity",
+      "weight": 0.7
+    },
+    {
+      "from_node": "esports_highlight",
+      "to_node": "gamer",
+      "relation_type": "topic_implies_identity",
+      "weight": 0.85
+    },
+    {
+      "from_node": "ai_prompt_hacks",
+      "to_node": "software_engineer",
+      "relation_type": "topic_implies_identity",
+      "weight": 0.6
+    },
+    {
+      "from_node": "tech_news_cloud",
+      "to_node": "backend_developer",
+      "relation_type": "topic_implies_identity",
+      "weight": 0.75
+    },
+    {
+      "from_node": "backend_developer",
+      "to_node": "software_engineer",
+      "relation_type": "topic_implies_identity",
+      "weight": 0.95
+    },
+    {
+      "from_node": "career_resume_tips",
+      "to_node": "candidate",
+      "relation_type": "career_stage_signal",
+      "weight": 0.8
+    },
+    {
+      "from_node": "linux_cli_tricks",
+      "to_node": "backend_developer",
+      "relation_type": "topic_implies_identity",
+      "weight": 0.7
+    },
+    {
+      "from_node": "software_engineer",
+      "to_node": "system_design",
+      "relation_type": "identity_adjacent_skill",
+      "weight": 0.85
+    },
+    {
+      "from_node": "software_engineer",
+      "to_node": "dsa",
+      "relation_type": "identity_adjacent_skill",
+      "weight": 0.8
+    },
+    {
+      "from_node": "software_engineer",
+      "to_node": "cloud_infrastructure",
+      "relation_type": "identity_adjacent_skill",
+      "weight": 0.75
+    },
+    {
+      "from_node": "software_engineer",
+      "to_node": "cybersecurity",
+      "relation_type": "identity_adjacent_skill",
+      "weight": 0.7
+    },
+    {
+      "from_node": "software_engineer",
+      "to_node": "ai_engineering",
+      "relation_type": "identity_adjacent_skill",
+      "weight": 0.65
+    },
+    {
+      "from_node": "gamer",
+      "to_node": "esports_strategy",
+      "relation_type": "identity_adjacent_skill",
+      "weight": 0.7
+    },
+    {
+      "from_node": "hardware_enthusiast",
+      "to_node": "pc_building",
+      "relation_type": "identity_adjacent_skill",
+      "weight": 0.8
+    },
+    {
+      "from_node": "system_design",
+      "to_node": "distributed_caching",
+      "relation_type": "adjacent_to_adjacent",
+      "weight": 0.8
+    },
+    {
+      "from_node": "dsa",
+      "to_node": "tree_algorithms",
+      "relation_type": "adjacent_to_adjacent",
+      "weight": 0.8
+    },
+    {
+      "from_node": "cloud_infrastructure",
+      "to_node": "kubernetes_orchestration",
+      "relation_type": "adjacent_to_adjacent",
+      "weight": 0.85
+    },
+    {
+      "from_node": "cybersecurity",
+      "to_node": "oauth_security",
+      "relation_type": "adjacent_to_adjacent",
+      "weight": 0.8
+    },
+    {
+      "from_node": "ai_engineering",
+      "to_node": "transformer_architecture",
+      "relation_type": "adjacent_to_adjacent",
+      "weight": 0.85
+    }
+  ]
+}
