@@ -49,14 +49,22 @@ class GraphLoader:
 
     @classmethod
     def validate_semantic_integrity(cls, graph: IdentitySkillGraph) -> None:
-        """Verify that nodes are unique, edges are not dangling, and relation semantics are sound."""
+        """Verify that nodes are unique, edges are not dangling, no duplicate edges exist, and relation semantics are sound."""
         node_map: dict[str, NodeType] = {}
         for node in graph.nodes:
             if node.id in node_map:
                 raise GraphValidationError(f"Duplicate node ID found: '{node.id}'")
             node_map[node.id] = node.category
 
+        seen_edges: set[tuple[str, str]] = set()
         for edge in graph.edges:
+            edge_key = (edge.from_node, edge.to_node)
+            if edge_key in seen_edges:
+                raise GraphValidationError(
+                    f"Duplicate edge found between '{edge.from_node}' and '{edge.to_node}'"
+                )
+            seen_edges.add(edge_key)
+
             if edge.from_node not in node_map:
                 raise GraphValidationError(
                     f"Dangling edge from non-existent node: '{edge.from_node}'"

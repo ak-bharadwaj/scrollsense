@@ -142,6 +142,34 @@ def test_loader_rejects_duplicate_nodes():
     assert "Duplicate node ID found" in str(exc.value)
 
 
+def test_loader_rejects_duplicate_edges():
+    """Verify loader rejects duplicate edges between the same (from_node, to_node) pair."""
+    data = {
+        "version": "1.0",
+        "nodes": [
+            {"id": "software_engineer", "category": "professional_identity"},
+            {"id": "system_design", "category": "skill"},
+        ],
+        "edges": [
+            {
+                "from_node": "software_engineer",
+                "to_node": "system_design",
+                "relation_type": "identity_adjacent_skill",
+                "weight": 0.85,
+            },
+            {
+                "from_node": "software_engineer",
+                "to_node": "system_design",
+                "relation_type": "identity_adjacent_skill",
+                "weight": 0.70,
+            },
+        ],
+    }
+    with pytest.raises(GraphValidationError) as exc:
+        GraphLoader.load_from_dict(data)
+    assert "Duplicate edge found between 'software_engineer' and 'system_design'" in str(exc.value)
+
+
 def test_loader_rejects_invalid_relation_category_semantics():
     """Verify loader rejects semantically incompatible node-relation pairs."""
     data = {
