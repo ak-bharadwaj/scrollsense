@@ -13,11 +13,15 @@ dependencies = [
     "networkx>=3.0",
     "fastapi>=0.100.0",
     "scikit-learn>=1.3.0",
+    "python-dotenv>=1.0.0",
+    "uvicorn>=0.20.0",
 ]
 
 [project.optional-dependencies]
 dev = [
     "pytest>=8.0",
+    "ruff>=0.1.0",
+    "mypy>=1.8.0",
 ]
 
 [tool.setuptools.packages.find]
@@ -27,3 +31,24 @@ where = ["src"]
 minversion = "8.0"
 testpaths = ["tests"]
 pythonpath = ["src"]
+
+[tool.ruff]
+line-length = 120
+target-version = "py311"
+exclude = [
+    ".git",
+    "__pycache__",
+    "scratch",
+    ".pytest_cache",
+]
+
+[tool.ruff.lint]
+select = ["E", "F", "W"]
+ignore = ["E501"]
+
+[tool.mypy]
+python_version = "3.11"
+warn_return_any = false
+warn_unused_configs = true
+ignore_missing_imports = true
+disallow_untyped_defs = false

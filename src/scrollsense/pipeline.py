@@ -1,6 +1,5 @@
 """End-to-end semantic recommendation pipeline composing signals, persona, and retrieval."""
 
-from dataclasses import dataclass
 from datetime import datetime, timezone
 from typing import Sequence
 from pydantic import BaseModel, ConfigDict, Field

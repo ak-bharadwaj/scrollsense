@@ -4,7 +4,6 @@ from datetime import datetime, timezone
 import hashlib
 from pathlib import Path
 import shutil
-from typing import Any
 from pydantic import BaseModel, ConfigDict, Field
 
 from scrollsense.domain.enums import DepthLevel

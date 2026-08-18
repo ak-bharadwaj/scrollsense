@@ -4,7 +4,6 @@ from pathlib import Path
 import tempfile
 import pytest
 
-from scrollsense.domain.enums import DepthLevel
 from scrollsense.ingestion import (
     AssetManifest,
     DuplicateAssetError,

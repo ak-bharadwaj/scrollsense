@@ -81,7 +81,11 @@ class ScrollSenseEngine:
                 from scrollsense.signals.llm_extractor import LLMStructuredSignalExtractor
                 from scrollsense.signals.provider import GeminiLLMProvider, LLMConfig
                 provider = GeminiLLMProvider(config=LLMConfig.from_env())
-                signal_extractor = LLMStructuredSignalExtractor(provider=provider, graph=graph_store)
+                signal_extractor = LLMStructuredSignalExtractor(
+                    provider=provider,
+                    graph=graph_store,
+                    fallback_extractor=DeterministicSignalExtractor(),
+                )
             else:
                 signal_extractor = DeterministicSignalExtractor()
         inferencer = PersonaInferencer()
@@ -126,11 +130,17 @@ class ScrollSenseEngine:
 
         timestamp = generated_at or datetime.now(timezone.utc)
 
-        # Stage 1: Signal Extraction
-        signals = [
-            self.extractor.extract(reel, generated_at=timestamp)
-            for reel in input_reels
-        ]
+        # Stage 1: Signal Extraction (Concurrent for low latency)
+        if len(input_reels) == 1:
+            signals = [self.extractor.extract(input_reels[0], generated_at=timestamp)]
+        else:
+            from concurrent.futures import ThreadPoolExecutor
+            with ThreadPoolExecutor(max_workers=min(8, len(input_reels))) as executor:
+                futures = [
+                    executor.submit(self.extractor.extract, reel, timestamp)
+                    for reel in input_reels
+                ]
+                signals = [f.result() for f in futures]
 
         # Stage 2: Persona Inference
         interest_state = self.inferencer.infer_interest_state(

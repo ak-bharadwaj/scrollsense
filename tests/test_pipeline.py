@@ -7,8 +7,7 @@ from typing import Any
 import pytest
 from pydantic import BaseModel
 
-from scrollsense.domain.enums import DepthLevel, EvidenceType, RetrievalSource
-from scrollsense.domain.graph import IdentitySkillGraph
+from scrollsense.domain.enums import RetrievalSource
 from scrollsense.domain.reels import Reel
 from scrollsense.graph.loader import GraphLoader
 from scrollsense.persona.inferencer import PersonaInferencer

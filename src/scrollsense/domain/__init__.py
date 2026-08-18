@@ -40,6 +40,7 @@ __all__ = [
     "ConfidenceBucket",
     "DepthLevel",
     "EvidenceType",
+    "FeedbackEvent",
     "FeedbackOutcome",
     "GateResult",
     "GraphEdge",

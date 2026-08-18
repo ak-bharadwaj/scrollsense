@@ -1,6 +1,5 @@
 """Unit and integration tests for LLMStructuredSignalExtractor and concrete Gemini provider."""
 
-from datetime import datetime, timezone
 import io
 import json
 import os
@@ -14,7 +13,7 @@ from pydantic import BaseModel
 from scrollsense.domain.enums import DepthLevel, EvidenceType, NodeType
 from scrollsense.domain.graph import IdentitySkillGraph
 from scrollsense.domain.reels import Reel, ReelSignal
-from scrollsense.graph import GraphLoader, GraphStore
+from scrollsense.graph import GraphStore
 from scrollsense.persona import PersonaInferencer
 from scrollsense.signals import (
     DeterministicSignalExtractor,
@@ -22,7 +21,6 @@ from scrollsense.signals import (
     ExtractionValidationError,
     GeminiLLMProvider,
     LLMConfig,
-    LLMProvider,
     LLMProviderError,
     LLMStructuredSignalExtractor,
     SignalExtractor,
@@ -424,7 +422,12 @@ def test_real_gemini_integration_skips_cleanly_without_credentials(canonical_gra
     )
 
     extractor = LLMStructuredSignalExtractor(provider=provider, graph=canonical_graph)
-    signal = extractor.extract(reel)
+    try:
+        signal = extractor.extract(reel)
+    except ExtractionError as exc:
+        if "429" in str(exc) or "RESOURCE_EXHAUSTED" in str(exc) or "quota" in str(exc).lower():
+            pytest.skip(f"Skipping live Gemini test due to Free Tier quota rate-limit: {exc}")
+        raise
 
     assert signal.reel_id == "test_real_gemini"
     assert signal.topic is not None

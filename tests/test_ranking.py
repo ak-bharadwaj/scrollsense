@@ -7,15 +7,11 @@ import pytest
 
 from scrollsense.domain.candidates import Candidate
 from scrollsense.domain.enums import DepthLevel, RetrievalSource
-from scrollsense.domain.gates import GateResult, HypeScore, QualityScore, SafetyResult
 from scrollsense.domain.persona import InterestState
 from scrollsense.domain.reels import Reel
 from scrollsense.gates import CandidateGateEvaluator
 from scrollsense.ranking import (
     MultiObjectiveRanker,
-    RankedCandidate,
-    RankingResult,
-    RankingTrace,
     RankingWeights,
 )
 

@@ -7,6 +7,7 @@ from scrollsense.domain.enums import EvidenceType, NodeType
 from scrollsense.domain.graph import IdentitySkillGraph
 from scrollsense.domain.reels import Reel, ReelSignal
 from scrollsense.graph.store import GraphStore
+from scrollsense.signals.extractor import SignalExtractor
 from scrollsense.signals.prompt import (
     StructuredExtractionPayload,
     format_extraction_prompt,
@@ -36,10 +37,13 @@ class LLMStructuredSignalExtractor:
         self,
         provider: LLMProvider,
         graph: IdentitySkillGraph | GraphStore,
+        fallback_extractor: SignalExtractor | None = None,
         signal_version: str = SIGNAL_VERSION,
         ontology_version: str = ONTOLOGY_VERSION,
     ) -> None:
         self.provider = provider
+        self.graph = graph
+        self.fallback_extractor = fallback_extractor
         self.signal_version = signal_version
         self.ontology_version = ontology_version
 
@@ -88,6 +92,8 @@ class LLMStructuredSignalExtractor:
                 schema=StructuredExtractionPayload,
             )
         except LLMProviderError as e:
+            if self.fallback_extractor is not None:
+                return self.fallback_extractor.extract(reel, generated_at=timestamp)
             raise ExtractionError(f"LLM provider failed for reel '{reel.reel_id}': {e}") from e
 
         # Validate through Pydantic schema

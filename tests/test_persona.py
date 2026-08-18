@@ -5,10 +5,9 @@ import json
 from pathlib import Path
 import pytest
 
-from scrollsense.domain.enums import DepthLevel
 from scrollsense.domain.persona import InterestState
-from scrollsense.domain.reels import Reel, ReelSignal
-from scrollsense.persona import InferencePolicy, PersonaInferencer
+from scrollsense.domain.reels import Reel
+from scrollsense.persona import PersonaInferencer
 from scrollsense.signals import DeterministicSignalExtractor
 
 DATA_DIR = Path(__file__).resolve().parent.parent / "data"

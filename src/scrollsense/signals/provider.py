@@ -137,10 +137,10 @@ class GeminiLLMProvider:
             raise LLMProviderError(f"Gemini API HTTP error {e.code}: {error_body}") from e
         except urllib.error.URLError as e:
             raise LLMProviderError(f"Gemini API network error: {e.reason}") from e
-        except TimeoutError as e:
-            raise LLMProviderError(f"Gemini API request timed out after {self.config.timeout_seconds}s") from e
         except json.JSONDecodeError as e:
             raise LLMProviderError(f"Failed to decode Gemini API response as JSON: {e}") from e
+        except Exception as e:
+            raise LLMProviderError(f"Gemini API connection error: {e}") from e
 
         # Extract structured content from Gemini candidates payload
         try:

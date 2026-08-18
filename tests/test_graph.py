@@ -4,7 +4,7 @@ from pathlib import Path
 import pytest
 from pydantic import ValidationError
 
-from scrollsense.domain.enums import NodeType, RelationType
+from scrollsense.domain.enums import RelationType
 from scrollsense.graph import GraphLoader, GraphStore, GraphValidationError
 
 DATA_DIR = Path(__file__).resolve().parent.parent / "data"

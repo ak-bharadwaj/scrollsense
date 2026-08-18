@@ -8,14 +8,14 @@ from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-load_dotenv()
-
 from scrollsense.api.routes import create_router
 from scrollsense.domain.reels import Reel
 from scrollsense.engine import ScrollSenseEngine
 from scrollsense.graph.loader import GraphLoader
 from scrollsense.ingestion.manifest import AssetManifest, ValidationStatus
 from scrollsense.retrieval.repository import CandidateRepository
+
+load_dotenv()
 
 DATA_DIR = Path(__file__).resolve().parent.parent.parent.parent / "data"
 

@@ -2,7 +2,6 @@
 
 from pathlib import Path
 import re
-from typing import Sequence
 from fastapi import APIRouter, HTTPException, Query, status
 from fastapi.responses import FileResponse
 
@@ -185,7 +184,7 @@ def create_router(
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail=str(exc),
             )
-        except Exception as exc:
+        except Exception:
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail="Internal recommendation computation error",

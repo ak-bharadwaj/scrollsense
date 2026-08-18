@@ -1,14 +1,12 @@
 """Integration tests for the ScrollSense FastAPI production API contracts and security boundaries."""
 
 from datetime import datetime, timezone
-import json
 from pathlib import Path
 from fastapi.testclient import TestClient
 import pytest
 
-from scrollsense.api import app, create_app
-from scrollsense.domain.enums import DepthLevel, TechCategory
-from scrollsense.domain.reels import Reel
+from scrollsense.api import create_app
+from scrollsense.domain.enums import DepthLevel
 from scrollsense.ingestion.manifest import (
     AssetManifest,
     HumanQCStatus,

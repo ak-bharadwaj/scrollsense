@@ -10,7 +10,6 @@ from scrollsense.domain.enums import ConfidenceBucket, DepthLevel, RetrievalSour
 from scrollsense.domain.gates import GateResult, HypeScore, QualityScore, SafetyResult
 from scrollsense.domain.persona import InterestState
 from scrollsense.domain.ranking import ObjectiveScores
-from scrollsense.domain.recommendation import Recommendation, RecommendationOutput
 from scrollsense.domain.reels import Reel
 from scrollsense.gates import CandidateGateEvaluator
 from scrollsense.ranking import (
@@ -21,10 +20,8 @@ from scrollsense.ranking import (
     RankingWeights,
 )
 from scrollsense.selection import (
-    DeterministicExplainer,
     RecommendationAssembler,
     SelectionPolicy,
-    map_reel_to_tech_category,
 )
 
 DATA_DIR = Path(__file__).resolve().parent.parent / "data"

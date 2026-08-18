@@ -2,11 +2,8 @@
 
 import json
 from pathlib import Path
-import pytest
 
 from scrollsense.domain import (
-    GraphEdge,
-    GraphNode,
     IdentitySkillGraph,
     NodeType,
     Reel,

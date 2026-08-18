@@ -3,7 +3,7 @@
 from datetime import datetime, timezone
 from typing import Protocol, runtime_checkable
 
-from scrollsense.domain.enums import DepthLevel, EvidenceType
+from scrollsense.domain.enums import EvidenceType
 from scrollsense.domain.reels import InterestEvidence, Reel, ReelSignal
 
 SIGNAL_VERSION = "1.0.0"

@@ -5,7 +5,7 @@ from pathlib import Path
 import pytest
 
 from scrollsense.domain.enums import DepthLevel
-from scrollsense.domain.gates import GateResult, HypeScore, QualityScore, SafetyResult
+from scrollsense.domain.gates import GateResult
 from scrollsense.domain.reels import Reel
 from scrollsense.gates import CandidateGateEvaluator
 

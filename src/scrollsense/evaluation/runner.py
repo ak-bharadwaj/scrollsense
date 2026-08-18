@@ -4,11 +4,7 @@ from datetime import datetime, timezone
 from typing import Any
 from pydantic import BaseModel, ConfigDict, Field
 
-from scrollsense.domain.enums import DepthLevel
-from scrollsense.domain.persona import InterestState
-from scrollsense.domain.recommendation import RecommendationOutput
-from scrollsense.domain.reels import Reel
-from scrollsense.engine import EngineResult, ScrollSenseEngine
+from scrollsense.engine import ScrollSenseEngine
 from scrollsense.evaluation.baselines import (
     B0_LiteralTopicBaseline,
     B1_EmbeddingSemanticSimilarityBaseline,
@@ -22,7 +18,6 @@ from scrollsense.evaluation.candidate_pool import (
 )
 from scrollsense.evaluation.metrics import MetricCalculator, ScenarioMetrics
 from scrollsense.evaluation.scenarios import Scenario, get_all_scenarios
-from scrollsense.graph.loader import GraphLoader
 from scrollsense.graph.store import GraphStore
 
 
@@ -91,10 +86,12 @@ class EvaluationHarness:
             embedding_provider=self.embedding_provider,
         )
 
-        # Initialize ScrollSense Engine
+        # Initialize ScrollSense Engine (deterministic offline extractor for reproducible benchmark)
+        from scrollsense.signals.extractor import DeterministicSignalExtractor
         self.engine = ScrollSenseEngine.create_default(
             graph_store=self.graph_store,
             candidate_repo=self.candidate_repo,
+            extractor=DeterministicSignalExtractor(),
         )
         self.b2_baseline = B2_ScrollSenseBaseline(self.engine)
 
