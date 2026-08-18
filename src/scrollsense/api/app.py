@@ -89,6 +89,14 @@ def create_app(
     manifest_path = base_content_dir / "manifest.json"
     manifest = AssetManifest.load_from_json(manifest_path) if manifest_path.exists() else None
 
+    # Resolve relative asset paths against the repo root (works on both Windows dev and Render Linux)
+    if manifest:
+        repo_root = DATA_DIR.parent  # data_dir is {repo_root}/data, so parent is repo_root
+        for item in manifest.items.values():
+            ap = Path(item.asset_path)
+            if not ap.is_absolute():
+                item.asset_path = str((repo_root / ap).resolve())
+
     # Load corpus reels (combines inputs and candidate repository)
     in_path = Path(inputs_path) if inputs_path else DATA_DIR / "inputs.json"
     cand_path = Path(candidates_path) if candidates_path else DATA_DIR / "candidates.json"
