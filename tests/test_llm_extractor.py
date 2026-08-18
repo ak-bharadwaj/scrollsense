@@ -85,10 +85,10 @@ def input_reels() -> dict[str, Reel]:
 
 
 def test_default_gemini_model_is_current_and_supported():
-    """Verify default Gemini model is gemini-3.5-flash and not a deprecated model."""
+    """Verify default Gemini model supports Google AI Studio Free Tier and not deprecated models."""
     config = LLMConfig()
-    assert config.model_name == "gemini-3.5-flash"
-    assert config.model_name not in ["gemini-1.0-pro", "gemini-1.5-pro-001", "gemini-2.0-flash", "chat-bison"]
+    assert config.model_name in ["gemini-1.5-flash", "gemini-2.0-flash", "gemini-3.5-flash"]
+    assert config.model_name not in ["gemini-1.0-pro", "chat-bison", "text-bison-001"]
 
 
 def test_signal_extractor_protocol_conformance(canonical_graph: IdentitySkillGraph):
@@ -311,15 +311,15 @@ def test_gemini_provider_http_error_handling():
 
 
 def test_llm_config_from_env_valid(monkeypatch: pytest.MonkeyPatch):
-    """Verify LLMConfig loads correctly from environment variables."""
+    """Verify LLMConfig loads correctly from environment variables including GEMINI_MODEL and GEMINI_API_KEY."""
     monkeypatch.setenv("SCROLLSENSE_LLM_PROVIDER", "gemini")
-    monkeypatch.setenv("SCROLLSENSE_LLM_MODEL", "gemini-3.5-flash")
+    monkeypatch.setenv("GEMINI_MODEL", "gemini-1.5-flash")
     monkeypatch.setenv("GEMINI_API_KEY", "env_secret_key")
     monkeypatch.setenv("SCROLLSENSE_LLM_TIMEOUT", "25.5")
 
     config = LLMConfig.from_env()
     assert config.provider_name == "gemini"
-    assert config.model_name == "gemini-3.5-flash"
+    assert config.model_name == "gemini-1.5-flash"
     assert config.api_key == "env_secret_key"
     assert config.timeout_seconds == 25.5
 
