@@ -112,27 +112,27 @@ def create_router(
                     reel = corpus_reels.get(item.reel_id) or item.to_domain_reel()
                     accepted_feed_items.append(_resolve_feed_item(reel))
 
-        # Return real accepted items if available
-        if accepted_feed_items:
-            return accepted_feed_items[:limit]
-
-        # Fallback to synthetic fixtures ONLY if no accepted real video items exist
+        # Always include corpus reels as synthetic fixtures if include_fixtures=True (or if no accepted items)
         if include_fixtures:
-            for r in list(corpus_reels.values())[:limit]:
-                accepted_feed_items.append(
-                    FeedItemResponse(
-                        reel_id=r.reel_id,
-                        title=f"{r.title} [SYNTHETIC_FIXTURE]",
-                        creator="[SYNTHETIC_FIXTURE]",
-                        category=r.category if isinstance(r.category, str) else r.category.value,
-                        difficulty=r.depth.value,
-                        thumbnail_url=None,
-                        video_url=None,
-                        duration_seconds=30.0,
+            already_included = {item.reel_id for item in accepted_feed_items}
+            for r in corpus_reels.values():
+                if r.reel_id not in already_included:
+                    accepted_feed_items.append(
+                        FeedItemResponse(
+                            reel_id=r.reel_id,
+                            title=r.title if accepted_feed_items else f"{r.title} [SYNTHETIC_FIXTURE]",
+                            creator=None if accepted_feed_items else "[SYNTHETIC_FIXTURE]",
+                            category=r.category if isinstance(r.category, str) else r.category.value,
+                            difficulty=r.depth.value,
+                            thumbnail_url=None,
+                            video_url=None,
+                            duration_seconds=30.0,
+                        )
                     )
-                )
+                if len(accepted_feed_items) >= limit:
+                    break
 
-        return accepted_feed_items
+        return accepted_feed_items[:limit]
 
     # 3. Individual Reel Detail Endpoint
     @router.get("/api/v1/reels/{reel_id}", response_model=ReelDetailResponse, tags=["Reels"])
