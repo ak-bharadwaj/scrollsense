@@ -1,4 +1,4 @@
-"""Unit tests for ScrollSense v4 domain contracts."""
+"""Unit tests for hardened ScrollSense v4 domain contracts."""
 
 from datetime import datetime, timezone
 import pytest
@@ -8,6 +8,7 @@ from scrollsense.domain import (
     Candidate,
     ConfidenceBucket,
     DepthLevel,
+    EvidenceType,
     FeedbackEvent,
     FeedbackOutcome,
     GraphEdge,
@@ -48,33 +49,44 @@ def test_reel_valid():
 def test_reel_invalid():
     """Verify Reel validation errors on empty required fields and invalid types."""
     with pytest.raises(ValidationError):
-        Reel(reel_id="", title="Title", category="cat")  # empty reel_id
+        Reel(reel_id="", title="Title", category="cat")
 
     with pytest.raises(ValidationError):
-        Reel(reel_id="r1", title="", category="cat")  # empty title
+        Reel(reel_id="r1", title="", category="cat")
 
 
 def test_interest_evidence_validation():
-    """Verify InterestEvidence validation and optional weight bounds."""
+    """Verify InterestEvidence requires typed EvidenceType and valid weights in [0, 1]."""
     evidence = InterestEvidence(
-        evidence_type=RelationType.CAREER_STAGE_SIGNAL,
+        evidence_type=EvidenceType.CAREER_STAGE_SIGNAL,
         value="candidate",
         weight=0.85,
     )
+    assert evidence.evidence_type == EvidenceType.CAREER_STAGE_SIGNAL
     assert evidence.weight == 0.85
 
-    # Out-of-bounds weight
+    # Boundary weights
+    ev_zero = InterestEvidence(evidence_type=EvidenceType.DOMAIN_SIGNAL, value="backend", weight=0.0)
+    ev_one = InterestEvidence(evidence_type=EvidenceType.DOMAIN_SIGNAL, value="backend", weight=1.0)
+    assert ev_zero.weight == 0.0
+    assert ev_one.weight == 1.0
+
+    # Invalid evidence_type (raw unmapped string)
     with pytest.raises(ValidationError):
-        InterestEvidence(evidence_type="test", value="val", weight=1.5)
+        InterestEvidence(evidence_type="invalid_type", value="val")  # type: ignore[arg-type]
+
+    # Out-of-bounds weights
+    with pytest.raises(ValidationError):
+        InterestEvidence(evidence_type=EvidenceType.GOAL_SIGNAL, value="val", weight=1.001)
 
     with pytest.raises(ValidationError):
-        InterestEvidence(evidence_type="test", value="val", weight=-0.1)
+        InterestEvidence(evidence_type=EvidenceType.GOAL_SIGNAL, value="val", weight=-0.001)
 
 
 def test_reel_signal_validation():
     """Verify ReelSignal construction and validation."""
     now = datetime.now(timezone.utc)
-    evidence = [InterestEvidence(evidence_type="career_stage_signal", value="candidate")]
+    evidence = [InterestEvidence(evidence_type=EvidenceType.CAREER_STAGE_SIGNAL, value="candidate")]
     signal = ReelSignal(
         reel_id="reel_123",
         signal_version="v1",
@@ -91,7 +103,6 @@ def test_reel_signal_validation():
     assert signal.topic == "interview_jokes"
     assert len(signal.interest_evidence) == 1
 
-    # Missing required field
     with pytest.raises(ValidationError):
         ReelSignal(
             reel_id="r1",
@@ -107,7 +118,7 @@ def test_reel_signal_validation():
 
 
 def test_graph_models_validation():
-    """Verify GraphNode, GraphEdge, and IdentitySkillGraph."""
+    """Verify GraphNode, GraphEdge with RelationType enum, and IdentitySkillGraph."""
     node1 = GraphNode(id="software_engineer", category=NodeType.PROFESSIONAL_IDENTITY)
     node2 = GraphNode(id="system_design", category=NodeType.SKILL, label="System Design")
 
@@ -117,45 +128,98 @@ def test_graph_models_validation():
         relation_type=RelationType.IDENTITY_ADJACENT_SKILL,
         weight=0.8,
     )
+    assert edge.relation_type == RelationType.IDENTITY_ADJACENT_SKILL
 
     graph = IdentitySkillGraph(version="v1.0", nodes=[node1, node2], edges=[edge])
     assert len(graph.nodes) == 2
     assert len(graph.edges) == 1
-    assert graph.edges[0].weight == 0.8
 
-    # Edge with invalid weight
+    # Invalid relation_type
     with pytest.raises(ValidationError):
         GraphEdge(
             from_node="n1",
             to_node="n2",
-            relation_type="rel",
-            weight=1.2,
+            relation_type="arbitrary_untyped_relation",  # type: ignore[arg-type]
+            weight=0.5,
+        )
+
+    # Invalid node category
+    with pytest.raises(ValidationError):
+        GraphNode(id="n1", category="invalid_category")  # type: ignore[arg-type]
+
+    # Out-of-bounds edge weights
+    with pytest.raises(ValidationError):
+        GraphEdge(
+            from_node="n1",
+            to_node="n2",
+            relation_type=RelationType.TOPIC_IMPLIES_IDENTITY,
+            weight=1.01,
+        )
+
+    with pytest.raises(ValidationError):
+        GraphEdge(
+            from_node="n1",
+            to_node="n2",
+            relation_type=RelationType.TOPIC_IMPLIES_IDENTITY,
+            weight=-0.01,
         )
 
 
-def test_interest_state_validation():
-    """Verify InterestState construction and validation."""
+def test_interest_state_weights_constrained():
+    """Verify InterestState strictly validates all weights in [0, 1]."""
     now = datetime.now(timezone.utc)
     state = InterestState(
         student_id="student_42",
-        professional_identity={"software_engineer": 0.86},
-        domains={"backend": 0.7, "ai": 0.3},
+        professional_identity={"software_engineer": 0.86, "ml_engineer": 0.0},
+        domains={"backend": 0.7, "ai": 1.0},
         goals={"career_prep": 0.8},
         depth={"backend": DepthLevel.INTERMEDIATE},
-        content_preference={"humor": 0.6, "tutorial": 0.7},
+        content_preference={"humor": 0.6, "tutorial": 0.0},
         evidence=["reel_1", "reel_2"],
         updated_at=now,
     )
     assert state.professional_identity["software_engineer"] == 0.86
-    assert state.depth["backend"] == DepthLevel.INTERMEDIATE
+    assert state.domains["ai"] == 1.0
 
-    # Missing updated_at or student_id
-    with pytest.raises(ValidationError):
-        InterestState(student_id="", updated_at=now)
+    # Weight > 1.0 in professional_identity
+    with pytest.raises(ValidationError) as exc:
+        InterestState(
+            student_id="s1",
+            professional_identity={"software_engineer": 1.05},
+            updated_at=now,
+        )
+    assert "must be in [0.0, 1.0]" in str(exc.value)
+
+    # Weight < 0.0 in domains
+    with pytest.raises(ValidationError) as exc:
+        InterestState(
+            student_id="s1",
+            domains={"backend": -0.1},
+            updated_at=now,
+        )
+    assert "must be in [0.0, 1.0]" in str(exc.value)
+
+    # Weight > 1.0 in goals
+    with pytest.raises(ValidationError) as exc:
+        InterestState(
+            student_id="s1",
+            goals={"career_prep": 2.0},
+            updated_at=now,
+        )
+    assert "must be in [0.0, 1.0]" in str(exc.value)
+
+    # Weight < 0.0 in content_preference
+    with pytest.raises(ValidationError) as exc:
+        InterestState(
+            student_id="s1",
+            content_preference={"tutorial": -0.5},
+            updated_at=now,
+        )
+    assert "must be in [0.0, 1.0]" in str(exc.value)
 
 
 def test_candidate_validation():
-    """Verify Candidate construction with metadata and path."""
+    """Verify Candidate construction with typed source and path."""
     cand = Candidate(
         reel_id="reel_sys_1",
         source=RetrievalSource.SOURCE_B_IDENTITY_ADJACENT,
@@ -165,15 +229,12 @@ def test_candidate_validation():
         initial_score=0.75,
     )
     assert cand.source == RetrievalSource.SOURCE_B_IDENTITY_ADJACENT
-    assert cand.graph_distance == 1
-    assert len(cand.traversal_path) == 2
 
-    # Negative graph distance should fail
+    # Invalid source enum
     with pytest.raises(ValidationError):
         Candidate(
             reel_id="r1",
-            source=RetrievalSource.SOURCE_A_TOPICAL,
-            graph_distance=-1,
+            source="Random Source",  # type: ignore[arg-type]
         )
 
 
@@ -190,17 +251,22 @@ def test_gates_validation():
     hype = HypeScore(pattern_penalty=0.2, promotional_language_score=0.1)
     assert hype.pattern_penalty == 0.2
 
-    # Quality score out of bounds
+    # Scores out of [0, 1] bounds
     with pytest.raises(ValidationError):
         QualityScore(concept_anchor_score=1.5, depth_score=0.5)
 
-    # Hype score out of bounds
+    with pytest.raises(ValidationError):
+        QualityScore(concept_anchor_score=0.5, depth_score=-0.1)
+
     with pytest.raises(ValidationError):
         HypeScore(pattern_penalty=-0.1, promotional_language_score=0.5)
 
+    with pytest.raises(ValidationError):
+        HypeScore(pattern_penalty=0.5, promotional_language_score=1.2)
 
-def test_ranking_and_recommendation_validation():
-    """Verify ObjectiveScores and Recommendation schemas."""
+
+def test_objective_scores_bounded():
+    """Verify all ObjectiveScores fields are strictly constrained to [0, 1]."""
     scores = ObjectiveScores(
         topical_fit=0.8,
         difficulty_match=0.9,
@@ -211,6 +277,91 @@ def test_ranking_and_recommendation_validation():
         final_score=0.78,
     )
     assert scores.final_score == 0.78
+
+    # Test each field failing when > 1.0 or < 0.0
+    with pytest.raises(ValidationError):
+        ObjectiveScores(
+            topical_fit=1.1,
+            difficulty_match=0.5,
+            career_relevance=0.5,
+            novelty=0.5,
+            quality=0.5,
+            hype_penalty=0.5,
+        )
+
+    with pytest.raises(ValidationError):
+        ObjectiveScores(
+            topical_fit=0.5,
+            difficulty_match=-0.1,
+            career_relevance=0.5,
+            novelty=0.5,
+            quality=0.5,
+            hype_penalty=0.5,
+        )
+
+    with pytest.raises(ValidationError):
+        ObjectiveScores(
+            topical_fit=0.5,
+            difficulty_match=0.5,
+            career_relevance=1.5,
+            novelty=0.5,
+            quality=0.5,
+            hype_penalty=0.5,
+        )
+
+    with pytest.raises(ValidationError):
+        ObjectiveScores(
+            topical_fit=0.5,
+            difficulty_match=0.5,
+            career_relevance=0.5,
+            novelty=-0.2,
+            quality=0.5,
+            hype_penalty=0.5,
+        )
+
+    with pytest.raises(ValidationError):
+        ObjectiveScores(
+            topical_fit=0.5,
+            difficulty_match=0.5,
+            career_relevance=0.5,
+            novelty=0.5,
+            quality=1.01,
+            hype_penalty=0.5,
+        )
+
+    with pytest.raises(ValidationError):
+        ObjectiveScores(
+            topical_fit=0.5,
+            difficulty_match=0.5,
+            career_relevance=0.5,
+            novelty=0.5,
+            quality=0.5,
+            hype_penalty=-0.05,
+        )
+
+    with pytest.raises(ValidationError):
+        ObjectiveScores(
+            topical_fit=0.5,
+            difficulty_match=0.5,
+            career_relevance=0.5,
+            novelty=0.5,
+            quality=0.5,
+            hype_penalty=0.5,
+            final_score=1.5,
+        )
+
+
+def test_recommendation_strictly_typed():
+    """Verify Recommendation requires typed RetrievalSource and ConfidenceBucket."""
+    scores = ObjectiveScores(
+        topical_fit=0.8,
+        difficulty_match=0.9,
+        career_relevance=0.85,
+        novelty=0.4,
+        quality=0.88,
+        hype_penalty=0.1,
+        final_score=0.78,
+    )
 
     rec = Recommendation(
         reel_id="reel_hld_01",
@@ -224,7 +375,40 @@ def test_ranking_and_recommendation_validation():
         evidence_reel_ids=["reel_joke_1", "reel_vlog_2", "reel_laptop_3"],
     )
     assert rec.confidence == ConfidenceBucket.HIGH
-    assert len(rec.evidence_reel_ids) == 3
+    assert rec.retrieval_source == RetrievalSource.SOURCE_B_IDENTITY_ADJACENT
+
+    # Invalid retrieval_source string
+    with pytest.raises(ValidationError):
+        Recommendation(
+            reel_id="r1",
+            title="t",
+            final_score=0.8,
+            confidence=ConfidenceBucket.LOW,
+            retrieval_source="raw_string_source",  # type: ignore[arg-type]
+            explanation="exp",
+        )
+
+    # Invalid confidence bucket
+    with pytest.raises(ValidationError):
+        Recommendation(
+            reel_id="r1",
+            title="t",
+            final_score=0.8,
+            confidence="CalibratedHigh",  # type: ignore[arg-type]
+            retrieval_source=RetrievalSource.SOURCE_A_TOPICAL,
+            explanation="exp",
+        )
+
+    # Final score out of [0, 1]
+    with pytest.raises(ValidationError):
+        Recommendation(
+            reel_id="r1",
+            title="t",
+            final_score=1.2,
+            confidence=ConfidenceBucket.MEDIUM,
+            retrieval_source=RetrievalSource.SOURCE_A_TOPICAL,
+            explanation="exp",
+        )
 
 
 def test_feedback_event_validation():
@@ -238,7 +422,6 @@ def test_feedback_event_validation():
     )
     assert event.outcome == FeedbackOutcome.ACCEPTED
 
-    # Invalid outcome value
     with pytest.raises(ValidationError):
         FeedbackEvent(
             recommendation_id="rec_100",

@@ -2,7 +2,7 @@
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from scrollsense.domain.enums import NodeType
+from scrollsense.domain.enums import NodeType, RelationType
 
 
 class GraphNode(BaseModel):
@@ -22,10 +22,9 @@ class GraphEdge(BaseModel):
 
     from_node: str = Field(..., min_length=1, description="Origin node ID")
     to_node: str = Field(..., min_length=1, description="Destination node ID")
-    relation_type: str = Field(
+    relation_type: RelationType = Field(
         ...,
-        min_length=1,
-        description="Relation type, e.g. topic_implies_identity, identity_adjacent_skill",
+        description="Typed relation type, e.g. topic_implies_identity, identity_adjacent_skill",
     )
     weight: float = Field(..., ge=0.0, le=1.0, description="Edge weight / confidence")
 

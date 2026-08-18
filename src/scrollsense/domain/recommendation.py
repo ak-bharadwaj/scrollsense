@@ -13,9 +13,15 @@ class Recommendation(BaseModel):
 
     reel_id: str = Field(..., min_length=1, description="Recommended reel identifier")
     title: str = Field(..., min_length=1, description="Title of the recommended reel")
-    final_score: float = Field(..., description="Final ranked composite score")
-    confidence: ConfidenceBucket = Field(..., description="Calibrated confidence bucket: High, Medium, or Low")
-    retrieval_source: RetrievalSource | str = Field(..., description="Retrieval source that generated this candidate")
+    final_score: float = Field(..., ge=0.0, le=1.0, description="Final ranked composite score in [0, 1]")
+    confidence: ConfidenceBucket = Field(
+        ...,
+        description="Rule-derived confidence bucket: High, Medium, or Low",
+    )
+    retrieval_source: RetrievalSource = Field(
+        ...,
+        description="Typed retrieval source that generated this candidate",
+    )
     traversal_path: list[str] = Field(
         default_factory=list,
         description="Graph traversal path that led to this recommendation",
@@ -27,7 +33,7 @@ class Recommendation(BaseModel):
     explanation: str = Field(
         ...,
         min_length=1,
-        description="Traceable explanation explaining WHY based on latent identity and evidence",
+        description="Traceable rationale explaining WHY based on latent identity and evidence",
     )
     evidence_reel_ids: list[str] = Field(
         default_factory=list,

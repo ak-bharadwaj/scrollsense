@@ -32,6 +32,16 @@ class RelationType(StrEnum):
     ADJACENT_TO_ADJACENT = "adjacent_to_adjacent"
 
 
+class EvidenceType(StrEnum):
+    """Types of latent viewer evidence extracted from reel content."""
+
+    CAREER_STAGE_SIGNAL = "career_stage_signal"
+    PROFESSIONAL_IDENTITY_SIGNAL = "professional_identity_signal"
+    TOPIC_IMPLIES_IDENTITY = "topic_implies_identity"
+    DOMAIN_SIGNAL = "domain_signal"
+    GOAL_SIGNAL = "goal_signal"
+
+
 class RetrievalSource(StrEnum):
     """Candidate retrieval sources defined in v4 multi-source retrieval."""
 
@@ -42,7 +52,7 @@ class RetrievalSource(StrEnum):
 
 
 class ConfidenceBucket(StrEnum):
-    """Rule-derived confidence buckets replacing raw floats."""
+    """Rule-derived confidence buckets based on evidence count and consistency."""
 
     HIGH = "High"
     MEDIUM = "Medium"

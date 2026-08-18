@@ -4,6 +4,7 @@ from scrollsense.domain.candidates import Candidate
 from scrollsense.domain.enums import (
     ConfidenceBucket,
     DepthLevel,
+    EvidenceType,
     FeedbackOutcome,
     NodeType,
     RelationType,
@@ -33,7 +34,7 @@ __all__ = [
     "Candidate",
     "ConfidenceBucket",
     "DepthLevel",
-    "FeedbackEvent",
+    "EvidenceType",
     "FeedbackOutcome",
     "GraphEdge",
     "GraphNode",

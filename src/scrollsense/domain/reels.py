@@ -3,7 +3,7 @@
 from datetime import datetime
 from pydantic import BaseModel, ConfigDict, Field
 
-from scrollsense.domain.enums import DepthLevel
+from scrollsense.domain.enums import DepthLevel, EvidenceType
 
 
 class InterestEvidence(BaseModel):
@@ -11,9 +11,12 @@ class InterestEvidence(BaseModel):
 
     model_config = ConfigDict(extra="forbid")
 
-    evidence_type: str = Field(..., min_length=1, description="Type of evidence, e.g. career_stage_signal, professional_identity")
+    evidence_type: EvidenceType = Field(
+        ...,
+        description="Typed category of evidence, e.g. career_stage_signal, professional_identity_signal",
+    )
     value: str = Field(..., min_length=1, description="Extracted value, e.g. candidate, developer, software_engineer")
-    weight: float | None = Field(default=None, ge=0.0, le=1.0, description="Optional confidence or weight of this evidence")
+    weight: float | None = Field(default=None, ge=0.0, le=1.0, description="Optional weight or strength of this evidence")
 
 
 class Reel(BaseModel):
