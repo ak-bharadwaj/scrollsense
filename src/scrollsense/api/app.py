@@ -130,8 +130,15 @@ def create_app(
     app.include_router(router)
 
     # Mount static assets and root frontend page
-    static_dir = Path(__file__).resolve().parent / "static"
-    if static_dir.exists():
+    # Use importlib.resources so this works when installed as a package (e.g. Render)
+    import importlib.resources as pkg_resources
+    try:
+        static_pkg = pkg_resources.files("scrollsense.api") / "static"
+        static_dir = Path(str(static_pkg))
+    except Exception:
+        static_dir = Path(__file__).resolve().parent / "static"
+
+    if static_dir.exists() and (static_dir / "index.html").exists():
         from fastapi.responses import FileResponse
         from fastapi.staticfiles import StaticFiles
 
