@@ -22,6 +22,7 @@ from scrollsense.signals.prompt import (
     format_extraction_prompt,
 )
 from scrollsense.signals.provider import (
+    GeminiLLMProvider,
     LLMConfig,
     LLMProvider,
     LLMProviderError,
@@ -31,6 +32,7 @@ __all__ = [
     "DeterministicSignalExtractor",
     "ExtractionError",
     "ExtractionValidationError",
+    "GeminiLLMProvider",
     "LLMConfig",
     "LLMProvider",
     "LLMProviderError",

@@ -1,27 +1,36 @@
-"""Unit and integration tests for LLMStructuredSignalExtractor and provider abstraction."""
+"""Unit and integration tests for LLMStructuredSignalExtractor and concrete Gemini provider."""
 
 from datetime import datetime, timezone
+import io
 import json
 from pathlib import Path
 from typing import Any
+from unittest.mock import MagicMock, patch
+import urllib.error
 import pytest
 from pydantic import BaseModel
 
 from scrollsense.domain.enums import DepthLevel, EvidenceType
+from scrollsense.domain.graph import IdentitySkillGraph
 from scrollsense.domain.reels import Reel, ReelSignal
+from scrollsense.graph import GraphLoader
 from scrollsense.persona import PersonaInferencer
 from scrollsense.signals import (
     DeterministicSignalExtractor,
     ExtractionError,
     ExtractionValidationError,
+    GeminiLLMProvider,
+    LLMConfig,
     LLMProvider,
     LLMProviderError,
     LLMStructuredSignalExtractor,
     SignalExtractor,
+    StructuredExtractionPayload,
 )
 
 DATA_DIR = Path(__file__).resolve().parent.parent / "data"
 INPUTS_PATH = DATA_DIR / "inputs.json"
+GRAPH_PATH = DATA_DIR / "identity_skill_graph.json"
 
 
 class MockLLMProvider:
@@ -45,6 +54,19 @@ class MockLLMProvider:
 
 
 @pytest.fixture
+def canonical_graph() -> IdentitySkillGraph:
+    """Fixture providing parsed canonical IdentitySkillGraph."""
+    with open(GRAPH_PATH, "r", encoding="utf-8") as f:
+        raw_data = json.load(f)
+    core = {
+        "version": raw_data["version"],
+        "nodes": raw_data["nodes"],
+        "edges": raw_data["edges"],
+    }
+    return IdentitySkillGraph.model_validate(core)
+
+
+@pytest.fixture
 def input_reels() -> dict[str, Reel]:
     """Fixture providing input reels by ID."""
     reels: dict[str, Reel] = {}
@@ -55,16 +77,24 @@ def input_reels() -> dict[str, Reel]:
     return reels
 
 
-def test_signal_extractor_protocol_conformance():
+def test_signal_extractor_protocol_conformance(canonical_graph: IdentitySkillGraph):
     """Verify that both Deterministic and LLM extractors satisfy the SignalExtractor protocol."""
     det_extractor = DeterministicSignalExtractor()
-    llm_extractor = LLMStructuredSignalExtractor(MockLLMProvider())
+    llm_extractor = LLMStructuredSignalExtractor(MockLLMProvider(), graph=canonical_graph)
 
     assert isinstance(det_extractor, SignalExtractor)
     assert isinstance(llm_extractor, SignalExtractor)
 
 
-def test_valid_llm_structured_extraction(input_reels: dict[str, Reel]):
+def test_llm_extractor_derives_allowlists_from_graph(canonical_graph: IdentitySkillGraph):
+    """Verify the extractor derives allowed identities and career stages directly from the graph."""
+    extractor = LLMStructuredSignalExtractor(MockLLMProvider(), graph=canonical_graph)
+
+    assert extractor.allowed_identities == {"software_engineer", "backend_developer", "gamer"}
+    assert extractor.allowed_career_stages == {"candidate"}
+
+
+def test_valid_llm_structured_extraction(input_reels: dict[str, Reel], canonical_graph: IdentitySkillGraph):
     """Verify LLM extractor parses valid structured JSON into typed ReelSignal."""
     mock_response = {
         "topic": "java_meme",
@@ -86,7 +116,7 @@ def test_valid_llm_structured_extraction(input_reels: dict[str, Reel]):
         ],
     }
     provider = MockLLMProvider({"reel_java_meme": mock_response})
-    extractor = LLMStructuredSignalExtractor(provider)
+    extractor = LLMStructuredSignalExtractor(provider, graph=canonical_graph)
 
     signal = extractor.extract(input_reels["reel_java_meme"])
 
@@ -99,7 +129,7 @@ def test_valid_llm_structured_extraction(input_reels: dict[str, Reel]):
     assert signal.interest_evidence[0].value == "software_engineer"
 
 
-def test_llm_extractor_rejects_unsupported_identity(input_reels: dict[str, Reel]):
+def test_llm_extractor_rejects_unsupported_identity(input_reels: dict[str, Reel], canonical_graph: IdentitySkillGraph):
     """Verify LLM extractor rejects unsupported identity values via post-LLM validation."""
     mock_response = {
         "topic": "laptop_comparison",
@@ -116,14 +146,14 @@ def test_llm_extractor_rejects_unsupported_identity(input_reels: dict[str, Reel]
         ],
     }
     provider = MockLLMProvider({"reel_laptop_comparison": mock_response})
-    extractor = LLMStructuredSignalExtractor(provider)
+    extractor = LLMStructuredSignalExtractor(provider, graph=canonical_graph)
 
     with pytest.raises(ExtractionValidationError) as exc:
         extractor.extract(input_reels["reel_laptop_comparison"])
     assert "emitted unsupported identity" in str(exc.value)
 
 
-def test_llm_extractor_rejects_invalid_career_stage(input_reels: dict[str, Reel]):
+def test_llm_extractor_rejects_invalid_career_stage(input_reels: dict[str, Reel], canonical_graph: IdentitySkillGraph):
     """Verify LLM extractor rejects unsupported career stage values."""
     mock_response = {
         "topic": "interview_joke",
@@ -140,14 +170,14 @@ def test_llm_extractor_rejects_invalid_career_stage(input_reels: dict[str, Reel]
         ],
     }
     provider = MockLLMProvider({"reel_interview_joke": mock_response})
-    extractor = LLMStructuredSignalExtractor(provider)
+    extractor = LLMStructuredSignalExtractor(provider, graph=canonical_graph)
 
     with pytest.raises(ExtractionValidationError) as exc:
         extractor.extract(input_reels["reel_interview_joke"])
     assert "emitted unsupported career stage" in str(exc.value)
 
 
-def test_llm_extractor_rejects_out_of_bounds_weights(input_reels: dict[str, Reel]):
+def test_llm_extractor_rejects_out_of_bounds_weights(input_reels: dict[str, Reel], canonical_graph: IdentitySkillGraph):
     """Verify LLM extractor rejects weights > 1.0 or < 0.0."""
     mock_response = {
         "topic": "java_meme",
@@ -164,23 +194,114 @@ def test_llm_extractor_rejects_out_of_bounds_weights(input_reels: dict[str, Reel
         ],
     }
     provider = MockLLMProvider({"reel_java_meme": mock_response})
-    extractor = LLMStructuredSignalExtractor(provider)
+    extractor = LLMStructuredSignalExtractor(provider, graph=canonical_graph)
 
     with pytest.raises(ExtractionValidationError):
         extractor.extract(input_reels["reel_java_meme"])
 
 
-def test_llm_extractor_handles_provider_error(input_reels: dict[str, Reel]):
+def test_llm_extractor_handles_provider_error(input_reels: dict[str, Reel], canonical_graph: IdentitySkillGraph):
     """Verify LLM extractor handles provider timeout or network failures cleanly."""
     provider = MockLLMProvider({"reel_java_meme": LLMProviderError("Connection timeout to LLM endpoint")})
-    extractor = LLMStructuredSignalExtractor(provider)
+    extractor = LLMStructuredSignalExtractor(provider, graph=canonical_graph)
 
     with pytest.raises(ExtractionError) as exc:
         extractor.extract(input_reels["reel_java_meme"])
     assert "LLM provider failed" in str(exc.value)
 
 
-def test_trap_pipeline_integration_with_llm_signals(input_reels: dict[str, Reel]):
+def test_gemini_provider_mock_transport_success():
+    """Verify concrete GeminiLLMProvider generates and extracts structured response."""
+    config = LLMConfig(provider_name="gemini", model_name="gemini-2.0-flash", api_key="test_api_key", timeout_seconds=10.0)
+    provider = GeminiLLMProvider(config)
+
+    gemini_api_payload = {
+        "candidates": [
+            {
+                "content": {
+                    "parts": [
+                        {
+                            "text": json.dumps({
+                                "topic": "java_meme",
+                                "format": "meme",
+                                "tone": "humorous",
+                                "depth": "Beginner",
+                                "concept_tags": ["java"],
+                                "interest_evidence": [
+                                    {"evidence_type": "domain_signal", "value": "java", "weight": 0.8}
+                                ],
+                            })
+                        }
+                    ]
+                }
+            }
+        ]
+    }
+
+    mock_resp = MagicMock()
+    mock_resp.read.return_value = json.dumps(gemini_api_payload).encode("utf-8")
+    mock_resp.__enter__.return_value = mock_resp
+
+    with patch("urllib.request.urlopen", return_value=mock_resp) as mock_urlopen:
+        result = provider.generate_structured_json("test prompt", StructuredExtractionPayload)
+        assert result["topic"] == "java_meme"
+        assert result["depth"] == "Beginner"
+        mock_urlopen.assert_called_once()
+
+
+def test_gemini_provider_missing_api_key():
+    """Verify concrete GeminiLLMProvider raises LLMProviderError on missing API key."""
+    config = LLMConfig(provider_name="gemini", model_name="gemini-2.0-flash", api_key=None)
+    provider = GeminiLLMProvider(config)
+
+    with pytest.raises(LLMProviderError) as exc:
+        provider.generate_structured_json("test prompt", StructuredExtractionPayload)
+    assert "Missing API key" in str(exc.value)
+
+
+def test_gemini_provider_http_error_handling():
+    """Verify concrete GeminiLLMProvider handles HTTP errors cleanly."""
+    config = LLMConfig(provider_name="gemini", model_name="gemini-2.0-flash", api_key="key")
+    provider = GeminiLLMProvider(config)
+
+    http_err = urllib.error.HTTPError(
+        url="http://test",
+        code=401,
+        msg="Unauthorized",
+        hdrs={},
+        fp=io.BytesIO(b'{"error": "Invalid API key"}'),
+    )
+
+    with patch("urllib.request.urlopen", side_effect=http_err):
+        with pytest.raises(LLMProviderError) as exc:
+            provider.generate_structured_json("test prompt", StructuredExtractionPayload)
+        assert "HTTP error 401" in str(exc.value)
+
+
+def test_llm_config_from_env_valid(monkeypatch: pytest.MonkeyPatch):
+    """Verify LLMConfig loads correctly from environment variables."""
+    monkeypatch.setenv("SCROLLSENSE_LLM_PROVIDER", "gemini")
+    monkeypatch.setenv("SCROLLSENSE_LLM_MODEL", "gemini-2.5-pro")
+    monkeypatch.setenv("GEMINI_API_KEY", "env_secret_key")
+    monkeypatch.setenv("SCROLLSENSE_LLM_TIMEOUT", "25.5")
+
+    config = LLMConfig.from_env()
+    assert config.provider_name == "gemini"
+    assert config.model_name == "gemini-2.5-pro"
+    assert config.api_key == "env_secret_key"
+    assert config.timeout_seconds == 25.5
+
+
+def test_llm_config_from_env_invalid_timeout(monkeypatch: pytest.MonkeyPatch):
+    """Verify LLMConfig rejects invalid timeout strings explicitly rather than falling back silently."""
+    monkeypatch.setenv("SCROLLSENSE_LLM_TIMEOUT", "invalid_not_a_number")
+
+    with pytest.raises(ValueError) as exc:
+        LLMConfig.from_env()
+    assert "Invalid SCROLLSENSE_LLM_TIMEOUT" in str(exc.value)
+
+
+def test_trap_pipeline_integration_with_llm_signals(input_reels: dict[str, Reel], canonical_graph: IdentitySkillGraph):
     """Integration test: Extract signals for 4 trap reels via LLM and feed into PersonaInferencer."""
     trap_responses = {
         "reel_java_meme": {
@@ -231,7 +352,7 @@ def test_trap_pipeline_integration_with_llm_signals(input_reels: dict[str, Reel]
     }
 
     provider = MockLLMProvider(trap_responses, model_name="gemini-2.0-flash")
-    llm_extractor = LLMStructuredSignalExtractor(provider)
+    llm_extractor = LLMStructuredSignalExtractor(provider, graph=canonical_graph)
     inferencer = PersonaInferencer()
 
     trap_reel_ids = [

@@ -1,9 +1,12 @@
 """LLM-backed structured semantic ReelSignal extractor."""
 
 from datetime import datetime, timezone
+from pydantic import ValidationError
 
-from scrollsense.domain.enums import EvidenceType
+from scrollsense.domain.enums import EvidenceType, NodeType
+from scrollsense.domain.graph import IdentitySkillGraph
 from scrollsense.domain.reels import Reel, ReelSignal
+from scrollsense.graph.store import GraphStore
 from scrollsense.signals.prompt import (
     StructuredExtractionPayload,
     format_extraction_prompt,
@@ -12,16 +15,6 @@ from scrollsense.signals.provider import LLMProvider, LLMProviderError
 
 SIGNAL_VERSION = "1.0.0"
 ONTOLOGY_VERSION = "1.0.0"
-
-DEFAULT_ALLOWED_IDENTITIES = {
-    "software_engineer",
-    "backend_developer",
-    "gamer",
-}
-
-DEFAULT_ALLOWED_CAREER_STAGES = {
-    "candidate",
-}
 
 
 class ExtractionError(Exception):
@@ -33,21 +26,53 @@ class ExtractionValidationError(ExtractionError):
 
 
 class LLMStructuredSignalExtractor:
-    """Production semantic extractor leveraging an LLM provider to extract atomic ReelSignal evidence."""
+    """Production semantic extractor leveraging an LLM provider to extract atomic ReelSignal evidence.
+
+    Derives allowed identities and career stages directly from the canonical IdentitySkillGraph
+    as the single source of truth.
+    """
 
     def __init__(
         self,
         provider: LLMProvider,
-        allowed_identities: set[str] | None = None,
-        allowed_career_stages: set[str] | None = None,
+        graph: IdentitySkillGraph | GraphStore,
         signal_version: str = SIGNAL_VERSION,
         ontology_version: str = ONTOLOGY_VERSION,
     ) -> None:
         self.provider = provider
-        self.allowed_identities = allowed_identities or DEFAULT_ALLOWED_IDENTITIES
-        self.allowed_career_stages = allowed_career_stages or DEFAULT_ALLOWED_CAREER_STAGES
         self.signal_version = signal_version
         self.ontology_version = ontology_version
+
+        # Derive allowlists directly from the graph
+        self.allowed_identities, self.allowed_career_stages = self._extract_graph_allowlists(graph)
+
+    @staticmethod
+    def _extract_graph_allowlists(
+        graph: IdentitySkillGraph | GraphStore,
+    ) -> tuple[set[str], set[str]]:
+        """Extract allowed professional_identity and career_stage IDs from graph nodes."""
+        if isinstance(graph, GraphStore):
+            identities = {
+                node_id for node_id, node in graph._nodes_by_id.items()
+                if node.category == NodeType.PROFESSIONAL_IDENTITY
+            }
+            career_stages = {
+                node_id for node_id, node in graph._nodes_by_id.items()
+                if node.category == NodeType.CAREER_STAGE
+            }
+        elif isinstance(graph, IdentitySkillGraph):
+            identities = {
+                node.id for node in graph.nodes
+                if node.category == NodeType.PROFESSIONAL_IDENTITY
+            }
+            career_stages = {
+                node.id for node in graph.nodes
+                if node.category == NodeType.CAREER_STAGE
+            }
+        else:
+            raise TypeError(f"Expected IdentitySkillGraph or GraphStore, got {type(graph).__name__}")
+
+        return identities, career_stages
 
     def extract(self, reel: Reel, generated_at: datetime | None = None) -> ReelSignal:
         """Extract a structured ReelSignal by prompting the LLM and validating output schemas."""
@@ -64,13 +89,13 @@ class LLMStructuredSignalExtractor:
                 prompt=prompt,
                 schema=StructuredExtractionPayload,
             )
-        except Exception as e:
+        except LLMProviderError as e:
             raise ExtractionError(f"LLM provider failed for reel '{reel.reel_id}': {e}") from e
 
         # Validate through Pydantic schema
         try:
             payload = StructuredExtractionPayload.model_validate(raw_data)
-        except Exception as e:
+        except ValidationError as e:
             raise ExtractionValidationError(
                 f"LLM output for reel '{reel.reel_id}' failed schema validation: {e}"
             ) from e
