@@ -145,8 +145,62 @@ async function fetchReelDetail(reelId) {
   }
 }
 
+const evolutionTimeline = document.getElementById("evolution-timeline");
+const evolutionStepCount = document.getElementById("evolution-step-count");
+let evolutionHistory = [];
+
+async function updateEvolutionTimeline(stepNumber, currentReel, partialHistory) {
+  try {
+    const res = await fetch(`${API_BASE}/api/v1/recommend`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        student_id: "demo_student_session",
+        history: partialHistory
+      })
+    });
+    if (!res.ok) return;
+    const data = await res.json();
+    const contract = data.official_contract;
+    
+    if (evolutionHistory.length === 0 && evolutionTimeline) {
+      evolutionTimeline.innerHTML = "";
+    }
+    
+    const stepEl = document.createElement("div");
+    stepEl.className = "evolution-step-card";
+    stepEl.innerHTML = `
+      <div class="evolution-step-header">
+        <span class="evolution-step-num">Step ${stepNumber}</span>
+        <span class="chip chip-diff">${contract.confidence} Conf</span>
+      </div>
+      <div class="evolution-reel-title">🎬 Watched: ${currentReel.title}</div>
+      <div class="evolution-grid">
+        <div>
+          <div class="evolution-field-label">INTEREST DETECTED</div>
+          <div class="evolution-field-val font-bold text-accent">${contract.interest_detected}</div>
+        </div>
+        <div>
+          <div class="evolution-field-label">RECOMMENDED REEL</div>
+          <div class="evolution-field-val">${contract.recommended_tech_reel}</div>
+        </div>
+      </div>
+    `;
+    if (evolutionTimeline) {
+      evolutionTimeline.appendChild(stepEl);
+      evolutionTimeline.scrollTop = evolutionTimeline.scrollHeight;
+    }
+    evolutionHistory.push({ step: stepNumber, data });
+    if (evolutionStepCount) {
+      evolutionStepCount.textContent = `Steps: ${evolutionHistory.length}`;
+    }
+  } catch (err) {
+    console.error("Evolution step fetch failed:", err);
+  }
+}
+
 function recordInteraction(reel, dwellSec = 15.0) {
-  const existing = watchedHistory.find(item => (typeof item === "string" ? item : item.reel_id) === reel.reel_id);
+  const existing = watchedHistory.find(h => h.reel_id === reel.reel_id);
   if (!existing) {
     watchedHistory.push({
       reel_id: reel.reel_id,
@@ -156,6 +210,7 @@ function recordInteraction(reel, dwellSec = 15.0) {
       timestamp: new Date().toISOString()
     });
     updateHistoryUI(reel, dwellSec);
+    updateEvolutionTimeline(watchedHistory.length, reel, [...watchedHistory]);
   }
 }
 
@@ -348,6 +403,13 @@ function resetSession() {
   lastRecommendationData = null;
   recConfidencePill.textContent = "Confidence: N/A";
   recConfidencePill.className = "badge-confidence";
+  evolutionHistory = [];
+  if (evolutionTimeline) {
+    evolutionTimeline.innerHTML = '<p class="empty-hint">Interact with reels to observe cumulative interest detection and recommendation transitions.</p>';
+  }
+  if (evolutionStepCount) {
+    evolutionStepCount.textContent = "Steps: 0";
+  }
   closeExplainSheet();
   startDwellTimer();
 }

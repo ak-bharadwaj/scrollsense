@@ -11,7 +11,7 @@ from scrollsense.api.routes import create_router
 from scrollsense.domain.reels import Reel
 from scrollsense.engine import ScrollSenseEngine
 from scrollsense.graph.loader import GraphLoader
-from scrollsense.ingestion.manifest import AssetManifest
+from scrollsense.ingestion.manifest import AssetManifest, ValidationStatus
 from scrollsense.retrieval.repository import CandidateRepository
 
 DATA_DIR = Path(__file__).resolve().parent.parent.parent.parent / "data"
@@ -80,6 +80,12 @@ def create_app(
     candidate_repo = CandidateRepository.load_from_json(cand_path) if cand_path.exists() else CandidateRepository()
     for r in candidate_repo.get_all():
         corpus_reels[r.reel_id] = r
+
+    if manifest:
+        for item in manifest.items.values():
+            if item.validation_status == ValidationStatus.ACCEPTED:
+                r = item.to_domain_reel()
+                corpus_reels[r.reel_id] = r
 
     # Initialize Engine if not provided
     if engine is None:

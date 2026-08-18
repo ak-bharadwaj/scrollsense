@@ -833,6 +833,78 @@ body {
   to { transform: rotate(360deg); }
 }
 
+/* Interest & Recommendation Evolution Timeline */
+.evolution-timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 320px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.evolution-step-card {
+  background: rgba(15, 23, 42, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  transition: border-color var(--transition-fast);
+}
+
+.evolution-step-card:hover {
+  border-color: rgba(56, 189, 248, 0.3);
+}
+
+.evolution-step-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.evolution-step-num {
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--accent-cyan);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.evolution-reel-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: #fff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.evolution-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  background: rgba(0, 0, 0, 0.25);
+  padding: 6px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+}
+
+.evolution-field-label {
+  font-size: 9px;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  margin-bottom: 2px;
+}
+
+.evolution-field-val {
+  font-weight: 600;
+  color: var(--text-main);
+  word-break: break-word;
+}
+
 .hidden {
   display: none !important;
 }
