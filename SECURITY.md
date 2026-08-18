@@ -4,14 +4,14 @@
 
 We take the security of ScrollSense seriously. If you discover a potential vulnerability or security concern, please report it responsibly:
 
-- **Contact**: Open a confidential security issue or email the maintainers at `security@scrollsense.dev`.
+- **Reporting Mechanism**: Report privately via GitHub Security Advisories by opening a confidential report under the repository's [Security Advisories](https://github.com/ak-bharadwaj/scrollsense/security/advisories/new) tab.
 - **Details to Include**:
   - Description of the vulnerability.
   - Steps to reproduce or proof-of-concept.
   - Potential impact on users or infrastructure.
-- **Response Timeline**: We aim to acknowledge receipt within 48 hours and provide remediation status updates.
+- **Response Timeline**: Maintainers will review and acknowledge receipt via GitHub Security Advisories within 48 hours and provide remediation status updates.
 
-Please do **not** file public issues for zero-day vulnerabilities until a fix has been coordinated and released.
+Please do **not** file public issues or discussions for vulnerabilities until a fix has been coordinated and released.
 
 ---
 

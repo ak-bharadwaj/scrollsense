@@ -1,6 +1,5 @@
 """Candidate quality, integrity, and safety gates evaluator."""
 
-from scrollsense.domain.candidates import Candidate
 from scrollsense.domain.enums import DepthLevel
 from scrollsense.domain.gates import GateResult, HypeScore, QualityScore, SafetyResult
 from scrollsense.domain.reels import Reel
