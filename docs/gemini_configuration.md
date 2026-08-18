@@ -18,8 +18,8 @@ In your local terminal or `.env` file:
 # Set your Google AI Studio Free Tier API key
 export GEMINI_API_KEY="your-api-key-here"
 
-# (Optional) Choose the target Gemini model (default: gemini-1.5-flash)
-export GEMINI_MODEL="gemini-1.5-flash"
+# (Optional) Choose the target Gemini model (default: gemini-3.5-flash)
+export GEMINI_MODEL="gemini-3.5-flash"
 
 # (Optional) Request timeout in seconds (default: 15.0)
 export SCROLLSENSE_LLM_TIMEOUT="15.0"
@@ -28,7 +28,7 @@ export SCROLLSENSE_LLM_TIMEOUT="15.0"
 On Windows PowerShell:
 ```powershell
 $env:GEMINI_API_KEY="your-api-key-here"
-$env:GEMINI_MODEL="gemini-1.5-flash"
+$env:GEMINI_MODEL="gemini-3.5-flash"
 ```
 
 ---
@@ -50,7 +50,7 @@ $env:GEMINI_MODEL="gemini-1.5-flash"
            | with response_schema enforcement                          | multi-feature heuristic
            v                                                           v
 +------------------------------------+                  +--------------------------------+
-|  Gemini 1.5 Flash Structured JSON  |                  |     Canonical ReelSignal       |
+|  Gemini 3.5 Flash Structured JSON  |                  |     Canonical ReelSignal       |
 +------------------------------------+                  +--------------------------------+
            │                                                           │
            └───────────────────────────────┬───────────────────────────┘

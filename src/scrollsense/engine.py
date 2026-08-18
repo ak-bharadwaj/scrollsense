@@ -72,7 +72,18 @@ class ScrollSenseEngine:
         selection_policy: SelectionPolicy | None = None,
     ) -> "ScrollSenseEngine":
         """Factory method to construct a fully wired default ScrollSenseEngine."""
-        signal_extractor = extractor or DeterministicSignalExtractor()
+        if extractor is not None:
+            signal_extractor = extractor
+        else:
+            import os
+            api_key = os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY")
+            if api_key:
+                from scrollsense.signals.llm_extractor import LLMStructuredSignalExtractor
+                from scrollsense.signals.provider import GeminiLLMProvider, LLMConfig
+                provider = GeminiLLMProvider(config=LLMConfig.from_env())
+                signal_extractor = LLMStructuredSignalExtractor(provider=provider, graph=graph_store)
+            else:
+                signal_extractor = DeterministicSignalExtractor()
         inferencer = PersonaInferencer()
         retriever = MultiSourceRetriever(repository=candidate_repo, graph_store=graph_store)
         gate_evaluator = CandidateGateEvaluator()

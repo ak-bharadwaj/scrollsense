@@ -14,7 +14,7 @@ class LLMConfig(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     provider_name: str = Field(default="gemini", description="Provider identifier (e.g. gemini, openai, mock)")
-    model_name: str = Field(default="gemini-1.5-flash", description="Target model version/name (Google AI Studio Free Tier)")
+    model_name: str = Field(default="gemini-3.5-flash", description="Target model version/name (Google AI Studio)")
     api_key: str | None = Field(default=None, description="Provider API key (read from environment)")
     timeout_seconds: float = Field(default=15.0, ge=1.0, le=120.0, description="Request timeout in seconds")
 
@@ -22,10 +22,10 @@ class LLMConfig(BaseModel):
     def from_env(cls) -> "LLMConfig":
         """Load LLM credentials and configuration from environment variables.
 
-        Supports Google AI Studio Gemini Free Tier via GEMINI_API_KEY and GEMINI_MODEL.
+        Supports Google AI Studio Gemini via GEMINI_API_KEY and GEMINI_MODEL.
         """
         provider = os.getenv("SCROLLSENSE_LLM_PROVIDER", "gemini")
-        model = os.getenv("GEMINI_MODEL") or os.getenv("SCROLLSENSE_LLM_MODEL") or "gemini-1.5-flash"
+        model = os.getenv("GEMINI_MODEL") or os.getenv("SCROLLSENSE_LLM_MODEL") or "gemini-3.5-flash"
         api_key = os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY") or os.getenv("LLM_API_KEY")
 
         timeout_env = os.getenv("SCROLLSENSE_LLM_TIMEOUT")

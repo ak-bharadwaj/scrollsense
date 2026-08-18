@@ -85,10 +85,10 @@ def input_reels() -> dict[str, Reel]:
 
 
 def test_default_gemini_model_is_current_and_supported():
-    """Verify default Gemini model supports Google AI Studio Free Tier and not deprecated models."""
+    """Verify default Gemini model is gemini-3.5-flash and not a deprecated model."""
     config = LLMConfig()
-    assert config.model_name in ["gemini-1.5-flash", "gemini-2.0-flash", "gemini-3.5-flash"]
-    assert config.model_name not in ["gemini-1.0-pro", "chat-bison", "text-bison-001"]
+    assert config.model_name == "gemini-3.5-flash"
+    assert config.model_name not in ["gemini-1.0-pro", "gemini-1.5-flash", "chat-bison", "text-bison-001"]
 
 
 def test_signal_extractor_protocol_conformance(canonical_graph: IdentitySkillGraph):
@@ -410,7 +410,8 @@ def test_real_gemini_integration_skips_cleanly_without_credentials():
     if not api_key:
         pytest.skip("Skipping real Gemini API integration test: GEMINI_API_KEY not configured")
 
-    config = LLMConfig(provider_name="gemini", model_name="gemini-1.5-flash", api_key=api_key)
+    model = os.getenv("GEMINI_MODEL", "gemini-3.5-flash")
+    config = LLMConfig(provider_name="gemini", model_name=model, api_key=api_key)
     provider = GeminiLLMProvider(config=config)
 
     reel = Reel(
