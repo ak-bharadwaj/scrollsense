@@ -2,7 +2,6 @@
 
 from collections import Counter
 from datetime import datetime, timezone
-import math
 from typing import Sequence
 
 from scrollsense.domain.enums import DepthLevel, EvidenceType
@@ -44,11 +43,15 @@ class PersonaInferencer:
                 updated_at=timestamp,
             )
 
-        # 1. Track unique contributing reel IDs preserving order of first appearance
-        evidence_reel_ids: list[str] = []
+        # 1. Deduplicate incoming signals by reel_id preserving first-seen order
+        unique_signals: list[ReelSignal] = []
+        seen_reel_ids: set[str] = set()
         for signal in reel_signals:
-            if signal.reel_id not in evidence_reel_ids:
-                evidence_reel_ids.append(signal.reel_id)
+            if signal.reel_id not in seen_reel_ids:
+                seen_reel_ids.add(signal.reel_id)
+                unique_signals.append(signal)
+
+        evidence_reel_ids = [s.reel_id for s in unique_signals]
 
         # 2. Aggregate evidence by distinct reels to avoid same-reel double counting
         identity_by_reel: dict[str, dict[str, float]] = {}
@@ -59,7 +62,7 @@ class PersonaInferencer:
         format_counter: Counter[str] = Counter()
         tone_counter: Counter[str] = Counter()
 
-        for signal in reel_signals:
+        for signal in unique_signals:
             r_id = signal.reel_id
             identity_by_reel.setdefault(r_id, {})
             domain_by_reel.setdefault(r_id, {})
@@ -110,9 +113,9 @@ class PersonaInferencer:
             goal_by_reel, self.policy.goal_evidence_scale
         )
 
-        # 4. Calculate content preferences from repeated observations
+        # 4. Calculate content preferences from distinct observations
         content_pref = self._calculate_content_preferences(
-            format_counter, tone_counter, len(reel_signals)
+            format_counter, tone_counter, len(unique_signals)
         )
 
         return InterestState(
@@ -159,7 +162,7 @@ class PersonaInferencer:
         tone_counter: Counter[str],
         total_signals: int,
     ) -> dict[str, float]:
-        """Aggregate observed format and tone preferences requiring multiple observations."""
+        """Aggregate observed format and tone preferences requiring multiple distinct observations."""
         if total_signals == 0:
             return {}
 

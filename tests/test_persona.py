@@ -134,7 +134,7 @@ def test_repeated_same_reel_evidence_not_double_counted(
     extractor: DeterministicSignalExtractor,
     all_reels: dict[str, Reel],
 ):
-    """Test 6: Duplicated identical reel signals in history do not artificially inflate evidence."""
+    """Test 6: Duplicated identical reel signals in history do not artificially inflate evidence or content preferences."""
     single_signal = extractor.extract(all_reels["reel_java_meme"])
     duplicate_signals = [single_signal, single_signal, single_signal]
 
@@ -143,6 +143,9 @@ def test_repeated_same_reel_evidence_not_double_counted(
 
     assert state_single.professional_identity == state_dup.professional_identity
     assert state_single.domains == state_dup.domains
+    assert state_single.goals == state_dup.goals
+    assert state_single.depth == state_dup.depth
+    assert state_single.content_preference == state_dup.content_preference
     assert state_dup.evidence == ["reel_java_meme"]
 
 
