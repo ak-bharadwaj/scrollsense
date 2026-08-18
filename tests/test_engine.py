@@ -273,3 +273,122 @@ def test_deterministic_repeated_execution(
     run_2 = default_engine.recommend_full(student_id="student_repro", input_reels=trap_inputs, generated_at=fixed_time)
 
     assert run_1.model_dump() == run_2.model_dump()
+
+
+def test_all_eight_required_output_fields_are_populated(
+    default_engine: ScrollSenseEngine,
+    all_input_reels: dict[str, Reel],
+):
+    """Test 8: Ensure every single required output contract field is present and non-empty."""
+    trap_inputs = [
+        all_input_reels["reel_java_meme"],
+        all_input_reels["reel_swe_lifestyle"],
+    ]
+
+    output = default_engine.recommend(student_id="student_contract", input_reels=trap_inputs)
+
+    # 1. CURRENT REEL
+    assert output.current_reel is not None and len(output.current_reel.strip()) > 0
+    assert "reel_swe_lifestyle" in output.current_reel
+
+    # 2. INTEREST DETECTED
+    assert output.interest_detected is not None and len(output.interest_detected.strip()) > 0
+    assert output.interest_detected == "Software Engineer"
+
+    # 3. WHY
+    assert output.why is not None and len(output.why.strip()) > 0
+    assert "reel_java_meme" in output.why
+
+    # 4. RECOMMENDED TECH REEL
+    assert output.recommended_tech_reel is not None and len(output.recommended_tech_reel.strip()) > 0
+
+    # 5. CATEGORY
+    assert isinstance(output.category, TechCategory)
+
+    # 6. WHY THIS RECOMMENDATION
+    assert output.why_this_recommendation is not None and len(output.why_this_recommendation.strip()) > 0
+    assert "Recommended via" in output.why_this_recommendation
+
+    # 7. DIFFICULTY
+    assert isinstance(output.difficulty, DepthLevel)
+
+    # 8. CONFIDENCE
+    assert isinstance(output.confidence, ConfidenceBucket)
+
+
+def test_runner_up_confidence_margin_regression():
+    """Test 9: Verify confidence derivation reacts deterministically to winner/runner-up ranking score margins."""
+    from scrollsense.domain.candidates import Candidate
+    from scrollsense.domain.enums import RetrievalSource
+    from scrollsense.domain.persona import InterestState
+    from scrollsense.domain.ranking import ObjectiveScores
+    from scrollsense.ranking.models import RankedCandidate
+    from scrollsense.selection import DeterministicExplainer, SelectionPolicy
+
+    explainer = DeterministicExplainer(SelectionPolicy(high_confidence_min_margin=0.06, medium_confidence_min_margin=0.02))
+
+    state = InterestState(
+        student_id="test_margin",
+        professional_identity={"software_engineer": 0.90},
+        domains={"java": 0.80},
+        goals={"career_prep": 0.85},
+        depth={},
+        content_preference={},
+        evidence=["r1", "r2", "r3", "r4"],
+        updated_at=datetime.now(timezone.utc),
+    )
+
+    def make_ranked(reel_id: str, score: float) -> RankedCandidate:
+        from scrollsense.domain.gates import GateResult, HypeScore, QualityScore, SafetyResult
+        from scrollsense.ranking.models import RankingTrace
+        from scrollsense.ranking.weights import RankingWeights
+
+        obj_scores = ObjectiveScores(
+            topical_fit=0.8,
+            difficulty_match=0.8,
+            career_relevance=0.8,
+            novelty=0.8,
+            quality=0.8,
+            hype_penalty=0.0,
+            final_score=score,
+        )
+        gate_res = GateResult(
+            candidate_id=reel_id,
+            passed=True,
+            safety=SafetyResult(passed=True),
+            quality=QualityScore(concept_anchor_score=0.8, depth_score=0.8),
+            hype=HypeScore(pattern_penalty=0.0, promotional_language_score=0.0),
+        )
+        trace = RankingTrace(
+            candidate_id=reel_id,
+            eligible=True,
+            objective_scores=obj_scores,
+            weights=RankingWeights(),
+            weighted_contributions={},
+            final_score=score,
+            gate_result=gate_res,
+        )
+        return RankedCandidate(
+            candidate=Candidate(reel_id=reel_id, source=RetrievalSource.SOURCE_B_IDENTITY_ADJACENT),
+            final_score=score,
+            scores=obj_scores,
+            trace=trace,
+        )
+
+    winner = make_ranked("cand_1", 0.90)
+
+    # High confidence: margin = 0.90 - 0.82 = 0.08 (>= 0.06)
+    runner_up_high = make_ranked("cand_2", 0.82)
+    assert explainer.derive_confidence(state, winner, runner_up_high) == ConfidenceBucket.HIGH
+
+    # Medium confidence: margin = 0.90 - 0.86 = 0.04 (>= 0.02 and < 0.06)
+    runner_up_med = make_ranked("cand_2", 0.86)
+    assert explainer.derive_confidence(state, winner, runner_up_med) == ConfidenceBucket.MEDIUM
+
+    # Low confidence: margin = 0.90 - 0.89 = 0.01 (< 0.02)
+    runner_up_low = make_ranked("cand_2", 0.89)
+    assert explainer.derive_confidence(state, winner, runner_up_low) == ConfidenceBucket.LOW
+
+    # Single candidate case: uses policy default single candidate margin (0.08 -> High)
+    assert explainer.derive_confidence(state, winner, runner_up_candidate=None) == ConfidenceBucket.HIGH
+
