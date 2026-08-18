@@ -103,7 +103,6 @@ def create_router(
         if manifest:
             for item in manifest.items.values():
                 asset_p = Path(item.asset_path)
-                # Check absolute asset_path or relative to accepted_dir
                 file_exists = asset_p.exists() or (accepted_dir and (accepted_dir / asset_p.name).exists())
                 if (
                     item.validation_status == ValidationStatus.ACCEPTED
@@ -113,27 +112,25 @@ def create_router(
                     reel = corpus_reels.get(item.reel_id) or item.to_domain_reel()
                     accepted_feed_items.append(_resolve_feed_item(reel))
 
-                if len(accepted_feed_items) >= limit:
-                    return accepted_feed_items
+        # Return real accepted items if available
+        if accepted_feed_items:
+            return accepted_feed_items[:limit]
 
-        if include_fixtures and (not accepted_feed_items or len(accepted_feed_items) < limit):
-            already_included = {item.reel_id for item in accepted_feed_items}
-            for r in corpus_reels.values():
-                if r.reel_id not in already_included:
-                    accepted_feed_items.append(
-                        FeedItemResponse(
-                            reel_id=r.reel_id,
-                            title=f"{r.title} [SYNTHETIC_FIXTURE]",
-                            creator="[SYNTHETIC_FIXTURE]",
-                            category=r.category if isinstance(r.category, str) else r.category.value,
-                            difficulty=r.depth.value,
-                            thumbnail_url=None,
-                            video_url=None,
-                            duration_seconds=30.0,
-                        )
+        # Fallback to synthetic fixtures ONLY if no accepted real video items exist
+        if include_fixtures:
+            for r in list(corpus_reels.values())[:limit]:
+                accepted_feed_items.append(
+                    FeedItemResponse(
+                        reel_id=r.reel_id,
+                        title=f"{r.title} [SYNTHETIC_FIXTURE]",
+                        creator="[SYNTHETIC_FIXTURE]",
+                        category=r.category if isinstance(r.category, str) else r.category.value,
+                        difficulty=r.depth.value,
+                        thumbnail_url=None,
+                        video_url=None,
+                        duration_seconds=30.0,
                     )
-                if len(accepted_feed_items) >= limit:
-                    break
+                )
 
         return accepted_feed_items
 
