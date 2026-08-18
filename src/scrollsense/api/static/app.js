@@ -211,6 +211,7 @@ function recordInteraction(reel, dwellSec = 15.0) {
     });
     updateHistoryUI(reel, dwellSec);
     updateEvolutionTimeline(watchedHistory.length, reel, [...watchedHistory]);
+    fetchRecommendation();
   }
 }
 
