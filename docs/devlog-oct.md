@@ -5,3 +5,4 @@
 - [2026-10-04 19:44] refactor: consolidate error types
 - [2026-10-05 21:48] fix: handle malformed request gracefully
 - [2026-10-06 21:51] fix: resolve memory leak in worker
+- [2026-10-06 17:11] feat: add error boundary handling
