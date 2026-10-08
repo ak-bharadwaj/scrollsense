@@ -11,3 +11,4 @@
 - [2026-10-08 12:11] feat: add structured logging
 - [2026-10-08 16:22] fix: resolve edge case in validation layer
 - [2026-10-08 16:39] docs: clarify configuration parameters
+- [2026-10-08 12:45] refactor: simplify state transition logic
