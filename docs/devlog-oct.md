@@ -9,3 +9,4 @@
 - [2026-10-06 21:02] fix: handle null pointer in serializer
 - [2026-10-07 17:10] docs: update deployment runbook
 - [2026-10-08 12:11] feat: add structured logging
+- [2026-10-08 16:22] fix: resolve edge case in validation layer
