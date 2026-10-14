@@ -19,3 +19,4 @@
 - [2026-10-10 08:02] refactor: extract reusable middleware
 - [2026-10-12 18:54] fix: prevent race condition in cache
 - [2026-10-12 17:34] docs: document schema migration steps
+- [2026-10-14 17:45] test: mock external API responses
