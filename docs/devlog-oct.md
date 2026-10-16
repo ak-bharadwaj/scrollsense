@@ -24,3 +24,4 @@
 - [2026-10-14 12:45] refactor: extract reusable middleware
 - [2026-10-14 09:21] fix: sanitize user input in forms
 - [2026-10-15 17:55] test: add regression test for #142
+- [2026-10-16 13:02] test: mock external API responses
