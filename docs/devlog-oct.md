@@ -26,3 +26,4 @@
 - [2026-10-15 17:55] test: add regression test for #142
 - [2026-10-16 13:02] test: mock external API responses
 - [2026-10-16 19:12] chore: cleanup deprecated utility methods
+- [2026-10-16 18:28] refactor: extract reusable middleware
