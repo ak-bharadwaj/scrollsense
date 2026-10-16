@@ -25,3 +25,4 @@
 - [2026-10-14 09:21] fix: sanitize user input in forms
 - [2026-10-15 17:55] test: add regression test for #142
 - [2026-10-16 13:02] test: mock external API responses
+- [2026-10-16 19:12] chore: cleanup deprecated utility methods
