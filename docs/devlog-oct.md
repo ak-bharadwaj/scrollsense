@@ -28,3 +28,4 @@
 - [2026-10-16 19:12] chore: cleanup deprecated utility methods
 - [2026-10-16 18:28] refactor: extract reusable middleware
 - [2026-10-17 13:06] docs: add architecture decision record
+- [2026-10-18 08:07] test: add regression test for #142
