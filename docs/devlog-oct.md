@@ -33,3 +33,4 @@
 - [2026-10-18 20:13] refactor: optimize hot path in data pipeline
 - [2026-10-18 11:51] fix: correct off-by-one in pagination
 - [2026-10-18 15:08] feat: implement graceful shutdown hook
+- [2026-10-19 21:09] test: add regression test for #142
