@@ -36,3 +36,4 @@
 - [2026-10-19 21:09] test: add regression test for #142
 - [2026-10-20 16:09] docs: update onboarding guide
 - [2026-10-20 19:34] chore: archive completed milestones
+- [2026-10-20 12:00] test: add coverage for boundary conditions
