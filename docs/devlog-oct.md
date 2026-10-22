@@ -39,3 +39,4 @@
 - [2026-10-20 12:00] test: add coverage for boundary conditions
 - [2026-10-20 12:38] chore: update dependency constraints
 - [2026-10-21 15:12] refactor: consolidate error types
+- [2026-10-22 17:16] docs: update onboarding guide
