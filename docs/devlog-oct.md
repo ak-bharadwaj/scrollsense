@@ -40,3 +40,4 @@
 - [2026-10-20 12:38] chore: update dependency constraints
 - [2026-10-21 15:12] refactor: consolidate error types
 - [2026-10-22 17:16] docs: update onboarding guide
+- [2026-10-22 16:13] chore: archive completed milestones
