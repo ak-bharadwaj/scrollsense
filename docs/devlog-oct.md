@@ -51,3 +51,4 @@
 - [2026-10-25 14:52] feat: add health check endpoint
 - [2026-10-25 08:05] fix: handle malformed request gracefully
 - [2026-10-25 18:22] docs: add troubleshooting FAQ
+- [2026-10-25 21:39] refactor: decompose monolithic handler
