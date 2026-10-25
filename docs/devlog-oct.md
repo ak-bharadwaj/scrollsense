@@ -46,3 +46,4 @@
 - [2026-10-22 10:58] refactor: consolidate error types
 - [2026-10-24 20:05] docs: update onboarding guide
 - [2026-10-24 08:08] chore: archive completed milestones
+- [2026-10-25 15:04] refactor: extract reusable middleware
