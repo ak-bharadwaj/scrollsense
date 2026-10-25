@@ -48,3 +48,4 @@
 - [2026-10-24 08:08] chore: archive completed milestones
 - [2026-10-25 15:04] refactor: extract reusable middleware
 - [2026-10-25 08:49] fix: sanitize user input in forms
+- [2026-10-25 14:52] feat: add health check endpoint
