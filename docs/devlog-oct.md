@@ -53,3 +53,4 @@
 - [2026-10-25 18:22] docs: add troubleshooting FAQ
 - [2026-10-25 21:39] refactor: decompose monolithic handler
 - [2026-10-26 12:21] refactor: simplify state transition logic
+- [2026-10-27 16:03] refactor: normalize response envelope
