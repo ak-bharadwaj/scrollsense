@@ -56,3 +56,4 @@
 - [2026-10-27 16:03] refactor: normalize response envelope
 - [2026-10-27 16:09] docs: update onboarding guide
 - [2026-10-29 13:10] refactor: optimize hot path in data pipeline
+- [2026-10-29 13:50] fix: correct off-by-one in pagination
