@@ -58,3 +58,4 @@
 - [2026-10-29 13:10] refactor: optimize hot path in data pipeline
 - [2026-10-29 13:50] fix: correct off-by-one in pagination
 - [2026-10-29 11:26] feat: implement graceful shutdown hook
+- [2026-10-30 13:00] refactor: normalize response envelope
